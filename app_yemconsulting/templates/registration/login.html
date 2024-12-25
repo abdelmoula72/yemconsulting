@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+<!-- Contenu spécifique à cette page -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+</head>
+<body>
+    <h1>Connexion</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Se connecter</button>
+    </form>
+    <p>Si vous voyez ce texte, le template s'affiche correctement.</p>
+
+    <p>Vous n'avez pas encore de compte ? <a href="{% url 'inscription' %}">Inscrivez-vous ici</a>.</p>
+
+    <!-- Lien de déconnexion si l'utilisateur est connecté -->
+    {% if user.is_authenticated %}
+        <p><a href="{% url 'logout' %}">Déconnexion</a></p>
+    {% endif %}
+</body>
+</html>
+
+{% endblock %}

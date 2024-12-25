@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Historique de vos commandes{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Historique de vos commandes</h1>
+    {% if commandes %}
+        <ul class="list-group">
+            {% for commande in commandes %}
+                <li class="list-group-item">
+                    <strong>Commande n° :</strong> {{ commande.id }}<br>
+                    <strong>Date :</strong> {{ commande.date_commande }}<br>
+                    <strong>Statut :</strong> {{ commande.get_statut_display }}<br>
+                    <a href="{% url 'confirmation_commande' commande.id %}" class="btn btn-primary mt-2">Voir les détails</a>
+                    
+                    {% if commande.statut == 'en_attente' %}
+                        <!-- Formulaire pour annuler la commande -->
+                        <form action="{% url 'annuler_commande' commande.id %}" method="POST" class="mt-2">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?');">Annuler la commande</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-center text-muted">Vous n'avez pas encore passé de commande.</p>
+    {% endif %}
+</div>
+{% endblock %}

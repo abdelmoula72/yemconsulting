@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block content %}
+<!-- Contenu spécifique à cette page -->
+<h1>Inscription</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">S'inscrire</button>
+</form>
+<p>Vous avez déjà un compte ? <a href="{% url 'login' %}">Connectez-vous</a></p>
+
+<!-- Lien de déconnexion si l'utilisateur est connecté -->
+{% if user.is_authenticated %}
+    <p><a href="{% url 'logout' %}">Déconnexion</a></p>
+{% endif %}
+
+{% endblock %}
