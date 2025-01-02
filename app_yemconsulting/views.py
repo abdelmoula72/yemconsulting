@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.db import transaction
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.db.models import Q
 
 
 def liste_produits(request):
@@ -329,3 +330,44 @@ def supprimer_article(request, ligne_panier_id):
 
 def test_template(request):
     return render(request, 'base.html')
+
+
+
+
+
+@login_required
+def rechercher_produits(request):
+    query = request.GET.get('q', '').strip()  # Récupère la requête et enlève les espaces
+    produits = Produit.objects.filter(
+        Q(nom__icontains=query)  # Recherche insensible à la casse
+    ) if query else []
+
+    return render(request, 'produits/rechercher.html', {'produits': produits, 'query': query})
+
+
+
+
+
+@login_required
+def autocomplete_produits(request):
+    query = request.GET.get('q', '').strip()
+    if query:
+        produits = Produit.objects.filter(nom__icontains=query)[:10]  # Limite à 10 résultats
+        suggestions = [{'id': p.id, 'nom': p.nom} for p in produits]
+        return JsonResponse(suggestions, safe=False)
+    return JsonResponse([], safe=False)
+
+
+
+
+
+def suggestions_produits(request):
+    terme = request.GET.get('q', '').strip()
+    if terme:
+        produits = Produit.objects.filter(nom__icontains=terme)[:10]  # Limitez les résultats
+        suggestions = [{'id': p.id, 'nom': p.nom} for p in produits]
+        return JsonResponse(suggestions, safe=False)
+    return JsonResponse([], safe=False)
+
+
+

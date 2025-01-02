@@ -1,107 +1,51 @@
 $(document).ready(function () {
-    // Gestion de l'ajout au panier avec AJAX
-    $(".add-to-cart-form").submit(function (event) {
-        event.preventDefault(); // Empêche le rechargement de la page
-        let form = $(this);
-        let url = form.attr("action");
-        let data = form.serialize();
+    $("#search-bar").on("input", function () {
+        const terme = $(this).val().trim();
+        const suggestionBox = $("#suggestion-box");
 
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: data,
-            success: function (response) {
-                if (response.success) {
-                    alert(response.message); // Affiche un message de succès
-                } else {
-                    alert("Une erreur est survenue.");
-                }
-            },
-            error: function (xhr) {
-                let error = JSON.parse(xhr.responseText);
-                alert(error.message || "Une erreur s'est produite.");
-            },
-        });
-    });
-});
-
-
-    // Mise à jour des quantités dans le panier
-    $(".update-quantity-form").submit(function (event) {
-        event.preventDefault();
-        let form = $(this);
-        let url = form.attr("action");
-        let data = form.serialize();
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: data,
-            success: function (response) {
-                if (response.success) {
-                    // Met à jour le sous-total et le total
-                    form.closest("tr").find(".sous-total").text(response.sous_total + " €");
-                    $("#total").text("Total : " + response.total + " €");
-                } else {
-                    alert(response.message); // Affiche le message d'erreur
-                }
-            },
-            error: function (xhr) {
-                let error = JSON.parse(xhr.responseText);
-                alert(error.message || "Une erreur s'est produite.");
-            },
-        });
-    });
-
-    // Suppression d'un produit du panier
-    $(".delete-item-form").submit(function (event) {
-        event.preventDefault();
-        if (!confirm("Êtes-vous sûr de vouloir supprimer cet article ?")) {
-            return;
+        if (terme.length > 0) {
+            $.ajax({
+                url: "/suggestions/",
+                type: "GET",
+                data: { q: terme },
+                success: function (data) {
+                    suggestionBox.empty();
+                    if (data.length > 0) {
+                        data.forEach(function (produit) {
+                            suggestionBox.append(
+                                `<div class="suggestion-item">${produit.nom}</div>`
+                            );
+                        });
+                    } else {
+                        suggestionBox.append(
+                            `<div class="p-2 text-muted">Aucun résultat</div>`
+                        );
+                    }
+                    suggestionBox.show();
+                },
+                error: function () {
+                    suggestionBox.empty().append(
+                        `<div class="p-2 text-danger">Erreur de chargement</div>`
+                    );
+                    suggestionBox.show();
+                },
+            });
+        } else {
+            suggestionBox.hide();
         }
-        let form = $(this);
-        let url = form.attr("action");
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: { csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val() },
-            success: function (response) {
-                if (response.success) {
-                    form.closest("tr").remove(); // Supprime la ligne du tableau
-                    $("#total").text("Total : " + response.total + " €"); // Met à jour le total
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function (xhr) {
-                let error = JSON.parse(xhr.responseText);
-                alert(error.message || "Une erreur s'est produite.");
-            },
-        });
     });
 
+    // Gestion du clic sur une suggestion
+    $(document).on("click", ".suggestion-item", function () {
+        const produitNom = $(this).text().trim(); // Supprime les espaces avant et après
+        $("#search-bar").val(produitNom); // Ajoute le texte sans espaces superflus
+        $("#suggestion-box").hide();
+    });
 
-$(document).ready(function () {
-    $("#passer-commande").click(function (event) {
-        event.preventDefault();
-
-        let url = $(this).attr("href");
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-            },
-            success: function (response) {
-                alert(response.message);
-                window.location.href = "/confirmation_commande/" + response.commande_id + "/";
-            },
-            error: function (xhr) {
-                let response = JSON.parse(xhr.responseText);
-                alert(response.message);
-            },
-        });
+    // Cache les suggestions lorsqu'on clique en dehors
+    $(document).on("click", function (e) {
+        if (!$(e.target).closest("#search-bar, #suggestion-box").length) {
+            $("#suggestion-box").hide();
+        }
     });
 });

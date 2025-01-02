@@ -23,6 +23,10 @@ urlpatterns = [
     path('mettre_a_jour_quantite/<int:ligne_panier_id>/', views.mettre_a_jour_quantite, name='mettre_a_jour_quantite'),
     path('supprimer_article/<int:ligne_panier_id>/', views.supprimer_article, name='supprimer_article'),
     path('test-template/', views.test_template, name='test_template'),
+    path('recherche/', views.rechercher_produits, name='rechercher_produits'),
+    path('autocomplete_produits/', views.autocomplete_produits, name='autocomplete_produits'),
+    path('suggestions/', views.suggestions_produits, name='suggestions_produits'),
+
 
 
 
