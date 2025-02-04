@@ -1,0 +1,36 @@
+{% extends "admin/login.html" %}
+
+{% load i18n %}
+
+{% block extrahead %}{{ block.super }}
+<style>
+#content-main {
+  float: none;
+}
+#footer {
+  padding: 0;
+}
+.admin-sso {
+  border-top: 1px solid #ccc;
+  padding: .75rem 0 0 0;
+  margin: .75rem 0 0 0;
+  text-align: center;
+}
+.admin-sso .button {
+  padding: 10px 15px;
+  display: inline-block;
+}
+@media (max-width: 767px) {
+  .admin-sso .button {
+    display: block;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+<div class="admin-sso">
+  <a class="button" href="{% url 'admin_oauth' %}?next={{ request.GET.next }}">{% trans "Log in using Google" %}{% if request.session.admin_oauth_prompt %} {% translate '(select account)' %}{% endif %}</a>
+</div>
+{% endblock content %}
