@@ -75,7 +75,6 @@ class Produit(models.Model):
 
 
 
-# Modèle pour le panier, lié à un utilisateur et contenant des produits
 class Panier(models.Model):
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name="paniers")
     produits = models.ManyToManyField(Produit, through='LignePanier', related_name="paniers")
@@ -87,15 +86,20 @@ class Panier(models.Model):
     def get_total(self):
         return sum(ligne.produit.prix * ligne.quantite for ligne in self.lignes.all())
 
+    def get_total_quantite(self):
+        return sum(ligne.quantite for ligne in self.lignes.all())  # Utilise self.lignes.all()
+
+
 
 # Modèle pour les lignes du panier, associant un produit à une quantité
 class LignePanier(models.Model):
     panier = models.ForeignKey(Panier, on_delete=models.CASCADE, related_name="lignes")
-    produit = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name="lignes")
-    quantite = models.IntegerField(default=1)  # Ajoute 'default=1' pour éviter l'erreur de contrainte NOT NULL
+    produit = models.ForeignKey(Produit, on_delete=models.CASCADE)
+    quantite = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return f"{self.quantite} x {self.produit.nom}"
+        return f"{self.quantite} x {self.produit.nom} dans le panier de {self.panier.utilisateur.nom}"
+
 
 
 # Modèle pour les commandes, liées à un utilisateur et un panier

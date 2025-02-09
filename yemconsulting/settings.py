@@ -144,6 +144,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = 'liste_produits'
+LOGIN_URL = '/login/'
 
 LOGOUT_REDIRECT_URL = 'login'  # Redirige vers la page de connexion après déconnexion

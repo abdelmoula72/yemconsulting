@@ -1,4 +1,42 @@
 $(document).ready(function () {
+    // 📌 Gestion de l'ajout au panier avec mise à jour du caddie
+    $(".add-to-cart-form").on("submit", function (e) {
+        e.preventDefault(); // ✅ Empêche le rechargement de la page
+
+        let form = $(this);
+        let url = form.attr("action");
+        let formData = form.serialize();
+        let csrfToken = $("input[name=csrfmiddlewaretoken]").val();  // ✅ Récupération du token CSRF
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: formData,
+            dataType: "json",
+            headers: { "X-CSRFToken": csrfToken },
+            success: function (response) {
+                console.log("✅ Réponse AJAX reçue:", response);  // 🔍 Vérification dans la console
+
+                if (response.success) {
+                    // ✅ Met à jour dynamiquement le caddie sans recharger la page
+                    $("#cart-count").text(response.total_quantite).show();
+
+                    // ✅ Affiche un message de confirmation temporaire
+                    let messageBox = $("#cart-message");
+                    messageBox.text(response.message);
+                    messageBox.fadeIn().delay(2000).fadeOut();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("❌ Erreur AJAX:", xhr.responseText); // 🔍 Log l'erreur pour debug
+                alert("Erreur lors de l'ajout au panier.");
+            }
+        });
+    });
+
+    // 📌 Gestion du champ de recherche avec autocomplétion
     $("#search-bar").on("input", function () {
         const terme = $(this).val().trim();
         const suggestionBox = $("#suggestion-box");
@@ -35,14 +73,14 @@ $(document).ready(function () {
         }
     });
 
-    // Gestion du clic sur une suggestion
+    // 📌 Gestion du clic sur une suggestion
     $(document).on("click", ".suggestion-item", function () {
-        const produitNom = $(this).text().trim(); // Supprime les espaces avant et après
-        $("#search-bar").val(produitNom); // Ajoute le texte sans espaces superflus
+        const produitNom = $(this).text().trim();
+        $("#search-bar").val(produitNom);
         $("#suggestion-box").hide();
     });
 
-    // Cache les suggestions lorsqu'on clique en dehors
+    // 📌 Cache les suggestions lorsqu'on clique en dehors
     $(document).on("click", function (e) {
         if (!$(e.target).closest("#search-bar, #suggestion-box").length) {
             $("#suggestion-box").hide();

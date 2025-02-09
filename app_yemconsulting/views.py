@@ -32,16 +32,16 @@ def produits_par_categorie(request, categorie_id):
 
 
 
+
+
+
 @login_required
 def ajouter_au_panier(request, produit_id):
     produit = get_object_or_404(Produit, id=produit_id)
     quantite = int(request.POST.get('quantite', 1))
 
     if produit.stock < quantite:
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': False, 'message': f"Stock insuffisant pour {produit.nom}. Quantité disponible : {produit.stock}."}, status=400)
-        messages.error(request, f"Stock insuffisant pour {produit.nom}. Quantité disponible : {produit.stock}.")
-        return redirect('liste_produits')
+        return JsonResponse({'success': False, 'message': f"Stock insuffisant ({produit.stock} restants)."}, status=400)
 
     utilisateur = request.user
     panier, created = Panier.objects.get_or_create(utilisateur=utilisateur)
@@ -52,11 +52,21 @@ def ajouter_au_panier(request, produit_id):
     produit.stock -= quantite
     produit.save()
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'success': True, 'message': f"{quantite} {produit.nom} ajouté(s) au panier."})
+    total_articles = sum(ligne.quantite for ligne in LignePanier.objects.filter(panier=panier))
 
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Vérifie si c'est une requête AJAX
+        return JsonResponse({
+            'success': True,
+            'message': f"{quantite} {produit.nom} ajouté(s) au panier.",
+            'total_quantite': total_articles
+        })
+
+    # 🔹 Si ce n'est pas une requête AJAX, redirige normalement
     messages.success(request, f"{quantite} {produit.nom} ajouté(s) au panier.")
-    return redirect('afficher_panier')
+    return redirect('liste_produits')
+
+
+
 
 
 
