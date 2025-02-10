@@ -10,6 +10,11 @@ from django.db import transaction
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db.models import Q
+from django.core.mail import send_mail
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import format_html
+
 
 
 def liste_produits(request):
@@ -40,30 +45,37 @@ def ajouter_au_panier(request, produit_id):
     produit = get_object_or_404(Produit, id=produit_id)
     quantite = int(request.POST.get('quantite', 1))
 
+    
+
     if produit.stock < quantite:
         return JsonResponse({'success': False, 'message': f"Stock insuffisant ({produit.stock} restants)."}, status=400)
 
     utilisateur = request.user
     panier, created = Panier.objects.get_or_create(utilisateur=utilisateur)
     ligne_panier, created = LignePanier.objects.get_or_create(panier=panier, produit=produit)
-    ligne_panier.quantite = ligne_panier.quantite + quantite if not created else quantite
-    ligne_panier.save()
 
-    produit.stock -= quantite
-    produit.save()
+    # ✅ Vérifie si la quantité est bien mise à jour
+    if not created:
+        ligne_panier.quantite += quantite
+    else:
+        ligne_panier.quantite = quantite
+    ligne_panier.save()
 
     total_articles = sum(ligne.quantite for ligne in LignePanier.objects.filter(panier=panier))
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Vérifie si c'est une requête AJAX
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({
             'success': True,
             'message': f"{quantite} {produit.nom} ajouté(s) au panier.",
             'total_quantite': total_articles
         })
 
-    # 🔹 Si ce n'est pas une requête AJAX, redirige normalement
     messages.success(request, f"{quantite} {produit.nom} ajouté(s) au panier.")
     return redirect('liste_produits')
+
+
+
 
 
 
@@ -106,38 +118,105 @@ def afficher_panier(request):
 
 
 
+
+
+
+
+
 @login_required
 def passer_commande(request):
     utilisateur = get_object_or_404(Utilisateur, email=request.user.email)
     panier = get_object_or_404(Panier, utilisateur=utilisateur)
 
+
     if not LignePanier.objects.filter(panier=panier).exists():
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': False, 'message': "Votre panier est vide."}, status=400)
-        messages.error(request, "Votre panier est vide.")
-        return redirect('afficher_panier')
+        return JsonResponse({'success': False, 'message': "Votre panier est vide."}, status=400)
 
     lignes_panier = LignePanier.objects.filter(panier=panier)
-    quantites_initiales = {ligne.produit.id: ligne.quantite for ligne in lignes_panier}
+    produits_alerte_stock = set()  # Utilisation d'un SET pour éviter les doublons
+
+    # ✅ Flag pour éviter l'envoi multiple
+    email_envoye = False  
+
+    # 🔹 Décrémenter le stock des produits commandés
+    for ligne in lignes_panier:
+        produit = ligne.produit
+        if produit.stock >= ligne.quantite:
+            produit.stock -= ligne.quantite
+            produit.save()
+            
+
+            # Vérifier si une alerte stock bas est nécessaire
+            if produit.stock <= 15:
+                produits_alerte_stock.add(produit)  
 
     # Création de la commande
     commande = Commande.objects.create(
         utilisateur=utilisateur,
         panier=panier,
-        statut='en_attente',
-        quantites_initiales=quantites_initiales
+        statut='en_attente'
     )
 
     # Vider le panier après la commande
     lignes_panier.delete()
 
-    # Si la requête est AJAX, retourne une réponse JSON
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'success': True, 'message': "Commande passée avec succès.", 'commande_id': commande.id})
+    # Envoi d'un e-mail de confirmation au client
+    send_mail(
+        "Confirmation de votre commande",
+        f"Bonjour {utilisateur.nom},\n\nVotre commande a bien été enregistrée.",
+        settings.DEFAULT_FROM_EMAIL,
+        [utilisateur.email],
+        fail_silently=False,
+    )
 
-    # Message classique pour les requêtes normales
+
+    # 🔹 Envoi **d'un seul e-mail** d'alerte stock bas
+    if produits_alerte_stock and not email_envoye:
+        alertes = []
+        for produit in produits_alerte_stock:
+            alertes.append(f"{produit.nom} ({produit.stock} restants)")
+
+        message = "Attention ! Les stocks suivants sont bas :\n\n" + "\n".join(alertes)
+
+        sujet = f"⚠️ Alerte Stock Bas - {produit.nom} ⚠️"
+        message_text = f"Attention ! Le stock du produit '{produit.nom}' est bas ({produit.stock} restants)."
+        message_html = format_html("<strong>⚠️ Attention !</strong> Le stock du produit '<b>{}</b>' est bas (<b>{}</b> restants).",
+                                produit.nom, produit.stock)
+
+        email = EmailMultiAlternatives(
+            sujet,
+            message_text,  # Texte brut pour les clients email qui ne supportent pas HTML
+            settings.DEFAULT_FROM_EMAIL,
+            [settings.DEFAULT_ADMIN_EMAIL]
+        )
+        email.attach_alternative(message_html, "text/html")  # Ajoute la version HTML
+        email.send()
+
+        
+        email_envoye = True  # ✅ Flag activé pour éviter l’envoi en double
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'message': "Commande passée avec succès."})
+
     messages.success(request, "Commande passée avec succès.")
     return redirect('confirmation_commande', commande_id=commande.id)
+
+
+
+
+
+
+
+
+from django.shortcuts import render
+
+def test_template(request):
+    return render(request, 'test_template.html')  # Assure-toi d'avoir ce fichier HTML
+
+
+
+
+
 
 
 
@@ -167,10 +246,6 @@ def confirmation_commande(request, commande_id):
         })
         total += sous_total
 
-    # Debugging logs pour vérification
-    print(f"Commande récupérée : {commande}")
-    print(f"Lignes commande à afficher : {lignes_commande}, Total : {total}")
-
     return render(request, 'commande/confirmation_commande.html', {
         'commande': commande,
         'lignes_commande': lignes_commande,
@@ -198,32 +273,32 @@ def historique_commandes(request):
 
 
 
+
+
 @login_required
 def annuler_commande(request, commande_id):
     commande = get_object_or_404(Commande, id=commande_id, utilisateur=request.user)
-    
+
     if commande.statut != 'en_attente':
         messages.error(request, "Cette commande ne peut plus être annulée.")
         return redirect('historique_commandes')
 
     # Restaurer le stock en utilisant les quantités initiales enregistrées
-    with transaction.atomic():  # Assurer une restauration complète en cas d’erreur
+    with transaction.atomic():  
         for produit_id, quantite in commande.quantites_initiales.items():
             produit = Produit.objects.select_for_update().get(id=produit_id)
-            
-            # Vérification pour éviter une double réincrémentation
-            if produit.stock + quantite > produit.stock:
-                produit.stock += quantite
-                produit.save()
+            produit.stock += quantite
+            produit.save()
 
-        # Marquer la commande comme annulée
+
+            
+
         commande.statut = 'annulee'
         commande.save()
 
+
     messages.success(request, "Commande annulée avec succès.")
     return redirect('historique_commandes')
-
-
 
 
 
@@ -290,12 +365,15 @@ def mettre_a_jour_quantite(request, ligne_panier_id):
                 # Sinon, affichage d'un message d'erreur classique
                 messages.error(request, f"Stock insuffisant pour augmenter la quantité à {nouvelle_quantite}.")
                 return redirect('afficher_panier')
+                
+
         else:
             # Réincrémentation du stock si la quantité est réduite
             ligne_panier.produit.stock += abs(difference)
             ligne_panier.produit.save()
             ligne_panier.quantite = nouvelle_quantite
             ligne_panier.save()
+            
 
         # Calcul des sous-totaux et du total général
         sous_total = ligne_panier.produit.prix * ligne_panier.quantite
@@ -322,24 +400,23 @@ def mettre_a_jour_quantite(request, ligne_panier_id):
 
 @login_required
 def supprimer_article(request, ligne_panier_id):
-    ligne_panier = get_object_or_404(LignePanier, id=ligne_panier_id, panier__utilisateur=request.user)
-    
-    # Réincrémenter le stock du produit
-    produit = ligne_panier.produit
-    produit.stock += ligne_panier.quantite
-    produit.save()
-    
-    # Supprimer la ligne du panier
+    """
+    Supprime un article du panier sans modifier le stock,
+    car le stock est déjà géré lors de la validation ou annulation de commande.
+    """
+    ligne_panier = get_object_or_404(LignePanier, id=ligne_panier_id)
+
+    if ligne_panier.produit:  # Vérifie si le produit existe
+        produit = ligne_panier.produit
+
+        # ✅ Ne pas modifier le stock ici, car il sera géré lors de la commande
+
+    # Supprime la ligne du panier
     ligne_panier.delete()
+
     messages.success(request, "Article supprimé du panier.")
-    
     return redirect('afficher_panier')
 
-
-
-
-def test_template(request):
-    return render(request, 'base.html')
 
 
 

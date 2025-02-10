@@ -1,6 +1,5 @@
 $(document).ready(function () {
-    // 📌 Gestion de l'ajout au panier avec mise à jour du caddie
-    $(".add-to-cart-form").on("submit", function (e) {
+    $(".add-to-cart-form").off("submit").on("submit", function (e) {
         e.preventDefault(); // ✅ Empêche le rechargement de la page
 
         let form = $(this);
@@ -18,10 +17,8 @@ $(document).ready(function () {
                 console.log("✅ Réponse AJAX reçue:", response);  // 🔍 Vérification dans la console
 
                 if (response.success) {
-                    // ✅ Met à jour dynamiquement le caddie sans recharger la page
                     $("#cart-count").text(response.total_quantite).show();
 
-                    // ✅ Affiche un message de confirmation temporaire
                     let messageBox = $("#cart-message");
                     messageBox.text(response.message);
                     messageBox.fadeIn().delay(2000).fadeOut();

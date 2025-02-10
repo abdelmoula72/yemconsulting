@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields import JSONField
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 # Gestionnaire personnalisé pour le modèle Utilisateur
@@ -54,14 +56,14 @@ class Categorie(models.Model):
 
 
 # Modèle Produit
-from django.db import models
+
 
 class Produit(models.Model):
     nom = models.CharField(max_length=100)
     description = models.TextField()
     prix = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
-    image = models.ImageField(upload_to='produits/', null=True, blank=True)  # Champ image
+    image = models.ImageField(upload_to='produits/', null=True, blank=True)
     categorie = models.ForeignKey(
         'Categorie',
         on_delete=models.CASCADE,
@@ -72,6 +74,9 @@ class Produit(models.Model):
 
     def __str__(self):
         return self.nom
+
+
+
 
 
 
