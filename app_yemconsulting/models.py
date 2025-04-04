@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 from django.core.mail import send_mail
 from django.conf import settings
+from django.urls import reverse
+import os
 
 
 # Gestionnaire personnalisé pour le modèle Utilisateur
@@ -49,21 +51,39 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
 # Modèle Catégorie
 class Categorie(models.Model):
-    nom = models.CharField(max_length=100)
+    nom = models.CharField(max_length=255)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True, blank=True,
+        related_name='subcategories'
+    )
 
     def __str__(self):
         return self.nom
 
+    def get_absolute_url(self):
+        return reverse('produits_par_categorie', args=[self.id])
+
+
+
+
+
+def chemin_image_produit(instance, filename):
+    # Utilise le nom de la catégorie principale si elle existe, sinon la catégorie actuelle
+    categorie = instance.categorie.parent.nom if instance.categorie and instance.categorie.parent else instance.categorie.nom if instance.categorie else "autre"
+    # Nettoie les noms pour éviter les problèmes de chemin
+    categorie = categorie.replace(" ", "_").lower()
+    return os.path.join("produits", categorie, filename)
+
 
 # Modèle Produit
-
-
 class Produit(models.Model):
     nom = models.CharField(max_length=100)
     description = models.TextField()
     prix = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
-    image = models.ImageField(upload_to='produits/', null=True, blank=True)
+    image = models.ImageField(upload_to=chemin_image_produit, null=True, blank=True)  # 📁 ImageField avec dossier par catégorie
     categorie = models.ForeignKey(
         'Categorie',
         on_delete=models.CASCADE,
@@ -74,6 +94,10 @@ class Produit(models.Model):
 
     def __str__(self):
         return self.nom
+
+    def get_absolute_url(self):
+        return reverse('produits_par_categorie', args=[self.categorie.id])
+
 
 
 

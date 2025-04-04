@@ -1,57 +1,29 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
-{% block title %}Produits dans la catégorie{% endblock %}
+{% block title %}Nos grandes catégories{% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <h1 class="text-center mb-4">Produits dans la catégorie : {{ categorie.nom }}</h1>
-
-    <!-- Affichage des produits de la catégorie -->
-    {% if produits %}
+    <h1 class="text-center mb-4">Nos grandes catégories</h1>
+    
+    {% if categories %}
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-            {% for produit in produits %}
+            {% for categorie in categories %}
                 <div class="col">
-                  <div class="card h-100">
-                    {% if produit.image %}
-                        <img src="{{ produit.image.url }}" class="card-img-top" alt="{{ produit.nom }}">
-                    {% else %}
-                        <img src="{% static 'default.jpg' %}" class="card-img-top" alt="Image par défaut">
-                    {% endif %}
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ produit.nom }}</h5>
-                        <p class="card-text text-secondary">Prix : <strong>{{ produit.prix }} €</strong></p>
-                        {% if user.is_staff %}
-                            <p class="text-muted">Stock : {{ produit.stock }} articles</p>
-                        {% endif %}
-                        <div class="mt-auto">
-                            {% if produit.stock > 0 %}
-                                <form class="add-to-cart-form" action="{% url 'ajouter_au_panier' produit.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <div class="input-group mb-2">
-                                        <input type="number" name="quantite" value="1" min="1" max="{{ produit.stock }}" class="form-control" placeholder="Quantité">
-                                    </div>
-                                    <button class="btn btn-primary w-100">Ajouter au panier</button>
-                                </form>
-                            {% else %}
-                                <p class="text-danger text-center">Rupture de stock</p>
-                            {% endif %}
+                    <div class="card h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-between">
+                            <h5 class="card-title">{{ categorie.nom }}</h5>
+                            <a href="{{ categorie.get_absolute_url }}" class="btn btn-outline-primary mt-3">
+                                Voir les sous-catégories
+                            </a>
                         </div>
-                    </div>
-                </div>
-                
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-center mt-4">Aucun produit disponible dans cette catégorie.</p>
+        <p class="text-center mt-4">Aucune grande catégorie disponible.</p>
     {% endif %}
-
-    <!-- Lien pour revenir à la liste des produits -->
-    <div class="text-center mt-4">
-        <a href="{% url 'liste_produits' %}" class="btn btn-secondary">Retour à la liste des catégories</a>
-    </div>
 </div>
 {% endblock %}

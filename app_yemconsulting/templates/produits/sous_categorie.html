@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sous-catégories de {{ categorie.nom }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="text-center mb-4">Sous-catégories de {{ categorie.nom }}</h1>
+
+    {% if sous_categories %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+            {% for sous_cat in sous_categories %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-between">
+                            <h5 class="card-title">{{ sous_cat.nom }}</h5>
+                            <a href="{% url 'produits_par_categorie' sous_cat.id %}" class="btn btn-outline-primary mt-3">
+                                Voir les produits
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center mt-4">Aucune sous-catégorie disponible.</p>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'liste_categories' %}" class="btn btn-secondary">Retour aux grandes catégories</a>
+    </div>
+</div>
+{% endblock %}

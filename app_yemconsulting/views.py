@@ -17,21 +17,33 @@ from django.utils.html import format_html
 
 
 
-def liste_produits(request):
-    produits = Produit.objects.all()
-    categories = Categorie.objects.all()
-    return render(request, 'produits/liste.html', {'produits': produits, 'categories': categories})
+# Page principale : grandes catégories
+def liste_categories(request):
+    categories = Categorie.objects.filter(parent__isnull=True)
+    return render(request, 'produits/liste_produits.html', {
+        'categories': categories
+    })
 
 
+
+
+# Affichage des sous-catégories ou des produits
 def produits_par_categorie(request, categorie_id):
     categorie = get_object_or_404(Categorie, id=categorie_id)
+    sous_categories = categorie.subcategories.all()
+
+    if sous_categories.exists():
+        return render(request, 'produits/sous_categorie.html', {
+            'categorie': categorie,
+            'sous_categories': sous_categories
+        })
+
     produits = Produit.objects.filter(categorie=categorie)
-    categories = Categorie.objects.all()
     return render(request, 'produits/liste.html', {
         'produits': produits,
-        'categories': categories,
-        'categorie_active': categorie,
+        'categorie': categorie,
     })
+
 
 
 
