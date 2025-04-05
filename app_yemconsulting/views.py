@@ -47,6 +47,9 @@ def produits_par_categorie(request, categorie_id):
 
 
 
+def produit_detail(request, produit_id):
+    produit = get_object_or_404(Produit, id=produit_id)
+    return render(request, 'produits/produit_detail.html', {'produit': produit})
 
 
 

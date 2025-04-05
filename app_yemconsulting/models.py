@@ -8,6 +8,7 @@ from django.urls import reverse
 import os
 
 
+
 # Gestionnaire personnalisé pour le modèle Utilisateur
 class UtilisateurManager(BaseUserManager):
     def create_user(self, email, nom, password=None):
@@ -27,10 +28,17 @@ class UtilisateurManager(BaseUserManager):
 
 
 # Modèle Utilisateur personnalisé
+
 class Utilisateur(AbstractBaseUser, PermissionsMixin):
+    prenom = models.CharField(max_length=100, blank=True)
     nom = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
+    societe = models.CharField(max_length=255, blank=True)
     adresse = models.CharField(max_length=255, blank=True)
+    complement_adresse = models.CharField(max_length=255, blank=True)
+    code_postal = models.CharField(max_length=20, blank=True)
+    ville = models.CharField(max_length=100, blank=True)
+    pays = models.CharField(max_length=100, default="Belgique")
     date_inscription = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -46,6 +54,7 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_admin
+
 
 
 
@@ -97,6 +106,16 @@ class Produit(models.Model):
 
     def get_absolute_url(self):
         return reverse('produits_par_categorie', args=[self.categorie.id])
+    
+    @property
+    def prix_ht(self):
+        return round(float(self.prix) / 1.21, 2)
+
+    @property
+    def montant_tva(self):
+        return round(float(self.prix) - self.prix_ht, 2)
+
+
 
 
 

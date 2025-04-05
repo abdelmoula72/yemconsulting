@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app_yemconsulting',
+    'widget_tweaks',
     'django_extensions',    
 ]
 
@@ -66,7 +67,7 @@ ROOT_URLCONF = 'yemconsulting.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "app_yemconsulting" / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

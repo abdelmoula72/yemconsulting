@@ -1,21 +1,87 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
 
 {% block title %}Inscription{% endblock %}
 
 {% block content %}
-<!-- Contenu spécifique à cette page -->
-<h1>Inscription</h1>
+<div class="container mt-5">
+    <div class="mx-auto" style="max-width: 700px;">
+        <h2 class="text-center mb-4">Créer un compte</h2>
+        <form method="POST" class="row g-3">
+            {% csrf_token %}
 
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">S'inscrire</button>
-</form>
-<p>Vous avez déjà un compte ? <a href="{% url 'login' %}">Connectez-vous</a></p>
+            <div class="col-md-6">
+                <label for="id_prenom" class="form-label">Prénom *</label>
+                {{ form.prenom|add_class:"form-control" }}
+            </div>
 
-<!-- Lien de déconnexion si l'utilisateur est connecté -->
-{% if user.is_authenticated %}
-    <p><a href="{% url 'logout' %}">Déconnexion</a></p>
-{% endif %}
+            <div class="col-md-6">
+                <label for="id_nom" class="form-label">Nom *</label>
+                {{ form.nom|add_class:"form-control" }}
+            </div>
 
+            <div class="col-md-12">
+                <label for="id_email" class="form-label">Email *</label>
+                {{ form.email|add_class:"form-control" }}
+            </div>
+
+            <div class="col-md-12">
+                <label for="id_societe" class="form-label">Société</label>
+                {{ form.societe|add_class:"form-control" }}
+            </div>
+
+            <div class="col-md-8">
+                <label for="id_adresse" class="form-label">Adresse *</label>
+                {{ form.adresse|add_class:"form-control" }}
+            </div>
+
+            <div class="col-md-4">
+                <label for="id_complement_adresse" class="form-label">Complément d'adresse</label>
+                {{ form.complement_adresse|add_class:"form-control" }}
+            </div>
+
+            <div class="col-md-4">
+                <label for="id_code_postal" class="form-label">Code postal *</label>
+                {{ form.code_postal|add_class:"form-control" }}
+            </div>
+
+            <div class="col-md-4">
+                <label for="id_ville" class="form-label">Ville *</label>
+                {{ form.ville|add_class:"form-control" }}
+            </div>
+
+            <div class="col-md-4">
+                <label for="id_pays" class="form-label">Pays *</label>
+                {{ form.pays|add_class:"form-control" }}
+            </div>
+
+            <div class="col-12 form-check ms-2">
+                {{ form.utiliser_adresse_facturation }}
+                <label class="form-check-label" for="id_utiliser_adresse_facturation">
+                    Utiliser comme adresse de facturation
+                </label>
+            </div>
+
+            <div class="col-md-6">
+                <label for="id_password1" class="form-label">Mot de passe *</label>
+                {{ form.password1|add_class:"form-control" }}
+            </div>
+
+            <div class="col-md-6">
+                <label for="id_password2" class="form-label">Confirmer le mot de passe *</label>
+                {{ form.password2|add_class:"form-control" }}
+            </div>
+
+            <div class="col-12 text-center mt-3">
+                <button type="submit" class="btn btn-primary px-4">S'inscrire</button>
+            </div>
+        </form>
+
+        <div class="text-center mt-3">
+            <p>Vous avez déjà un compte ? <a href="{% url 'login' %}">Connectez-vous</a></p>
+        </div>
+    </div>
+</div>
 {% endblock %}

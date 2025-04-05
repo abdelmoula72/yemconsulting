@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ produit.nom }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <!-- Image centrée -->
+            <div class="d-flex justify-content-center mb-4">
+                <img src="{{ produit.image.url }}" class="img-fluid" alt="{{ produit.nom }}" style="max-width: 95%; height: auto;">
+            </div>
+
+            <!-- Titre du produit -->
+            <h2 class="text-center mb-3">{{ produit.nom }}</h2>
+
+            <!-- Description justifiée -->
+            <div class="mb-4" style="text-align: justify;">
+                {{ produit.description }}
+            </div>
+
+            <!-- Infos prix + stock -->
+            <p><strong>Prix HT :</strong> {{ produit.prix_ht }} €</p>
+            <p><strong>TVA (21%) :</strong> {{ produit.montant_tva }} €</p>
+            <p><strong>Prix TTC :</strong> {{ produit.prix }} €</p>
+            <p><strong>Stock :</strong> {{ produit.stock }} articles</p>
+
+            {% if produit.stock > 0 %}
+                <form action="{% url 'ajouter_au_panier' produit.id %}" method="POST" class="mb-3">
+                    {% csrf_token %}
+                    <div class="input-group mb-2">
+                        <input type="number" name="quantite" value="1" min="1" max="{{ produit.stock }}" class="form-control">
+                        <button type="submit" class="btn btn-success">Ajouter au panier</button>
+                    </div>
+                </form>
+            {% else %}
+                <p class="text-danger">Ce produit est en rupture de stock.</p>
+            {% endif %}
+
+            <a href="{% url 'produits_par_categorie' produit.categorie.id %}" class="btn btn-secondary">
+                ← Retour à la catégorie
+            </a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

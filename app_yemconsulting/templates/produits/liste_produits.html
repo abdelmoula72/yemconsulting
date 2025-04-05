@@ -1,22 +1,23 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Nos grandes catégories{% endblock %}
+{% block title %}Tous nos produits{% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <h1 class="text-center mb-4">Nos grandes catégories</h1>
+    <h1 class="text-center mb-4">Matériel informatique</h1>
     
     {% if categories %}
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
             {% for categorie in categories %}
                 <div class="col">
-                    <div class="card h-100">
-                        <div class="card-body text-center d-flex flex-column justify-content-between">
-                            <h5 class="card-title">{{ categorie.nom }}</h5>
-                            <a href="{{ categorie.get_absolute_url }}" class="btn btn-outline-primary mt-3">
-                                Voir les sous-catégories
-                            </a>
+                    <div class="card h-100 text-center d-flex flex-column justify-content-center">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{{ categorie.get_absolute_url }}" class="stretched-link text-decoration-none text-primary">
+                                    {{ categorie.nom }}
+                                </a>
+                            </h5>
                         </div>
                     </div>
                 </div>
