@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Confirmation de votre commande</title>
+<style>
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fafafa;color:#222}
+  .wrapper{max-width:650px;margin:auto;padding:24px;background:#fff}
+  h1,h2,h3,h4{margin:0 0 .6em}
+  a{color:#0d6efd;text-decoration:none}
+  .mb-1{margin-bottom:.5rem}.mb-2{margin-bottom:.75rem}
+  .mb-3{margin-bottom:1rem}.mb-4{margin-bottom:1.5rem}
+  .small{font-size:.875rem;color:#666}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;vertical-align:middle}
+  th.right,td.right{text-align:right}
+  img.prod{max-width:110px;border:1px solid #ddd;border-radius:4px}
+  @media (prefers-color-scheme:dark){
+    body{background:#121212;color:#e0e0e0}
+    .wrapper{background:#1c1c1c}
+    a{color:#4dabff}
+    th,td{border-color:#333}
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Livraison estimée -->
+  <p class="mb-2" style="font-size:15px">
+    <strong>Livraison estimée&nbsp;:</strong>
+    {{ livraison_debut }} – {{ livraison_fin }}
+  </p>
+
+  <!-- Message d’accueil -->
+  <h2 class="mb-2">Bonjour {{ utilisateur.prenom|default:utilisateur.nom }},</h2>
+  <p class="mb-4" style="font-size:1.1rem">
+    Merci pour votre commande&nbsp;! Vous trouverez ci-dessous son récapitulatif.
+  </p>
+
+  <!-- Adresse de livraison -->
+  <h4 class="mb-1">Adresse de livraison</h4>
+  <p class="mb-3">
+    {{ utilisateur.prenom }} {{ utilisateur.nom }}<br>
+    {{ utilisateur.adresse }}{% if utilisateur.complement_adresse %} {{ utilisateur.complement_adresse }}{% endif %}<br>
+    {{ utilisateur.code_postal }} {{ utilisateur.ville }}<br>
+    {{ utilisateur.pays }}
+  </p>
+
+  <!-- Tableau des articles -->
+  <table class="mb-4">
+    <thead>
+      <tr>
+        <th>Miniature</th>
+        <th>Article</th>
+        <th>Qté</th>
+        <th class="right">Prix&nbsp;TTC</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for ligne in lignes %}
+      <tr>
+        <td><img class="prod" src="cid:{{ ligne.img_cid }}" alt=""></td>
+        <td>{{ ligne.nom }}</td>
+        <td>{{ ligne.quantite }}</td>
+        <td class="right">{{ ligne.prix }} €</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="3" class="right">Sous-total&nbsp;:</th>
+        <td class="right">{{ total_ht }} €</td>
+      </tr>
+      <tr>
+        <th colspan="3" class="right">TVA&nbsp;(21 %)&nbsp;:</th>
+        <td class="right">{{ total_tva }} €</td>
+      </tr>
+      <tr>
+        <th colspan="3" class="right" style="font-size:1.1rem">Total&nbsp;TTC&nbsp;:</th>
+        <td class="right" style="font-size:1.1rem"><strong>{{ total_ttc }} €</strong></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- Détails & lien -->
+  <p class="mb-1"><strong>N° de commande&nbsp;:</strong> {{ commande.id }}</p>
+  <p class="mb-1"><strong>Date de la commande&nbsp;:</strong> {{ commande.date_commande|date:"d M Y" }}</p>
+  <p class="mb-3"><strong>Méthode de paiement&nbsp;:</strong> {{ methode_paiement }}</p>
+
+  <p class="mb-4 small">
+    Suivre la commande : <a href="{{ url_commande }}">mon espace client</a>.
+  </p>
+
+  <p>Cordialement,<br><strong>L’équipe YEM Consulting</strong></p>
+  <p class="small">Cet e-mail a été généré automatiquement&nbsp;; merci de ne pas répondre.</p>
+</div>
+</body>
+</html>

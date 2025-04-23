@@ -50,12 +50,21 @@
                 {% endfor %}
             </tbody>
         </table>
+
         <div class="d-flex justify-content-between align-items-center">
             <p><strong>Total : {{ total }} €</strong></p>
         </div>
+
         <div class="d-flex justify-content-between mt-4">
             <a href="{% url 'liste_produits' %}" class="btn btn-secondary">Retour aux produits</a>
-            <a href="{% url 'passer_commande' %}" class="btn btn-primary">Passer la commande</a>
+
+                <!-- 🔵 Bouton « Commander » (toujours relié à Stripe) -->
+                <form action="{% url 'stripe_checkout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        Commander
+                    </button>
+                </form>
         </div>
         
     {% else %}

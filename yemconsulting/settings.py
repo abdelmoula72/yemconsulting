@@ -94,6 +94,9 @@ DATABASES = {
 }
 
 
+
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -154,7 +157,7 @@ LOGIN_REDIRECT_URL = '/produits/'  # Redirige vers la liste des produits
 DEFAULT_ADMIN_EMAIL = "abdelmoula.elamri@gmail.com"  # Remplace par l'email de l'admin
 DEFAULT_FROM_EMAIL = "abdelmoula.elamri@gmail.com"  # L'email qui enverra les notifications
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = 'smtp.gmail.com'  # Remplace par ton serveur SMTP
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
@@ -162,3 +165,6 @@ EMAIL_HOST_USER = 'abdelmoula.elamri@gmail.com'  # Remplace par ton email
 EMAIL_HOST_PASSWORD = "ygyh rqta cswx mkef"
 
 
+# Stripe
+STRIPE_SECRET_KEY = 'sk_test_51RAa3qRVH7RxPoOljsnRwaPKsRb1OgY0MWHyjAkpkiJgEOz1MuclKww6GlYCbTX7gi9T472xJjUf2m9iLsdNgTpC00IODHQsEb'  
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51RAa3qRVH7RxPoOlW69a8lGyeIZnEMeesdyAN6oQGYjteTsf6n6dd0U6zO3xSh1z3JlkiXfHMoH2hJcqAyTWmrsQ00foOLHwQ3'  

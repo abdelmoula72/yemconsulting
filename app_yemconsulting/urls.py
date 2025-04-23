@@ -8,6 +8,11 @@ from django.conf.urls.static import static
 urlpatterns = [
     # Page d'accueil = grandes catégories uniquement
     path('', views.liste_categories, name='liste_produits'),
+    
+
+    # Paiement Stripe
+    path('paiement/stripe/', views.stripe_checkout, name='stripe_checkout'),
+    path('paiement/stripe/success/', views.stripe_success, name='stripe_success'),
 
 
     # Navigation catégories et sous-catégories
@@ -21,6 +26,7 @@ urlpatterns = [
     path('panier/', views.afficher_panier, name='afficher_panier'),
     path('mettre_a_jour_quantite/<int:ligne_panier_id>/', views.mettre_a_jour_quantite, name='mettre_a_jour_quantite'),
     path('supprimer_article/<int:ligne_panier_id>/', views.supprimer_article, name='supprimer_article'),
+
 
     # Commandes
     path('commande/', views.passer_commande, name='passer_commande'),

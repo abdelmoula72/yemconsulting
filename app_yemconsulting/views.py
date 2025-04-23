@@ -14,6 +14,72 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import format_html
+import stripe
+from django.urls import reverse
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from decimal import Decimal, ROUND_HALF_UP
+from django.template.loader import render_to_string         #  ← import ajouté
+from django.utils.html import format_html, strip_tags
+from django.urls import reverse
+from email.utils import make_msgid
+from mimetypes import guess_type
+from django.contrib.staticfiles.storage import staticfiles_storage
+from email.mime.image import MIMEImage
+from django.contrib.staticfiles.storage import staticfiles_storage
+import os 
+from datetime import date, timedelta
+from django.utils.formats import date_format
+import locale
+
+
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+@login_required
+def stripe_checkout(request):
+    utilisateur = request.user
+    panier = get_object_or_404(Panier, utilisateur=utilisateur)
+    lignes = LignePanier.objects.filter(panier=panier)
+
+    if not lignes.exists():
+        messages.error(request, "Votre panier est vide.")
+        return redirect('afficher_panier')
+
+    line_items = []
+    for ligne in lignes:
+        produit = ligne.produit
+        line_items.append({
+            'price_data': {
+                'currency': 'eur',
+                'product_data': {
+                    'name': produit.nom,
+                },
+                'unit_amount': int(produit.prix * 100),  # en centimes
+            },
+            'quantity': ligne.quantite,
+        })
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=line_items,
+        mode='payment',
+        success_url=request.build_absolute_uri(reverse('stripe_success')),
+        cancel_url=request.build_absolute_uri(reverse('afficher_panier')),
+    )
+
+    return redirect(session.url)
+
+
+@login_required
+def stripe_success(request):
+    # 💳 Indiquer que le paiement a été effectué via Stripe
+    request.session['methode_paiement'] = 'Stripe'
+
+    # ⏩ Rediriger vers la création de commande
+    return redirect('passer_commande')
+
+
 
 
 
@@ -138,83 +204,165 @@ def afficher_panier(request):
 
 
 
+
 @login_required
 def passer_commande(request):
     utilisateur = get_object_or_404(Utilisateur, email=request.user.email)
-    panier = get_object_or_404(Panier, utilisateur=utilisateur)
+    panier      = get_object_or_404(Panier, utilisateur=utilisateur)
+    methode_paiement = request.session.pop('methode_paiement', 'Inconnu')
 
+    lignes_panier = (
+        LignePanier.objects
+        .filter(panier=panier)
+        .select_related("produit")
+    )
+    if not lignes_panier.exists():
+        return JsonResponse(
+            {"success": False, "message": "Votre panier est vide."},
+            status=400
+        )
 
-    if not LignePanier.objects.filter(panier=panier).exists():
-        return JsonResponse({'success': False, 'message': "Votre panier est vide."}, status=400)
-
-    lignes_panier = LignePanier.objects.filter(panier=panier)
-    produits_alerte_stock = set()  # Utilisation d'un SET pour éviter les doublons
-
-    # ✅ Flag pour éviter l'envoi multiple
-    email_envoye = False  
-
-    # 🔹 Décrémenter le stock des produits commandés
+    # ────────── gestion du stock ──────────
+    produits_alerte_stock = set()
     for ligne in lignes_panier:
-        produit = ligne.produit
-        if produit.stock >= ligne.quantite:
-            produit.stock -= ligne.quantite
-            produit.save()
-            
+        prod = ligne.produit
+        if prod.stock >= ligne.quantite:
+            prod.stock -= ligne.quantite
+            prod.save()
+            if prod.stock <= 15:
+                produits_alerte_stock.add(prod)
 
-            # Vérifier si une alerte stock bas est nécessaire
-            if produit.stock <= 15:
-                produits_alerte_stock.add(produit)  
-
-    # Création de la commande
+    # ────────── création de la commande ──────────
     commande = Commande.objects.create(
         utilisateur=utilisateur,
         panier=panier,
-        statut='en_attente'
+        statut='confirmee',
     )
 
-    # Vider le panier après la commande
+    # ────────── totaux HT / TVA / TTC ──────────
+    total_ttc = sum(l.produit.prix * l.quantite for l in lignes_panier)
+    coeff_tva = Decimal("1.21")
+    total_ht  = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
+    total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
+
+    # ────────── préparation des lignes pour l’e-mail ──────────
+    email_lignes        = []
+    images_a_attacher   = []      # liste de tuples (cid, chemin_fichier)
+
+    for ligne in lignes_panier:
+        prod = ligne.produit
+
+        # chemin physique de l’image (MEDIA ou fallback STATIC)
+        if prod.image and prod.image.name:
+            img_path = prod.image.path
+        else:
+            img_path = staticfiles_storage.path('default.jpg')
+
+        # CID unique pour insertion inline
+        cid       = make_msgid(domain='yemconsulting.local')       # ex. '<abc@yem…>'
+        cid_clean = cid[1:-1]                                      # on retire < >
+
+        email_lignes.append({
+            "nom"      : prod.nom,
+            "quantite" : ligne.quantite,
+            "prix"     : prod.prix,
+            "img_cid"  : cid_clean,           # utilisé dans le template
+        })
+        images_a_attacher.append((cid, img_path))
+
+    # contexte pour les templates
+
+        try:
+            locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")  # Linux / macOS
+        except locale.Error:
+            try:
+                locale.setlocale(locale.LC_TIME, "French_France")  # Windows
+            except locale.Error:
+                pass  # on garde la locale système si introuvable
+
+    def format_livraison(offset):
+        """
+        Retourne une date française lisible, sans zéro initial sur le jour,
+        compatible Windows ET Linux.
+        """
+        d       = date.today() + timedelta(days=offset)
+        weekday = d.strftime("%a")          # mer.
+        month   = d.strftime("%b")          # avr.
+        return f"{weekday}, {d.day} {month} {d.year}"
+
+    livraison_debut = format_livraison(2)   # mer., 2 avr. 2025
+    livraison_fin   = format_livraison(3)   # jeu., 3 avr. 2025
+    
+
+    ctx = {
+        "utilisateur"     : utilisateur,
+        "commande"        : commande,
+        "lignes"          : email_lignes,
+        "total_ht"        : total_ht,
+        "total_tva"       : total_tva,
+        "total_ttc"       : total_ttc,
+        "methode_paiement": methode_paiement,
+        "url_commande"    : request.build_absolute_uri( reverse("confirmation_commande", args=[commande.id])),
+        "livraison_debut": livraison_debut,
+        "livraison_fin"  : livraison_fin,
+    }
+
+    html_body = render_to_string("emails/confirmation_commande.html", ctx)
+    text_body = render_to_string("emails/confirmation_commande.txt", ctx)
+
+    # ---------- création du message ----------
+    mail = EmailMultiAlternatives(
+        subject="Confirmation de votre commande",
+        body=text_body,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[utilisateur.email],
+    )
+    mail.attach_alternative(html_body, "text/html")
+
+    # jointure des miniatures (inline)
+    for cid, path in images_a_attacher:
+        try:
+            with open(path, "rb") as fp:
+                subtype = guess_type(path)[0].split("/")[1]   # 'jpeg', 'png'…
+                img = MIMEImage(fp.read(), _subtype=subtype)
+                img.add_header("Content-ID", cid)
+                img.add_header("Content-Disposition", "inline",
+                            filename=os.path.basename(path))
+                mail.attach(img)
+        except FileNotFoundError:
+            pass  # on ignore simplement
+
+    mail.send(fail_silently=False)
+
+
+    # ────────── alerte stock bas (inchangée) ──────────
+    if produits_alerte_stock:
+        alertes_txt = "\n".join(
+            f"{p.nom} ({p.stock} restants)" for p in produits_alerte_stock
+        )
+        corps_html = "<br>".join(alertes_txt.splitlines())
+        alert_mail = EmailMultiAlternatives(
+            "⚠️ Alerte Stock Bas",
+            f"Attention !\n\n{alertes_txt}",
+            settings.DEFAULT_FROM_EMAIL,
+            [settings.DEFAULT_ADMIN_EMAIL],
+        )
+        alert_mail.attach_alternative(
+            f"<strong>Attention !</strong><br>{corps_html}", "text/html"
+        )
+        alert_mail.send()
+
+    # ────────── on vide le panier ──────────
     lignes_panier.delete()
 
-    # Envoi d'un e-mail de confirmation au client
-    send_mail(
-        "Confirmation de votre commande",
-        f"Bonjour {utilisateur.nom},\n\nVotre commande a bien été enregistrée.",
-        settings.DEFAULT_FROM_EMAIL,
-        [utilisateur.email],
-        fail_silently=False,
-    )
+    # ────────── réponse / redirection ──────────
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({"success": True,
+                             "message": "Commande passée avec succès."})
 
+    messages.success(request, f"Commande passée avec succès ({methode_paiement}).")
+    return redirect("confirmation_commande", commande_id=commande.id)
 
-    # 🔹 Envoi **d'un seul e-mail** d'alerte stock bas
-    if produits_alerte_stock and not email_envoye:
-        alertes = []
-        for produit in produits_alerte_stock:
-            alertes.append(f"{produit.nom} ({produit.stock} restants)")
-
-        message = "Attention ! Les stocks suivants sont bas :\n\n" + "\n".join(alertes)
-
-        sujet = f"⚠️ Alerte Stock Bas - {produit.nom} ⚠️"
-        message_text = f"Attention ! Le stock du produit '{produit.nom}' est bas ({produit.stock} restants)."
-        message_html = format_html("<strong>⚠️ Attention !</strong> Le stock du produit '<b>{}</b>' est bas (<b>{}</b> restants).",
-                                produit.nom, produit.stock)
-
-        email = EmailMultiAlternatives(
-            sujet,
-            message_text,  # Texte brut pour les clients email qui ne supportent pas HTML
-            settings.DEFAULT_FROM_EMAIL,
-            [settings.DEFAULT_ADMIN_EMAIL]
-        )
-        email.attach_alternative(message_html, "text/html")  # Ajoute la version HTML
-        email.send()
-
-        
-        email_envoye = True  # ✅ Flag activé pour éviter l’envoi en double
-
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'success': True, 'message': "Commande passée avec succès."})
-
-    messages.success(request, "Commande passée avec succès.")
-    return redirect('confirmation_commande', commande_id=commande.id)
 
 
 
@@ -227,10 +375,6 @@ from django.shortcuts import render
 
 def test_template(request):
     return render(request, 'test_template.html')  # Assure-toi d'avoir ce fichier HTML
-
-
-
-
 
 
 

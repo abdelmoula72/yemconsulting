@@ -1,0 +1,21 @@
+Bonjour {{ utilisateur.nom }},
+
+Nous avons bien reçu votre commande n° {{ commande.id }} du {{ commande.date_commande|date:"d/m/Y" }}.
+
+Adresse de livraison :
+{{ utilisateur.prenom }} {{ utilisateur.nom }}
+{{ utilisateur.adresse }}{% if utilisateur.complement_adresse %}, {{ utilisateur.complement_adresse }}{% endif %}
+{{ utilisateur.code_postal }} {{ utilisateur.ville }}
+{{ utilisateur.pays }}
+
+Contenu :
+{% for ligne in lignes_panier %}
+- {{ ligne.quantite }} x {{ ligne.produit.nom }} – {{ ligne.produit.prix }} €
+{% endfor %}
+
+Total TTC : {{ total_ttc }} €
+
+Vous recevrez un courriel dès l’expédition.
+Merci pour votre confiance !
+
+L’équipe YEMCONSULTING
