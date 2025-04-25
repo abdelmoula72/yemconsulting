@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static widget_tweaks %}
+
+{% block extra_js %}
+  <script src="{% static 'js/panier_confirmation.js' %}" defer></script>
+{% endblock %}
+
+{% block title %}Vérifiez votre commande{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <form method="post" id="confirm-form" class="row g-4">
+    {% csrf_token %}
+    <div class="col-lg-8">
+      <h5 class="mb-3"><i class="bi bi-box-seam"></i> Commande</h5>
+      <table class="table align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Article</th><th class="text-center">Qté</th><th class="text-end">Prix&nbsp;TTC</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ligne in lignes %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  {% if ligne.image_url %}
+                    <img src="{{ ligne.image_url }}" class="prod-mini" width="64">
+                  {% else %}
+                    <img src="{% static 'default.jpg' %}" class="prod-mini" width="64">
+                  {% endif %}
+                  <span>{{ ligne.nom }}</span>
+                </div>
+              </td>
+              <td class="text-center">{{ ligne.quantite }}</td>
+              <td class="text-end">{{ ligne.prix }} €</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-lg-4">
+      <h5 class="mb-3"><i class="bi bi-truck"></i> Délai de livraison prévu</h5>
+
+      {% for code, opt in livraisons.items %}
+        <div class="form-check mb-2">
+          <input class="form-check-input liv-option"
+                 type="radio" name="livraison"
+                 id="liv-{{ code }}" value="{{ code }}"
+                 data-price="{{ opt.prix }}"
+                 {% if code == livraison_select %}checked{% endif %}>
+          <label class="form-check-label w-100" for="liv-{{ code }}">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div class="flex-grow-1">
+                <span class="d-block">{{ opt.libelle }}</span>
+                <small class="text-muted">{{ opt.delai }}</small>
+              </div>
+              <strong class="ps-4">
+                {% if opt.prix == 0 %}Gratuite{% else %}{{ opt.prix|floatformat:2 }} €{% endif %}
+              </strong>
+            </div>
+          </label>
+        </div>
+      {% endfor %}
+
+      <hr>
+
+      <p class="d-flex justify-content-between">
+        <span>Sous-total :</span>
+        <strong id="sousttc" data-val="{{ sous_total|floatformat:2 }}">
+          {{ sous_total }} €
+        </strong>
+      </p>
+      <p class="d-flex justify-content-between">
+        <span>Livraison :</span>
+        <strong id="livPrx">{% if livraison.prix == 0 %}Gratuite{% else %}{{ livraison.prix|floatformat:2 }} €{% endif %}</strong>
+      </p>
+      <p class="d-flex justify-content-between fs-5">
+        <span>Total TTC :</span>
+        <strong id="totttc">{{ total_ttc }} €</strong>
+      </p>
+
+      <!-- Adresse de livraison + bouton Modifier -->
+      <div class="mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h3 class="mb-0 fs-5">
+            <i class="bi bi-geo-alt-fill me-1 text-primary"></i>
+            Adresse de livraison
+          </h3>
+          <a href="{% url 'modifier_profil' %}?next={{ request.path }}"
+             class="btn btn-sm btn-outline-secondary">
+            Modifier
+          </a>
+        </div>
+        <address class="fw-bold lh-sm">
+          {{ utilisateur.prenom }} {{ utilisateur.nom }}<br>
+          {{ utilisateur.adresse }}<br>
+          {% if utilisateur.complement_adresse %}{{ utilisateur.complement_adresse }}<br>{% endif %}
+          {{ utilisateur.code_postal }} {{ utilisateur.ville }}<br>
+          {{ utilisateur.pays }}
+        </address>
+      </div>
+
+      <button class="btn btn-primary w-100 mt-3" type="submit">
+        Valider votre commande
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Modal Bootstrap pour Modifier l'adresse -->
+<div class="modal fade" id="modal-adresse" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modifier l’adresse</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'modifier_profil' %}?next={{ request.path }}">
+        {% csrf_token %}
+        <div class="modal-body">
+          {% for field in form.visible_fields %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">
+                {{ field.label }}{% if field.field.required %} *{% endif %}
+              </label>
+              {{ field|add_class:"form-control" }}
+              {% if field.errors %}
+                <div class="text-danger small">{{ field.errors|striptags }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

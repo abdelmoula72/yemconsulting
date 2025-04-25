@@ -26,7 +26,7 @@ urlpatterns = [
     path('panier/', views.afficher_panier, name='afficher_panier'),
     path('mettre_a_jour_quantite/<int:ligne_panier_id>/', views.mettre_a_jour_quantite, name='mettre_a_jour_quantite'),
     path('supprimer_article/<int:ligne_panier_id>/', views.supprimer_article, name='supprimer_article'),
-
+    path("confirmation-panier/", views.confirmer_panier, name="confirmer_panier"),
 
     # Commandes
     path('commande/', views.passer_commande, name='passer_commande'),
@@ -39,6 +39,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('inscription/', views.inscription, name='inscription'),
     path('modifier_profil/', views.modifier_profil, name='modifier_profil'),
+    
 
     # Administration
     path('admin/utilisateurs/', views.liste_utilisateurs, name='liste_utilisateurs'),
@@ -51,3 +52,8 @@ urlpatterns = [
     # Test
     path('test-template/', views.test_template, name='test_template'),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

@@ -1,74 +1,79 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% load static widget_tweaks %}
 {% block title %}Votre panier{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="text-center mb-4">Votre panier</h1>
+  <h1 class="text-center mb-4">Votre panier</h1>
 
-    {% if messages %}
-        <div class="alert-messages">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
+  {% if messages %}
+    <div class="alert-messages">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
-    {% if lignes_commande %}
-        <table class="table table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>Produit</th>
-                    <th>Prix</th>
-                    <th>Quantité</th>
-                    <th>Sous-total</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ligne_commande in lignes_commande %}
-                    <tr>
-                        <td>{{ ligne_commande.ligne.produit.nom }}</td>
-                        <td>{{ ligne_commande.ligne.produit.prix }} €</td>
-                        <td>
-                            <!-- Formulaire pour mettre à jour la quantité -->
-                            <form action="{% url 'mettre_a_jour_quantite' ligne_commande.ligne.id %}" method="POST">
-                                {% csrf_token %}
-                                <input type="number" name="quantite" value="{{ ligne_commande.ligne.quantite }}" min="1" class="form-control">
-                                <button type="submit" class="btn btn-sm btn-success mt-2">Mettre à jour</button>
-                            </form>
-                        </td>
-                        <td>{{ ligne_commande.sous_total }} €</td>
-                        <td>
-                            <!-- Bouton pour supprimer l'article -->
-                            <form action="{% url 'supprimer_article' ligne_commande.ligne.id %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');">Supprimer</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+  {% if lignes_commande %}
+    <table class="table table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Produit</th>
+          <th>Prix&nbsp;TTC</th>
+          <th>Quantité</th>
+          <th>Sous-total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for l in lignes_commande %}
+        <tr>
+          <!-- ► Miniature + nom --------------------------------------------- -->
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <img src="{{ l.img_url }}" alt="" style="width:64px;height:auto;border:1px solid #ddd;border-radius:4px">
+              <span>{{ l.nom }}</span>
+            </div>
+          </td>
 
-        <div class="d-flex justify-content-between align-items-center">
-            <p><strong>Total : {{ total }} €</strong></p>
-        </div>
+          <td>{{ l.prix }} €</td>
 
-        <div class="d-flex justify-content-between mt-4">
-            <a href="{% url 'liste_produits' %}" class="btn btn-secondary">Retour aux produits</a>
+          <!-- ► Formulaire quantité ----------------------------------------- -->
+          <td>
+            <form action="{% url 'mettre_a_jour_quantite' l.id %}" method="post">
+              {% csrf_token %}
+              <input type="number" name="quantite" value="{{ l.quantite }}" min="1"
+                     class="form-control form-control-sm">
+              <button class="btn btn-sm btn-success mt-1">MAJ</button>
+            </form>
+          </td>
 
-                <!-- 🔵 Bouton « Commander » (toujours relié à Stripe) -->
-                <form action="{% url 'stripe_checkout' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">
-                        Commander
-                    </button>
-                </form>
-        </div>
-        
-    {% else %}
-        <p class="text-center text-muted">Votre panier est vide.</p>
-    {% endif %}
+          <td>{{ l.sous_total }} €</td>
+
+          <!-- ► Suppression -------------------------------------------------- -->
+          <td>
+            <form action="{% url 'supprimer_article' l.id %}" method="post"
+                  onsubmit="return confirm('Supprimer cet article ?');">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-danger">Supprimer</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between">
+      <p class="fs-5"><strong>Total : {{ total }} €</strong></p>
+      <div class="d-flex gap-3">
+        <a href="{% url 'liste_produits' %}" class="btn btn-secondary">Retour aux produits</a>
+        <a href="{% url 'confirmer_panier' %}" class="btn btn-primary">Commander</a>
+      </div>
+    </div>
+
+  {% else %}
+    <p class="text-center text-muted">Votre panier est vide.</p>
+  {% endif %}
 </div>
 {% endblock %}

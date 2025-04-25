@@ -16,6 +16,27 @@ import os
 
 
 
+# settings.py
+LANGUAGE_CODE = "fr"
+USE_I18N = True
+USE_L10N = True
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+
+    # Place LocaleMiddleware IMMÉDIATEMENT après SessionMiddleware
+    "django.middleware.locale.LocaleMiddleware",
+
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    ...
+]
+
+
+
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
