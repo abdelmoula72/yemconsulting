@@ -33,12 +33,15 @@ urlpatterns = [
     path('confirmation_commande/<int:commande_id>/', views.confirmation_commande, name='confirmation_commande'),
     path('annuler_commande/<int:commande_id>/', views.annuler_commande, name='annuler_commande'),
     path('commandes/', views.historique_commandes, name='historique_commandes'),
+    path('update-shipping-address/<int:adresse_id>/', views.update_shipping_address, name='update_shipping_address'),
 
     # Authentification et profil
     path('login/', auth_views.LoginView.as_view(redirect_authenticated_user=True), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('inscription/', views.inscription, name='inscription'),
-    path('modifier_profil/', views.modifier_profil, name='modifier_profil'),
+    path('compte/adresses/', views.mes_adresses,             name='mes_adresses'),
+    path('compte/adresses/supprimer/<int:adresse_id>/', views.supprimer_adresse, name='supprimer_adresse'),
+    path('compte/', views.mon_compte, name='mon_compte'),
     
 
     # Administration

@@ -1,32 +1,32 @@
 {% extends 'base.html' %}
+{% load form_tags %}
 
 {% block title %}Connexion{% endblock %}
 
 {% block content %}
-<!-- Contenu spécifique à cette page -->
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion</title>
-</head>
-<body>
-    <h1>Connexion</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Se connecter</button>
+<div class="container mt-5" style="max-width:420px">
+  <div class="card shadow-sm p-4">
+    <h2 class="text-center mb-4">Connexion</h2>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div class="mb-3">
+        <label for="id_username" class="form-label">Adresse email</label>
+        {{ form.username|add_class:'form-control'|attr:'placeholder:Votre email' }}
+        {% for e in form.username.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="mb-3">
+        <label for="id_password" class="form-label">Mot de passe</label>
+        {{ form.password|add_class:'form-control'|attr:'placeholder:Votre mot de passe' }}
+        {% for e in form.password.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary w-100 mt-2">Se connecter</button>
     </form>
-    <p>Si vous voyez ce texte, le template s'affiche correctement.</p>
-
-    <p>Vous n'avez pas encore de compte ? <a href="{% url 'inscription' %}">Inscrivez-vous ici</a>.</p>
-
-    <!-- Lien de déconnexion si l'utilisateur est connecté -->
-    {% if user.is_authenticated %}
-        <p><a href="{% url 'logout' %}">Déconnexion</a></p>
-    {% endif %}
-</body>
-</html>
-
+    <div class="text-center mt-3">
+      <p>Vous n'avez pas encore de compte ? <a href="{% url 'inscription' %}">Inscrivez-vous ici</a>.</p>
+    </div>
+  </div>
+</div>
 {% endblock %}

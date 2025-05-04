@@ -18,8 +18,8 @@ from django.urls import reverse
 from django.utils.html import format_html, strip_tags
 from django.utils.formats import date_format
 from django.views.decorators.http import require_http_methods
-from .models import Produit, Categorie, Panier, LignePanier, Utilisateur, Commande
-from .forms import InscriptionForm, ModifierProfilForm
+from .models import Produit, Categorie, Panier, LignePanier, Utilisateur, Commande, Adresse
+from .forms import (InscriptionForm, ModifierProfilForm, DonneesPersonnellesForm, AdresseForm)
 import stripe
 from email.mime.image import MIMEImage
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -30,8 +30,10 @@ from django.utils import timezone
 from app_yemconsulting.utils.date_helpers import business_days_after
 import mimetypes
 from .models import Panier, LignePanier, Commande
-from .forms import ModifierProfilForm
 from django.templatetags.static import static
+from django.contrib.auth.forms import PasswordChangeForm
+
+
 
 
 
@@ -49,7 +51,7 @@ def next_business_day(base=None):
     return d
 
 def business_days_after(n, base=None):
-    """Ajoute *n* jours ouvrables à *base* (par défaut aujourd’hui)."""
+    """Ajoute *n* jours ouvrables à *base* (par défaut aujourd'hui)."""
     d = next_business_day(base)
     added = 0
     while added < n:
@@ -80,6 +82,16 @@ def confirmer_panier(request):
         messages.error(request, "Votre panier est vide.")
         return redirect("afficher_panier")
 
+    # Récupérer l'adresse de livraison par défaut ou celle stockée en session
+    adresse_livraison_id = request.session.get('adresse_livraison_id')
+    if adresse_livraison_id:
+        adresse_livraison = Adresse.objects.filter(id=adresse_livraison_id, utilisateur=utilisateur, active=True).first()
+    else:
+        adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True, active=True).first()
+
+    # Récupérer toutes les adresses actives de l'utilisateur
+    adresses = Adresse.objects.filter(utilisateur=utilisateur, active=True)
+
     # ────────── fonctions utilitaires dates ouvrables ──────────
     def business_days_after(n):
         """
@@ -99,19 +111,31 @@ def confirmer_panier(request):
     STANDARD_DEBUT = business_days_after(2)
     STANDARD_FIN   = business_days_after(3)
 
+    # Juste avant de formatter les dates :
+    try:
+        locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
+    except locale.Error:
+        try:
+            locale.setlocale(locale.LC_TIME, "fr_FR")
+        except locale.Error:
+            # Sur Windows, parfois il faut "French_France"
+            locale.setlocale(locale.LC_TIME, "French_France")
+
     # ────────── options de livraison dynamiques ──────────
     LIVRAISON_OPTIONS = {
         "standard": {
             "libelle": "Livraison standard",
             "prix":    Decimal("0.00"),
-            "debut":   STANDARD_DEBUT,   # objets date
+            "debut":   STANDARD_DEBUT,
             "fin":     STANDARD_FIN,
+            "delai":   f"{STANDARD_DEBUT.strftime('%A %d %B')} – {STANDARD_FIN.strftime('%A %d %B')}",
         },
         "express": {
             "libelle": "Livraison Express",
             "prix":    Decimal("7.00"),
             "debut":   DEMAIN,
-            "fin":     None,             # pas de fin pour l’express
+            "fin":     None,
+            "delai":   f"{DEMAIN.strftime('%A %d %B')}",
         },
     }
 
@@ -127,7 +151,7 @@ def confirmer_panier(request):
 
         return redirect("stripe_checkout")   # (ou la route de paiement voulue)
 
-    # ────────── GET : prépare l’affichage ──────────
+    # ────────── GET : prépare l'affichage ──────────
     livraison_select = request.session.get("livraison_select", "standard")
     livraison_info   = LIVRAISON_OPTIONS[livraison_select]
 
@@ -157,7 +181,9 @@ def confirmer_panier(request):
         "livraisons"       : LIVRAISON_OPTIONS,
         "livraison_select" : livraison_select,
         "livraison"        : livraison_info,
-         "form"            : form,
+        "form"             : form,
+        "adresse_livraison": adresse_livraison,
+        "adresses"         : adresses,
     }
     return render(request, "panier/confirmation_panier.html", context)
 
@@ -382,6 +408,16 @@ def passer_commande(request):
             status=400
         )
 
+    # Récupérer l'adresse de livraison
+    adresse_livraison_id = request.session.get('adresse_livraison_id')
+    if not adresse_livraison_id:
+        return JsonResponse(
+            {"success": False, "message": "Aucune adresse de livraison sélectionnée."},
+            status=400
+        )
+    
+    adresse_livraison = get_object_or_404(Adresse, id=adresse_livraison_id, utilisateur=utilisateur, active=True)
+
     # ────────── gestion du stock ──────────
     produits_alerte_stock = set()
     for ligne in lignes_panier:
@@ -397,6 +433,7 @@ def passer_commande(request):
         utilisateur=utilisateur,
         panier=panier,
         statut="confirmee",
+        address=adresse_livraison  # Ajout de l'adresse de livraison
     )
 
     commande.quantites_initiales = {
@@ -417,7 +454,7 @@ def passer_commande(request):
     total_ht  = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
     total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
 
-    # ────────── préparation des lignes pour l’e-mail ──────────
+    # ────────── préparation des lignes pour l'e-mail ──────────
     email_lignes      = []
     images_a_attacher = []        # [(cid, path), …]
 
@@ -464,6 +501,7 @@ def passer_commande(request):
         "livraison_fin"  : livraison_fin.strftime("%a %d %b %Y"),
         "livraison_express": f"{express.strftime('%a')}, {express.day} {express.strftime('%b %Y')}",
         "livraison_prix"  : livraison_prix,
+        "adresse_livraison": adresse_livraison,  # Ajout de l'adresse de livraison
     }
 
     html_body = render_to_string("emails/confirmation_commande.html", ctx)
@@ -556,7 +594,7 @@ def confirmation_commande(request, commande_id):
         produit = get_object_or_404(Produit, id=produit_id)
         sous_total = produit.prix * quantite
 
-        # calcul de l’URL de la miniature
+        # calcul de l'URL de la miniature
         if produit.image and produit.image.url:
             img_url = produit.image.url
         else:
@@ -643,35 +681,120 @@ def inscription(request):
             return redirect('liste_produits')
     else:
         form = InscriptionForm()
-    return render(request, 'registration/inscription.html', {'form': form})
+
+    # Ajout des classes d'erreur pour chaque champ
+    is_invalid_prenom = "is-invalid" if form['prenom'].errors else ""
+    is_invalid_nom = "is-invalid" if form['nom'].errors else ""
+    is_invalid_email = "is-invalid" if form['email'].errors else ""
+    is_invalid_password1 = "is-invalid" if form['password1'].errors else ""
+    is_invalid_password2 = "is-invalid" if form['password2'].errors else ""
+
+    return render(request, 'registration/inscription.html', {
+        'form': form,
+        'is_invalid_prenom': is_invalid_prenom,
+        'is_invalid_nom': is_invalid_nom,
+        'is_invalid_email': is_invalid_email,
+        'is_invalid_password1': is_invalid_password1,
+        'is_invalid_password2': is_invalid_password2,
+    })
 
 
 
 
 @login_required
-def modifier_profil(request):
-    utilisateur = request.user
+def mes_adresses(request):
+    user = request.user
+    edit_type = request.GET.get('edit')
+    pk = request.GET.get('pk')
+    next_url = request.GET.get('next')
 
-    # On récupère next dans GET ou POST, sinon on tombe sur l'accueil
-    next_page = (
-        request.POST.get("next")
-        or request.GET.get("next")
-        or reverse("liste_categories")
-    )
+    # Si aucune adresse active n'existe, rediriger vers ajout avec les deux cases pré-cochées
+    if user.adresses.filter(active=True).count() == 0 and not edit_type:
+        return editer_adresse(request, first_address=True)
 
-    if request.method == "POST":
-        form = ModifierProfilForm(request.POST, instance=utilisateur)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Profil mis à jour ✔")
-            return redirect(next_page)       # ← redirection immédiate
-    else:
-        form = ModifierProfilForm(instance=utilisateur)
+    # Si on vient de la confirmation panier et pas de paramètre edit, rediriger vers l'adresse de livraison par défaut
+    if next_url and not edit_type:
+        adresse_livraison = user.adresses.filter(is_default_shipping=True, active=True).first()
+        if adresse_livraison:
+            url = f"{request.path}?edit=shipping&pk={adresse_livraison.pk}"
+            if next_url:
+                url += f"&next={next_url}"
+            return redirect(url)
 
-    return render(request, "utilisateur/modifier_profil.html", {
-        "form": form,
-        "next": next_page,
+    if edit_type in ['shipping', 'billing']:
+        return editer_adresse(request, pk=pk)
+
+    # Récupère toutes les adresses actives
+    adresses = user.adresses.filter(active=True)
+    return render(request, 'utilisateur/mes_adresses_list.html', {
+        'adresses': adresses,
     })
+
+@login_required
+def editer_adresse(request, pk=None, first_address=False):
+    user = request.user
+
+    # Choix de l'instance (modification vs création)
+    if pk:
+        adresse = get_object_or_404(Adresse, pk=pk, utilisateur=user)
+    else:
+        adresse = Adresse(utilisateur=user)
+
+    if request.method == 'POST':
+        form = AdresseForm(request.POST, instance=adresse)
+        if form.is_valid():
+            cd = form.cleaned_data
+            if pk:
+                adresse = form.save(commit=False)
+                if cd.get('is_default_shipping'):
+                    Adresse.objects.filter(utilisateur=user, is_default_shipping=True).exclude(pk=adresse.pk).update(is_default_shipping=False)
+                if cd.get('is_default_billing'):
+                    Adresse.objects.filter(utilisateur=user, is_default_billing=True).exclude(pk=adresse.pk).update(is_default_billing=False)
+            else:
+                adresse = form.save(commit=False)
+                adresse.utilisateur = user
+                if first_address:
+                    adresse.is_default_shipping = True
+                    adresse.is_default_billing = True
+                else:
+                    if cd.get('is_default_shipping'):
+                        Adresse.objects.filter(utilisateur=user, is_default_shipping=True).update(is_default_shipping=False)
+                    if cd.get('is_default_billing'):
+                        Adresse.objects.filter(utilisateur=user, is_default_billing=True).update(is_default_billing=False)
+            
+            adresse.save()
+            messages.success(request, 'Adresse enregistrée avec succès.')
+            return redirect('mes_adresses')
+    else:
+        form = AdresseForm(instance=adresse)
+        if first_address:
+            form.fields['is_default_shipping'].initial = True
+            form.fields['is_default_billing'].initial = True
+
+    # Ajout des classes d'erreur pour chaque champ
+    is_invalid_prenom = "is-invalid" if form['prenom'].errors else ""
+    is_invalid_nom = "is-invalid" if form['nom'].errors else ""
+    is_invalid_adresse = "is-invalid" if form['adresse'].errors else ""
+    is_invalid_complement = "is-invalid" if form['complement'].errors else ""
+    is_invalid_code_postal = "is-invalid" if form['code_postal'].errors else ""
+    is_invalid_ville = "is-invalid" if form['ville'].errors else ""
+    is_invalid_pays = "is-invalid" if form['pays'].errors else ""
+
+    return render(request, 'utilisateur/mes_adresses_form.html', {
+        'form': form,
+        'adresse': adresse,
+        'is_invalid_prenom': is_invalid_prenom,
+        'is_invalid_nom': is_invalid_nom,
+        'is_invalid_adresse': is_invalid_adresse,
+        'is_invalid_complement': is_invalid_complement,
+        'is_invalid_code_postal': is_invalid_code_postal,
+        'is_invalid_ville': is_invalid_ville,
+        'is_invalid_pays': is_invalid_pays,
+    })
+
+
+
+
 
 
 
@@ -796,6 +919,60 @@ def suggestions_produits(request):
         suggestions = [{'id': p.id, 'nom': p.nom} for p in produits]
         return JsonResponse(suggestions, safe=False)
     return JsonResponse([], safe=False)
+
+
+
+
+@login_required
+def supprimer_adresse(request, adresse_id):
+    adresse = get_object_or_404(Adresse, id=adresse_id, utilisateur=request.user)
+    if request.method == 'POST':
+        adresse.delete()
+        messages.success(request, "Adresse supprimée avec succès.")
+    return redirect('mes_adresses')
+
+
+
+
+@login_required
+def mon_compte(request):
+    user = request.user
+    if request.method == 'POST':
+        pwd_form = PasswordChangeForm(user, request.POST)
+        if pwd_form.is_valid():
+            pwd_form.save()
+            messages.success(request, "Mot de passe mis à jour ✔")
+            return redirect('mon_compte')
+    else:
+        pwd_form = PasswordChangeForm(user)
+    return render(request, 'utilisateur/mon_compte.html', {
+        'user': user,
+        'pwd_form': pwd_form,
+    })
+
+
+
+
+@login_required
+def update_shipping_address(request, adresse_id):
+    if request.method == 'POST':
+        try:
+            adresse = Adresse.objects.get(id=adresse_id, utilisateur=request.user, active=True)
+            # Mettre à jour l'adresse de livraison pour cette commande
+            request.session['adresse_livraison_id'] = adresse_id
+            
+            return JsonResponse({
+                'success': True,
+                'nom': f"{adresse.prenom} {adresse.nom}",
+                'adresse': adresse.adresse,
+                'complement': adresse.complement,
+                'code_postal': adresse.code_postal,
+                'ville': adresse.ville,
+                'pays': adresse.pays
+            })
+        except Adresse.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Adresse non trouvée ou inactive'}, status=404)
+    return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
 
 
 

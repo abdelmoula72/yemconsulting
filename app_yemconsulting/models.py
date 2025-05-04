@@ -31,29 +31,69 @@ class UtilisateurManager(BaseUserManager):
 
 class Utilisateur(AbstractBaseUser, PermissionsMixin):
     prenom = models.CharField(max_length=100, blank=True)
-    nom = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
+    nom    = models.CharField(max_length=100)
+    # ← ici, il faut absolument ce champ :
+    email  = models.EmailField('Adresse email', unique=True)
     societe = models.CharField(max_length=255, blank=True)
-    adresse = models.CharField(max_length=255, blank=True)
-    complement_adresse = models.CharField(max_length=255, blank=True)
-    code_postal = models.CharField(max_length=20, blank=True)
-    ville = models.CharField(max_length=100, blank=True)
-    pays = models.CharField(max_length=100, default="Belgique")
-    date_inscription = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    # Tes autres champs…
+    telephone                     = models.CharField("Téléphone", max_length=20, blank=True)
+    date_naissance                = models.DateField("Date de naissance", null=True, blank=True)
+    adresse                       = models.CharField(max_length=255, blank=True)
+    complement_adresse            = models.CharField(max_length=255, blank=True)
+    code_postal                   = models.CharField(max_length=20, blank=True)
+    ville                         = models.CharField(max_length=100, blank=True)
+    pays                          = models.CharField(max_length=100, default="Belgique")
+    # … et tous les champs facturation que tu as ajoutés …
+
+    adresse_facturation            = models.CharField("Adresse facturation",     max_length=255, blank=True)
+    complement_adresse_facturation = models.CharField("Complément facturation",   max_length=255, blank=True)
+    code_postal_facturation        = models.CharField("Code postal facturation",  max_length=20,  blank=True)
+    ville_facturation              = models.CharField("Ville facturation",        max_length=100, blank=True)
+    pays_facturation               = models.CharField("Pays facturation",        max_length=100, default="Belgique")
 
     objects = UtilisateurManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['nom']
 
-    def __str__(self):
-        return self.nom
 
-    @property
-    def is_staff(self):
-        return self.is_admin
+
+class Adresse(models.Model):
+    utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='adresses')
+    prenom = models.CharField(max_length=100, blank=True)
+    nom = models.CharField(max_length=100, blank=True)
+    adresse = models.CharField(max_length=250)
+    complement = models.CharField(max_length=250, blank=True)
+    code_postal = models.CharField(max_length=10)
+    ville = models.CharField(max_length=100)
+    pays = models.CharField(max_length=100)
+    is_default_shipping = models.BooleanField(default=False, help_text='Adresse de livraison par défaut')
+    is_default_billing = models.BooleanField(default=False, help_text='Adresse de facturation par défaut')
+    active = models.BooleanField(default=True, help_text='Indique si l\'adresse est active')
+
+    class Meta:
+        verbose_name = 'Adresse'
+        verbose_name_plural = 'Adresses'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['utilisateur', 'is_default_shipping'],
+                condition=models.Q(is_default_shipping=True),
+                name='unique_default_shipping'
+            ),
+            models.UniqueConstraint(
+                fields=['utilisateur', 'is_default_billing'],
+                condition=models.Q(is_default_billing=True),
+                name='unique_default_billing'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.prenom} {self.nom}, {self.adresse}, {self.code_postal} {self.ville}, {self.pays}"
+
+    def delete(self, *args, **kwargs):
+        """Soft delete : marque l'adresse comme inactive au lieu de la supprimer"""
+        self.active = False
+        self.save()
 
 
 
@@ -163,7 +203,8 @@ class Commande(models.Model):
     date_commande = models.DateTimeField(auto_now_add=True)
     statut = models.CharField(max_length=50, choices=STATUT_CHOICES, default='en_attente')
     traitée = models.BooleanField(default=False)
-    quantites_initiales = models.JSONField(default=dict)  # Assurez-vous d'avoir `default=dict`
+    quantites_initiales = models.JSONField(default=dict)
+    address = models.ForeignKey(Adresse, on_delete=models.SET_NULL, null=True, related_name='commandes')
 
     def __str__(self):
         return f"Commande {self.id} par {self.utilisateur.nom}"

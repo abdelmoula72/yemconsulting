@@ -33,7 +33,7 @@
     {{ livraison_debut }} – {{ livraison_fin }}
   </p>
 
-  <!-- Message d’accueil -->
+  <!-- Message d'accueil -->
   <h2 class="mb-2">Bonjour {{ utilisateur.prenom|default:utilisateur.nom }},</h2>
   <p class="mb-4" style="font-size:1.1rem">
     Merci pour votre commande&nbsp;! Vous trouverez ci-dessous son récapitulatif.
@@ -42,10 +42,11 @@
   <!-- Adresse de livraison -->
   <h4 class="mb-1">Adresse de livraison</h4>
   <p class="mb-3">
-    {{ utilisateur.prenom }} {{ utilisateur.nom }}<br>
-    {{ utilisateur.adresse }}{% if utilisateur.complement_adresse %} {{ utilisateur.complement_adresse }}{% endif %}<br>
-    {{ utilisateur.code_postal }} {{ utilisateur.ville }}<br>
-    {{ utilisateur.pays }}
+    {{ adresse_livraison.prenom }} {{ adresse_livraison.nom }}<br>
+    {{ adresse_livraison.adresse }}<br>
+    {% if adresse_livraison.complement %}{{ adresse_livraison.complement }}<br>{% endif %}
+    {{ adresse_livraison.code_postal }} {{ adresse_livraison.ville }}<br>
+    {{ adresse_livraison.pays }}
   </p>
 
   <!-- Tableau des articles -->
@@ -59,14 +60,14 @@
       </tr>
     </thead>
     <tbody>
-    {% for ligne in lignes %}
+      {% for ligne in lignes %}
       <tr>
         <td><img class="prod" src="cid:{{ ligne.img_cid }}" alt=""></td>
         <td>{{ ligne.nom }}</td>
         <td>{{ ligne.quantite }}</td>
         <td class="right">{{ ligne.prix }} €</td>
       </tr>
-    {% endfor %}
+      {% endfor %}
     </tbody>
     <tfoot>
       <tr>

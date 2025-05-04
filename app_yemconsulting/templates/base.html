@@ -18,62 +18,47 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- Header / Navbar -->
-    <header class="bg-primary text-white py-3">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-light">
-                <a class="navbar-brand text-white text-decoration-none" href="{% url 'liste_categories' %}">
-                    YEMTech Solutions
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        {% if user.is_authenticated %}
-                        <!-- Panier -->
-                        <li class="nav-item me-2">
-                            <a class="nav-link text-white position-relative" href="{% url 'afficher_panier' %}">
-                                <i class="bi bi-cart"></i>
-                                {% with nb=user.paniers.last.get_total_quantite|default:0 %}
-                                    {% if nb %}
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                            {{ nb }}
-                                        </span>
-                                    {% endif %}
-                                {% endwith %}
-                            </a>
-                        </li>
-                        <!-- Menu utilisateur -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white" href="#" id="menuUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle"></i> {{ user.prenom|default:user.nom }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuUser">
-                                <li><a class="dropdown-item" href="{% url 'modifier_profil' %}">Mon profil</a></li>
-                                <li><a class="dropdown-item" href="{% url 'historique_commandes' %}">Mes commandes</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{% url 'logout' %}" method="post" class="d-inline">
-                                        {% csrf_token %}
-                                        <button class="dropdown-item text-danger">Déconnexion</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                        {% else %}
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'login' %}">Connexion</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'inscription' %}">Inscription</a></li>
-                        {% endif %}
-                    </ul>
-                    <form class="d-flex position-relative" action="{% url 'rechercher_produits' %}" method="GET">
-                        <input id="search-bar" type="search" name="q" class="form-control me-2" placeholder="Rechercher un produit">
-                        <div id="suggestion-box" class="position-absolute bg-white border rounded w-100" style="z-index:1000;"></div>
-                        <button class="btn btn-outline-light" type="submit">Rechercher</button>
-                    </form>
-                </div>
-            </nav>
-        </div>
-    </header>
+    <nav class="navbar navbar-dark bg-dark">
+  <div class="container d-flex align-items-center">
+    <a class="navbar-brand p-0" href="{% url 'liste_categories' %}">
+        <img src="{% static 'images/logo-header21.png' %}" alt="YemTech Pro" class="logo-header">
+    </a>
+    <div class="d-flex ms-auto align-items-center gap-3">
+      {% if user.is_authenticated %}
+      <a class="nav-link text-white position-relative p-0" href="{% url 'afficher_panier' %}">
+        <i class="bi bi-cart" style="font-size: 1.5rem;"></i>
+        {% with nb=user.paniers.last.get_total_quantite|default:0 %}
+          {% if nb %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ nb }}</span>
+          {% endif %}
+        {% endwith %}
+      </a>
+      <div class="dropdown">
+        <a class="nav-link dropdown-toggle text-white p-0" href="#" role="button" id="menuUser" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuUser">
+            <li><a class="dropdown-header" href="{% url 'mon_compte' %}">Mon compte</a></li>
+            <li><a class="dropdown-item" href="{% url 'mes_adresses' %}">Mes adresses</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form action="{% url 'logout' %}" method="post" class="m-0">
+                {% csrf_token %}
+                <button class="dropdown-item text-danger">Déconnexion</button>
+              </form>
+            </li>
+          </ul>
+      </div>
+      {% else %}
+      <a class="nav-link text-white" href="{% url 'login' %}">Connexion</a>
+      <a class="nav-link text-white" href="{% url 'inscription' %}">Inscription</a>
+      {% endif %}
+      <form class="d-flex position-relative" action="{% url 'rechercher_produits' %}" method="GET">
+        <input id="search-bar" type="search" name="q" class="form-control" placeholder="Rechercher un produit">
+      </form>
+    </div>
+  </div>
+</nav>
 
     <!-- Messages Django -->
     <div class="container mt-3">

@@ -175,3 +175,27 @@ button:hover {
 
 
 table img { box-shadow:0 0 3px rgba(0,0,0,.15); }
+
+/* Fond du header - déjà mis en inline sur la balise nav, mais on peut extraire */
+.navbar {
+  background-color: #000000 !important;
+}
+
+/* Taille du logo — augmentez si besoin */
+.logo-header {
+  max-height: 150x;   /* passe de 120px à 160px (ou plus) */
+  max-width: 300px;    /* ajuste la largeur maxi si tu ne veux pas que ça déborde */
+  width: auto;         /* conserve les proportions */
+  display: block;
+}
+
+
+/* Si vous voulez un peu d’espace autour */
+.navbar-brand {
+  padding: 0.25rem 0;   /* réduit le padding horizontal inutile */
+  margin-right: 1rem;   /* espace avant le toggler/menu */
+}
+
+.border-dashed {
+  border: 2px dashed #bbb !important;
+}

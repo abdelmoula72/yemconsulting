@@ -88,17 +88,24 @@
             <i class="bi bi-geo-alt-fill me-1 text-primary"></i>
             Adresse de livraison
           </h3>
-          <a href="{% url 'modifier_profil' %}?next={{ request.path }}"
-             class="btn btn-sm btn-outline-secondary">
+          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalAdresses">
             Modifier
-          </a>
+          </button>
         </div>
-        <address class="fw-bold lh-sm">
-          {{ utilisateur.prenom }} {{ utilisateur.nom }}<br>
-          {{ utilisateur.adresse }}<br>
-          {% if utilisateur.complement_adresse %}{{ utilisateur.complement_adresse }}<br>{% endif %}
-          {{ utilisateur.code_postal }} {{ utilisateur.ville }}<br>
-          {{ utilisateur.pays }}
+        <address class="fw-bold lh-sm" id="adresseLivraison">
+          {% if adresse_livraison %}
+            {{ adresse_livraison.utilisateur.get_full_name }}<br>
+            {{ adresse_livraison.adresse }}<br>
+            {% if adresse_livraison.complement %}{{ adresse_livraison.complement }}<br>{% endif %}
+            {{ adresse_livraison.code_postal }} {{ adresse_livraison.ville }}<br>
+            {{ adresse_livraison.pays }}
+          {% else %}
+            {{ utilisateur.prenom }} {{ utilisateur.nom }}<br>
+            {{ utilisateur.adresse }}<br>
+            {% if utilisateur.complement_adresse %}{{ utilisateur.complement_adresse }}<br>{% endif %}
+            {{ utilisateur.code_postal }} {{ utilisateur.ville }}<br>
+            {{ utilisateur.pays }}
+          {% endif %}
         </address>
       </div>
 
@@ -109,34 +116,87 @@
   </form>
 </div>
 
-<!-- Modal Bootstrap pour Modifier l'adresse -->
-<div class="modal fade" id="modal-adresse" tabindex="-1" aria-hidden="true">
+<!-- Modal pour la sélection d'adresse -->
+<div class="modal fade" id="modalAdresses" tabindex="-1" aria-labelledby="modalAdressesLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Modifier l’adresse</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title" id="modalAdressesLabel">Sélectionner une adresse de livraison</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
       </div>
-      <form method="post" action="{% url 'modifier_profil' %}?next={{ request.path }}">
-        {% csrf_token %}
-        <div class="modal-body">
-          {% for field in form.visible_fields %}
-            <div class="mb-3">
-              <label class="form-label" for="{{ field.id_for_label }}">
-                {{ field.label }}{% if field.field.required %} *{% endif %}
-              </label>
-              {{ field|add_class:"form-control" }}
-              {% if field.errors %}
-                <div class="text-danger small">{{ field.errors|striptags }}</div>
-              {% endif %}
-            </div>
+      <div class="modal-body">
+        <div class="list-group">
+          {% for adresse in adresses %}
+            <label class="list-group-item d-flex gap-2">
+              <input class="form-check-input flex-shrink-0" type="radio" name="adresseLivraison" 
+                     value="{{ adresse.id }}" 
+                     {% if adresse.id == adresse_livraison.id %}checked{% endif %}>
+              <div>
+                <strong>{{ adresse.utilisateur.get_full_name }}</strong><br>
+                {{ adresse.adresse }}<br>
+                {% if adresse.complement %}{{ adresse.complement }}<br>{% endif %}
+                {{ adresse.code_postal }} {{ adresse.ville }}<br>
+                {{ adresse.pays }}
+              </div>
+            </label>
           {% endfor %}
         </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Enregistrer</button>
-        </div>
-      </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" id="validerAdresse">Valider</button>
+      </div>
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion de la sélection d'adresse
+    const modalAdresses = document.getElementById('modalAdresses');
+    const validerAdresse = document.getElementById('validerAdresse');
+    const adresseLivraison = document.getElementById('adresseLivraison');
+    
+    validerAdresse.addEventListener('click', function() {
+        const selectedAdresse = document.querySelector('input[name="adresseLivraison"]:checked');
+        if (selectedAdresse) {
+            const adresseId = selectedAdresse.value;
+            // Envoyer une requête AJAX pour mettre à jour l'adresse de livraison
+            fetch(`/update-shipping-address/${adresseId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la mise à jour de l\'adresse');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour l'affichage de l'adresse
+                    adresseLivraison.innerHTML = `
+                        ${data.nom}<br>
+                        ${data.adresse}<br>
+                        ${data.complement ? data.complement + '<br>' : ''}
+                        ${data.code_postal} ${data.ville}<br>
+                        ${data.pays}
+                    `;
+                    // Fermer la modal
+                    const modal = bootstrap.Modal.getInstance(modalAdresses);
+                    if (modal) {
+                        modal.hide();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de la mise à jour de l\'adresse');
+            });
+        }
+    });
+});
+</script>
 {% endblock %}
