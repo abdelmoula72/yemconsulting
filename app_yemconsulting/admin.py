@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Commande, Produit, Categorie, Panier, LignePanier
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User, Group
+from .models import Commande, Produit, Categorie, Utilisateur
 
 class CommandeAdmin(admin.ModelAdmin):
     list_display = ('id', 'utilisateur', 'date_commande', 'statut')  # Affiche ces champs dans la liste
@@ -29,8 +31,26 @@ class CommandeAdmin(admin.ModelAdmin):
         self.message_user(request, "Les commandes sélectionnées ont été annulées.")
     marquer_commande_comme_annulee.short_description = "Marquer comme annulées"
 
+class CustomUserAdmin(UserAdmin):
+    list_display = ('email', 'nom', 'prenom', 'is_admin', 'is_staff')
+    list_filter = ('is_admin', 'is_superuser')
+    search_fields = ('email', 'nom', 'prenom')
+    ordering = ('email',)
+
+    fieldsets = (
+        ('Informations de connexion', {'fields': ('email', 'password')}),
+        ('Informations personnelles', {'fields': ('nom', 'prenom')}),
+        ('Permissions', {'fields': ('is_admin', 'is_superuser', 'groups', 'user_permissions')}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'nom', 'prenom', 'password1', 'password2'),
+        }),
+    )
+
 admin.site.register(Commande, CommandeAdmin)
 admin.site.register(Produit)
 admin.site.register(Categorie)
-admin.site.register(Panier)
-admin.site.register(LignePanier)
+admin.site.register(Utilisateur, CustomUserAdmin)
