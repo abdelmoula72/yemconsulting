@@ -45,5 +45,11 @@ fi
 
 echo ""
 echo "⚠️  N'oubliez pas de :"
-echo "1. Configurer le fichier .env avec vos variables d'environnement"
-echo "2. Créer un superutilisateur avec : python manage.py createsuperuser" 
+echo "1. Activer l'environnement virtuel"
+if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
+    echo "  ./venv/Scripts/activate"
+else
+    echo "  source venv/bin/activate"
+fi
+echo "2. Créer un superutilisateur si vous le souhaitez avec : python manage.py createsuperuser"
+echo "3. Demarrer le serveur avec : python manage.py runserver"
