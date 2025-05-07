@@ -1,0 +1,125 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Confirmation de votre commande</title>
+<style>
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fafafa;color:#222}
+  .wrapper{max-width:650px;margin:auto;padding:24px;background:#fff}
+  h1,h2,h3,h4{margin:0 0 .6em}
+  a{color:#0d6efd;text-decoration:none}
+  .mb-1{margin-bottom:.5rem}.mb-2{margin-bottom:.75rem}
+  .mb-3{margin-bottom:1rem}.mb-4{margin-bottom:1.5rem}
+  .small{font-size:.875rem;color:#666}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;vertical-align:middle}
+  th.right,td.right{text-align:right}
+  img.prod{max-width:110px;border:1px solid #ddd;border-radius:4px}
+  @media (prefers-color-scheme:dark){
+    body{background:#121212;color:#e0e0e0}
+    .wrapper{background:#1c1c1c}
+    a{color:#4dabff}
+    th,td{border-color:#333}
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Livraison estimée -->
+  <p class="mb-2" style="font-size:15px">
+    <strong>Livraison estimée&nbsp;:</strong>
+    {{ livraison_debut }} – {{ livraison_fin }}
+  </p>
+
+  <!-- Message d'accueil -->
+  <h2 class="mb-2">Bonjour {{ utilisateur.prenom|default:utilisateur.nom }},</h2>
+  <p class="mb-4" style="font-size:1.1rem">
+    Merci pour votre commande&nbsp;! Vous trouverez ci-dessous son récapitulatif.
+  </p>
+
+  <!-- Adresses -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <h4 class="mb-1">Adresse de livraison</h4>
+      <p class="mb-3">
+        {{ adresse_livraison.prenom }} {{ adresse_livraison.nom }}<br>
+        {{ adresse_livraison.adresse }}<br>
+        {% if adresse_livraison.complement %}{{ adresse_livraison.complement }}<br>{% endif %}
+        {{ adresse_livraison.code_postal }} {{ adresse_livraison.ville }}<br>
+        {{ adresse_livraison.pays }}
+      </p>
+    </div>
+    <div class="col-md-6">
+      <h4 class="mb-1">Adresse de facturation</h4>
+      <p class="mb-3">
+        {{ adresse_facturation.prenom }} {{ adresse_facturation.nom }}<br>
+        {{ adresse_facturation.adresse }}<br>
+        {% if adresse_facturation.complement %}{{ adresse_facturation.complement }}<br>{% endif %}
+        {{ adresse_facturation.code_postal }} {{ adresse_facturation.ville }}<br>
+        {{ adresse_facturation.pays }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Détails de la commande -->
+  <h4 class="mb-2">Détails de votre commande</h4>
+  <table class="mb-4">
+    <thead>
+      <tr>
+        <th>Produit</th>
+        <th class="right">Quantité</th>
+        <th class="right">Prix unitaire</th>
+        <th class="right">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ligne in lignes %}
+      <tr>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <img src="cid:{{ ligne.img_cid }}" alt="{{ ligne.nom }}" class="prod">
+            <span>{{ ligne.nom }}</span>
+          </div>
+        </td>
+        <td class="right">{{ ligne.quantite }}</td>
+        <td class="right">{{ ligne.prix|floatformat:2 }} €</td>
+        <td class="right">{{ ligne.quantite|multiply:ligne.prix|floatformat:2 }} €</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3" class="right"><strong>Sous-total</strong></td>
+        <td class="right">{{ total_ht|floatformat:2 }} €</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="right"><strong>TVA (21%)</strong></td>
+        <td class="right">{{ total_tva|floatformat:2 }} €</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="right"><strong>Livraison</strong></td>
+        <td class="right">{% if livraison_prix == 0 %}Gratuite{% else %}{{ livraison_prix|floatformat:2 }} €{% endif %}</td>
+      </tr>
+      <tr>
+        <td colspan="3" class="right"><strong>Total TTC</strong></td>
+        <td class="right"><strong>{{ total_ttc|floatformat:2 }} €</strong></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- Lien vers la commande -->
+  <p class="mb-4">
+    <a href="{{ url_commande }}">Voir les détails de votre commande</a>
+  </p>
+
+  <!-- Pied de page -->
+  <p class="small mb-0">
+    Merci de votre confiance !<br>
+    L'équipe YEMCONSULTING
+  </p>
+</div>
+</body>
+</html>

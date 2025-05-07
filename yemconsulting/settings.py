@@ -16,6 +16,27 @@ import os
 
 
 
+# settings.py
+LANGUAGE_CODE = "fr"
+USE_I18N = True
+USE_L10N = True
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+
+    # Place LocaleMiddleware IMMÉDIATEMENT après SessionMiddleware
+    "django.middleware.locale.LocaleMiddleware",
+
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    ...
+]
+
+
+
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -43,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app_yemconsulting',
+    'widget_tweaks',
     'django_extensions',    
 ]
 
@@ -66,7 +88,7 @@ ROOT_URLCONF = 'yemconsulting.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "app_yemconsulting" / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -91,6 +113,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+
 
 
 # Password validation
@@ -144,6 +169,23 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = 'liste_produits'
+LOGIN_URL = '/login/'
 
-LOGOUT_REDIRECT_URL = 'login'  # Redirige vers la page de connexion après déconnexion
+LOGIN_REDIRECT_URL = '/'  # Redirige vers la page d'accueil
+
+
+
+DEFAULT_ADMIN_EMAIL = "abdelmoula.elamri@gmail.com"  # Remplace par l'email de l'admin
+DEFAULT_FROM_EMAIL = "abdelmoula.elamri@gmail.com"  # L'email qui enverra les notifications
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = 'smtp.gmail.com'  # Remplace par ton serveur SMTP
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'abdelmoula.elamri@gmail.com'  # Remplace par ton email
+EMAIL_HOST_PASSWORD = "ygyh rqta cswx mkef"
+
+
+# Stripe
+STRIPE_SECRET_KEY = 'sk_test_51RAa3qRVH7RxPoOljsnRwaPKsRb1OgY0MWHyjAkpkiJgEOz1MuclKww6GlYCbTX7gi9T472xJjUf2m9iLsdNgTpC00IODHQsEb'  
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51RAa3qRVH7RxPoOlW69a8lGyeIZnEMeesdyAN6oQGYjteTsf6n6dd0U6zO3xSh1z3JlkiXfHMoH2hJcqAyTWmrsQ00foOLHwQ3'  

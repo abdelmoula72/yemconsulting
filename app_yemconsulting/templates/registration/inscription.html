@@ -1,21 +1,318 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load form_tags %}
+
 
 {% block title %}Inscription{% endblock %}
 
 {% block content %}
-<!-- Contenu spécifique à cette page -->
-<h1>Inscription</h1>
+<style>
+  .form-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 24px 20px 16px 20px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+  .form-label {
+    font-weight: 500;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+  }
+  .form-label .required-star {
+    color: #e53935;
+    font-size: 1.1em;
+    margin-left: 2px;
+  }
+  .form-control {
+    border-radius: 6px;
+    border: 1px solid #333;
+    padding: 8px 12px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  .form-control:focus {
+    border-color: #6c47ff;
+    box-shadow: 0 0 0 0.2rem rgba(108, 71, 255, 0.25);
+  }
+  .form-control.is-valid {
+    border-color: #4caf50;
+    box-shadow: 0 0 0 1.5px #b9f6ca;
+  }
+  .form-control.is-invalid {
+    border-color: #e53935;
+    box-shadow: 0 0 0 1.5px #ffcdd2;
+  }
+  .invalid-feedback.d-block {
+    color: #e53935;
+    font-size: 0.97em;
+    margin-top: 2px;
+  }
+  .btn-primary {
+    background-color: #6c47ff;
+    border-color: #6c47ff;
+    padding: 10px 24px;
+    font-weight: 500;
+  }
+  .btn-primary:hover {
+    background-color: #5a3ce6;
+    border-color: #5a3ce6;
+  }
+  .form-check-input:checked {
+    background-color: #6c47ff;
+    border-color: #6c47ff;
+  }
+  .password-criteria {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 8px;
+  }
+  .password-criteria ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  .password-criteria li {
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .password-criteria li::before {
+    content: "•";
+    color: #666;
+  }
+  .password-criteria li.valid::before {
+    content: "✓";
+    color: #4caf50;
+  }
+  .password-criteria li.invalid::before {
+    content: "✗";
+    color: #e53935;
+  }
+  #password-match-feedback {
+    display: none;
+    color: #e53935;
+    font-size: 0.97em;
+    margin-top: 2px;
+  }
+</style>
 
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">S'inscrire</button>
-</form>
-<p>Vous avez déjà un compte ? <a href="{% url 'login' %}">Connectez-vous</a></p>
+<div class="container mt-5">
+    <div class="mx-auto" style="max-width: 500px;">
+        <h2 class="text-center mb-4">Créer un compte</h2>
+        <div class="form-card">
+            <form method="POST" class="row g-3 needs-validation" novalidate>
+                {% csrf_token %}
 
-<!-- Lien de déconnexion si l'utilisateur est connecté -->
-{% if user.is_authenticated %}
-    <p><a href="{% url 'logout' %}">Déconnexion</a></p>
-{% endif %}
+                <div class="col-md-6">
+                    <label for="id_prenom" class="form-label">
+                        Prénom
+                        <span class="required-star">*</span>
+                    </label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="id_prenom" 
+                           name="prenom" 
+                           required
+                           pattern="^[A-Za-zÀ-ÿ\-\s]+$"
+                           placeholder="ex: Jean">
+                    {% if form.prenom.errors %}
+                        <div class="invalid-feedback d-block">{{ form.prenom.errors }}</div>
+                    {% endif %}
+                </div>
 
+                <div class="col-md-6">
+                    <label for="id_nom" class="form-label">
+                        Nom
+                        <span class="required-star">*</span>
+                    </label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="id_nom" 
+                           name="nom" 
+                           required
+                           pattern="^[A-Za-zÀ-ÿ\-\s]+$"
+                           placeholder="ex: Dupont">
+                    {% if form.nom.errors %}
+                        <div class="invalid-feedback d-block">{{ form.nom.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="col-12">
+                    <label for="id_email" class="form-label">
+                        Email
+                        <span class="required-star">*</span>
+                    </label>
+                    <input type="email" 
+                           class="form-control" 
+                           id="id_email" 
+                           name="email" 
+                           required
+                           placeholder="ex: jean.dupont@email.com">
+                    {% if form.email.errors %}
+                        <div class="invalid-feedback d-block">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="id_password1" class="form-label">
+                        Mot de passe
+                        <span class="required-star">*</span>
+                    </label>
+                    <input type="password" 
+                           class="form-control" 
+                           id="id_password1" 
+                           name="password1" 
+                           required
+                           pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+                           placeholder="Minimum 8 caractères">
+                    <div class="password-criteria">
+                        <ul>
+                            <li id="length-criteria">Au moins 8 caractères</li>
+                            <li id="letter-criteria">Contient au moins une lettre</li>
+                            <li id="number-criteria">Contient au moins un chiffre</li>
+                        </ul>
+                    </div>
+                    {% if form.password1.errors %}
+                        <div class="invalid-feedback d-block">{{ form.password1.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="id_password2" class="form-label">
+                        Confirmer le mot de passe
+                        <span class="required-star">*</span>
+                    </label>
+                    <input type="password" 
+                           class="form-control" 
+                           id="id_password2" 
+                           name="password2" 
+                           required
+                           placeholder="Répétez votre mot de passe">
+                    <div id="password-match-feedback">Les deux mots de passe ne correspondent pas</div>
+                    {% if form.password2.errors %}
+                        <div class="invalid-feedback d-block">{{ form.password2.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="col-12 text-center mt-4">
+                    <button type="submit" class="btn btn-primary px-4">S'inscrire</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <p>Vous avez déjà un compte ? <a href="{% url 'login' %}" style="color: #6c47ff;">Connectez-vous</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input[required]');
+    const passwordInput = document.getElementById('id_password1');
+    const confirmPasswordInput = document.getElementById('id_password2');
+    const passwordMatchFeedback = document.getElementById('password-match-feedback');
+    const lengthCriteria = document.getElementById('length-criteria');
+    const letterCriteria = document.getElementById('letter-criteria');
+    const numberCriteria = document.getElementById('number-criteria');
+    
+    // Validation du mot de passe
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        
+        // Vérification de la longueur
+        if (password.length >= 8) {
+            lengthCriteria.classList.add('valid');
+            lengthCriteria.classList.remove('invalid');
+        } else {
+            lengthCriteria.classList.remove('valid');
+            lengthCriteria.classList.add('invalid');
+        }
+        
+        // Vérification de la présence d'une lettre
+        if (/[A-Za-z]/.test(password)) {
+            letterCriteria.classList.add('valid');
+            letterCriteria.classList.remove('invalid');
+        } else {
+            letterCriteria.classList.remove('valid');
+            letterCriteria.classList.add('invalid');
+        }
+        
+        // Vérification de la présence d'un chiffre
+        if (/\d/.test(password)) {
+            numberCriteria.classList.add('valid');
+            numberCriteria.classList.remove('invalid');
+        } else {
+            numberCriteria.classList.remove('valid');
+            numberCriteria.classList.add('invalid');
+        }
+
+        // Vérification de la correspondance des mots de passe
+        checkPasswordMatch();
+    });
+
+    // Validation de la correspondance des mots de passe
+    confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+    confirmPasswordInput.addEventListener('blur', checkPasswordMatch);
+
+    function checkPasswordMatch() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        
+        if (confirmPassword && password !== confirmPassword) {
+            confirmPasswordInput.classList.add('is-invalid');
+            confirmPasswordInput.classList.remove('is-valid');
+            passwordMatchFeedback.style.display = 'block';
+        } else if (confirmPassword) {
+            confirmPasswordInput.classList.remove('is-invalid');
+            confirmPasswordInput.classList.add('is-valid');
+            passwordMatchFeedback.style.display = 'none';
+        } else {
+            confirmPasswordInput.classList.remove('is-invalid');
+            confirmPasswordInput.classList.remove('is-valid');
+            passwordMatchFeedback.style.display = 'none';
+        }
+    }
+    
+    // Validation des autres champs
+    inputs.forEach(input => {
+        let hasInteracted = false;
+        
+        input.addEventListener('focus', function() {
+            hasInteracted = true;
+            updateValidationState(this);
+        });
+        
+        input.addEventListener('blur', function() {
+            updateValidationState(this);
+        });
+        
+        input.addEventListener('input', function() {
+            if (hasInteracted) {
+                updateValidationState(this);
+            }
+        });
+        
+        function updateValidationState(input) {
+            if (!hasInteracted) {
+                input.classList.remove('is-valid');
+                input.classList.remove('is-invalid');
+            } else if (input.value === '') {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+            } else if (input.checkValidity()) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            } else {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

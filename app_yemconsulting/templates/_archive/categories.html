@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Nos grandes catégories{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="text-center mb-4">Nos grandes catégories</h1>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        {% for categorie in categories %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-between text-center">
+                        <h5 class="card-title">{{ categorie.nom }}</h5>
+                        <a href="{{ categorie.get_absolute_url }}" class="btn btn-outline-primary mt-3">
+                            Voir les sous-catégories
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

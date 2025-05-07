@@ -1,7 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
+from django.core.mail import send_mail
+from django.conf import settings
+from django.urls import reverse
+import os
+from decimal import Decimal
+
 
 
 # Gestionnaire personnalisé pour le modèle Utilisateur
@@ -23,12 +29,11 @@ class UtilisateurManager(BaseUserManager):
 
 
 # Modèle Utilisateur personnalisé
+
 class Utilisateur(AbstractBaseUser, PermissionsMixin):
+    prenom = models.CharField(max_length=100, blank=True)
     nom = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    adresse = models.CharField(max_length=255, blank=True)
-    date_inscription = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
+    email = models.EmailField('Adresse email', unique=True)
     is_admin = models.BooleanField(default=False)
 
     objects = UtilisateurManager()
@@ -37,7 +42,7 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['nom']
 
     def __str__(self):
-        return self.nom
+        return self.email
 
     @property
     def is_staff(self):
@@ -45,23 +50,81 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
 
 
+class Adresse(models.Model):
+    utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='adresses')
+    prenom = models.CharField(max_length=100, blank=True)
+    nom = models.CharField(max_length=100, blank=True)
+    adresse = models.CharField(max_length=250)
+    complement = models.CharField(max_length=250, blank=True)
+    code_postal = models.CharField(max_length=10)
+    ville = models.CharField(max_length=100)
+    pays = models.CharField(max_length=100)
+    is_default_shipping = models.BooleanField(default=False, help_text='Adresse de livraison par défaut')
+    is_default_billing = models.BooleanField(default=False, help_text='Adresse de facturation par défaut')
+    active = models.BooleanField(default=True, help_text='Indique si l\'adresse est active')
+
+    class Meta:
+        verbose_name = 'Adresse'
+        verbose_name_plural = 'Adresses'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['utilisateur', 'is_default_shipping'],
+                condition=models.Q(is_default_shipping=True),
+                name='unique_default_shipping'
+            ),
+            models.UniqueConstraint(
+                fields=['utilisateur', 'is_default_billing'],
+                condition=models.Q(is_default_billing=True),
+                name='unique_default_billing'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.prenom} {self.nom}, {self.adresse}, {self.code_postal} {self.ville}, {self.pays}"
+
+    def delete(self, *args, **kwargs):
+        """Soft delete : marque l'adresse comme inactive au lieu de la supprimer"""
+        self.active = False
+        self.save()
+
+
+
+
 # Modèle Catégorie
 class Categorie(models.Model):
-    nom = models.CharField(max_length=100)
+    nom = models.CharField(max_length=255)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True, blank=True,
+        related_name='subcategories'
+    )
 
     def __str__(self):
         return self.nom
 
+    def get_absolute_url(self):
+        return reverse('produits_par_categorie', args=[self.id])
+
+
+
+
+
+def chemin_image_produit(instance, filename):
+    # Utilise le nom de la catégorie principale si elle existe, sinon la catégorie actuelle
+    categorie = instance.categorie.parent.nom if instance.categorie and instance.categorie.parent else instance.categorie.nom if instance.categorie else "autre"
+    # Nettoie les noms pour éviter les problèmes de chemin
+    categorie = categorie.replace(" ", "_").lower()
+    return os.path.join("produits", categorie, filename)
+
 
 # Modèle Produit
-from django.db import models
-
 class Produit(models.Model):
     nom = models.CharField(max_length=100)
     description = models.TextField()
     prix = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
-    image = models.ImageField(upload_to='produits/', null=True, blank=True)  # Champ image
+    image = models.ImageField(upload_to=chemin_image_produit, null=True, blank=True)  # 📁 ImageField avec dossier par catégorie
     categorie = models.ForeignKey(
         'Categorie',
         on_delete=models.CASCADE,
@@ -73,9 +136,25 @@ class Produit(models.Model):
     def __str__(self):
         return self.nom
 
+    def get_absolute_url(self):
+        return reverse('produits_par_categorie', args=[self.categorie.id])
+    
+    @property
+    def prix_ht(self):
+        return round(float(self.prix) / 1.21, 2)
+
+    @property
+    def montant_tva(self):
+        return round(float(self.prix) - self.prix_ht, 2)
 
 
-# Modèle pour le panier, lié à un utilisateur et contenant des produits
+
+
+
+
+
+
+
 class Panier(models.Model):
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name="paniers")
     produits = models.ManyToManyField(Produit, through='LignePanier', related_name="paniers")
@@ -87,15 +166,20 @@ class Panier(models.Model):
     def get_total(self):
         return sum(ligne.produit.prix * ligne.quantite for ligne in self.lignes.all())
 
+    def get_total_quantite(self):
+        return sum(ligne.quantite for ligne in self.lignes.all())  # Utilise self.lignes.all()
+
+
 
 # Modèle pour les lignes du panier, associant un produit à une quantité
 class LignePanier(models.Model):
     panier = models.ForeignKey(Panier, on_delete=models.CASCADE, related_name="lignes")
-    produit = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name="lignes")
-    quantite = models.IntegerField(default=1)  # Ajoute 'default=1' pour éviter l'erreur de contrainte NOT NULL
+    produit = models.ForeignKey(Produit, on_delete=models.CASCADE)
+    quantite = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return f"{self.quantite} x {self.produit.nom}"
+        return f"{self.quantite} x {self.produit.nom} dans le panier de {self.panier.utilisateur.nom}"
+
 
 
 # Modèle pour les commandes, liées à un utilisateur et un panier
@@ -105,16 +189,40 @@ class Commande(models.Model):
         ('en_cours', 'En cours de traitement'),
         ('livree', 'Livrée'),
         ('annulee', 'Annulée'),
+        ('confirmee', 'Confirmée'),
     ]
+
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
     panier = models.ForeignKey(Panier, on_delete=models.CASCADE)
     date_commande = models.DateTimeField(auto_now_add=True)
     statut = models.CharField(max_length=50, choices=STATUT_CHOICES, default='en_attente')
     traitée = models.BooleanField(default=False)
-    quantites_initiales = models.JSONField(default=dict)  # Assurez-vous d'avoir `default=dict`
+    quantites_initiales = models.JSONField(default=dict, null=True, blank=True)
+    adresse_livraison = models.JSONField(default=dict, help_text="Adresse de livraison au format JSON")
+    adresse_facturation = models.JSONField(default=dict, help_text="Adresse de facturation au format JSON")
+    livraison = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Prix de la livraison")
 
     def __str__(self):
-        return f"Commande {self.id} par {self.utilisateur.nom}"
+        return f"Commande {self.id} de {self.utilisateur.nom}"
+
+    def get_quantites_initiales(self):
+        return self.quantites_initiales or {}
+
+    def set_quantites_initiales(self, lignes_panier):
+        self.quantites_initiales = {
+            str(ligne.produit.id): {
+                "quantity": ligne.quantite,
+                "price": float(ligne.produit.prix),
+            }
+            for ligne in lignes_panier
+        }
+        self.save()
+
+    def get_total_initial(self):
+        return sum(
+            data["price"] * data["quantity"]
+            for data in self.get_quantites_initiales().values()
+        )
 
 
 

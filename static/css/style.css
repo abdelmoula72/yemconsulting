@@ -140,3 +140,62 @@ button:hover {
   background-color: #007bff;
   border-color: #007bff;
 }
+
+#suggestion-box {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  background-color: #fff; /* Couleur de fond blanche pour la lisibilité */
+  z-index: 1000;
+  display: none; /* Masqué par défaut */
+}
+
+.suggestion-item {
+  cursor: pointer;
+  padding: 10px;
+  color: #000; /* Texte noir pour une meilleure visibilité */
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0; /* Fond gris clair lors du survol */
+  color: #000; /* Texte noir pour une meilleure visibilité au survol */
+}
+
+.suggestion-item:active {
+  background-color: #007bff; /* Fond bleu pour indiquer la sélection */
+  color: #fff; /* Texte blanc pour le contraste */
+}
+
+/* ligne produit : */
+.tr-produit {vertical-align: middle;}
+
+
+table img { box-shadow:0 0 3px rgba(0,0,0,.15); }
+
+/* Fond du header - déjà mis en inline sur la balise nav, mais on peut extraire */
+.navbar {
+  background-color: #000000 !important;
+}
+
+/* Taille du logo — augmentez si besoin */
+.logo-header {
+  max-height: 150x;   /* passe de 120px à 160px (ou plus) */
+  max-width: 300px;    /* ajuste la largeur maxi si tu ne veux pas que ça déborde */
+  width: auto;         /* conserve les proportions */
+  display: block;
+}
+
+
+/* Si vous voulez un peu d’espace autour */
+.navbar-brand {
+  padding: 0.25rem 0;   /* réduit le padding horizontal inutile */
+  margin-right: 1rem;   /* espace avant le toggler/menu */
+}
+
+.border-dashed {
+  border: 2px dashed #bbb !important;
+}

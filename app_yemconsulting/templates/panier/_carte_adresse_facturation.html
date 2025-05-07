@@ -1,0 +1,14 @@
+<div class="w-100">
+  <div class="adresse-titre">
+    <i class="bi bi-geo-alt-fill"></i>
+    Adresse de facturation
+  </div>
+  <div class="adresse-nom">{{ adresse.prenom }} {{ adresse.nom }}</div>
+  <div class="adresse-ligne">{{ adresse.adresse }}</div>
+  {% if adresse.complement %}
+    <div class="adresse-ligne">{{ adresse.complement }}</div>
+  {% endif %}
+  <div class="adresse-ligne">{{ adresse.code_postal }}</div>
+  <div class="adresse-ligne">{{ adresse.ville }}</div>
+  <div class="adresse-ligne">{{ adresse.pays }}</div>
+</div> 

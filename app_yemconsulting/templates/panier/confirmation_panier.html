@@ -1,0 +1,689 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block extra_css %}
+<style>
+  .adresse-popup-nom {
+    font-size: 1.1em;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 1px;
+  }
+  .adresse-popup-ligne {
+    font-size: 0.95em;
+    display: block;
+    line-height: 1.3;
+    margin-bottom: 0;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+  .list-group {
+    padding: 12px 8px;
+    background: #fff;
+  }
+  .list-group-item {
+    padding: 1.2rem 1.5rem;
+    border-radius: 20px;
+    border: 2px solid #d1d5db;
+    background: #fff;
+    box-sizing: border-box;
+  }
+  .list-group-item:last-child {
+    margin-bottom: 0;
+  }
+  .list-group-item .form-check-input {
+    margin-top: 0.25rem;
+  }
+  .list-group-item > div {
+    flex: 1;
+  }
+  .adresse-popup-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 6px 0 6px 0;
+  }
+  .adresse-item-container {
+    margin-bottom: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .adresse-item-container:last-child {
+    margin-bottom: 0;
+  }
+  .carte-adresse {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 18px 22px 14px 22px;
+    margin: 0 0 12px 0;
+    box-shadow: 0 2px 8px rgba(60, 60, 60, 0.04);
+    min-height: 120px;
+    position: relative;
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .carte-adresse:hover {
+    box-shadow: 0 4px 16px rgba(60, 60, 60, 0.09);
+    border-color: #d1d5db;
+  }
+  .adresse-titre {
+    font-size: 1.08em;
+    color: #222;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .adresse-titre .bi {
+    font-size: 1.25em;
+    color: #888;
+    margin-right: 2px;
+  }
+  .adresse-nom {
+    font-size: 1.01em;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 2px;
+    letter-spacing: 0.01em;
+  }
+  .adresse-ligne {
+    color: #444;
+    font-size: 0.99em;
+    margin-bottom: 1px;
+    letter-spacing: 0.01em;
+  }
+  .adresse-ligne:last-child {
+    margin-bottom: 0;
+  }
+  .adresse-defaults {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    margin-top: 12px;
+  }
+  .adresse-default {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.98em;
+    color: #555;
+    font-weight: 500;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 2px 10px 2px 6px;
+  }
+  .adresse-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    margin-left: 18px;
+    min-width: 110px;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/panier_confirmation.js' %}" defer></script>
+{% endblock %}
+
+{% block title %}Vérifiez votre commande{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 500px">
+  <div class="card shadow-sm p-4">
+    <h2 class="text-center mb-4">Vérifiez votre commande</h2>
+    
+    <!-- Message d'information sur les adresses -->
+    <div class="alert alert-info mb-4" role="alert">
+      <small><i class="bi bi-info-circle-fill me-1"></i> Les adresses sélectionnées ci-dessous seront utilisées uniquement pour cette commande.</small>
+    </div>
+    
+    <form method="post" id="confirm-form">
+      {% csrf_token %}
+      <div class="mb-4">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Article</th>
+              <th class="text-center">Qté</th>
+              <th class="text-end">Prix&nbsp;TTC</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ligne in lignes %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  {% if ligne.image_url %}
+                  <img
+                    src="{{ ligne.image_url }}"
+                    class="prod-mini"
+                    width="48"
+                  />
+                  {% else %}
+                  <img
+                    src="{% static 'default.jpg' %}"
+                    class="prod-mini"
+                    width="48"
+                  />
+                  {% endif %}
+                  <span>{{ ligne.nom }}</span>
+                </div>
+              </td>
+              <td class="text-center">{{ ligne.quantite }}</td>
+              <td class="text-end">{{ ligne.prix }} €</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="mb-4">
+        <h5 class="mb-3 text-center">
+          <i class="bi bi-truck"></i> Délai de livraison prévu
+        </h5>
+        {% for code, opt in livraisons.items %}
+        <div class="form-check mb-2">
+          <input class="form-check-input liv-option" type="radio"
+          name="livraison" id="liv-{{ code }}" value="{{ code }}" data-price="{{ opt.prix }}" {% if code == livraison_select %}checked{% endif %}>
+          <label class="form-check-label w-100" for="liv-{{ code }}">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div class="flex-grow-1">
+                <span class="d-block">{{ opt.libelle }}</span>
+                <small class="text-muted">{{ opt.delai }}</small>
+              </div>
+              <strong class="ps-4">{% if opt.prix == 0 %}Gratuite{% else %}{{ opt.prix|floatformat:2 }} €{% endif %}</strong>
+            </div>
+          </label>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="mb-4">
+        <div class="d-flex justify-content-between">
+          <span>Sous-total :</span>
+          <strong id="sousttc" data-val="{{ sous_total|floatformat:2 }}">{{ sous_total|floatformat:2 }} €</strong>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span>Livraison :</span>
+          <strong id="livPrx">{% if livraison.prix == 0 %}Gratuite{% else %}{{ livraison.prix|floatformat:2 }} €{% endif %}</strong>
+        </div>
+        <div class="d-flex justify-content-between fs-5">
+          <span>Total TTC :</span>
+          <strong id="totttc">{{ total_ttc|floatformat:2 }} €</strong>
+        </div>
+      </div>
+      <div class="mb-4 adresse">
+        <div class="carte-adresse w-100" id="carteAdresseLivraison" {% if adresse_livraison %}data-adresse-id="{{ adresse_livraison.id }}"{% endif %}>
+          <div class="w-100">
+            <div class="adresse-titre">
+              <i class="bi bi-geo-alt-fill"></i>
+              Adresse de livraison
+            </div>
+          <div class="adresse-content" id = "adresse-content-livraison">
+            <div class="adresse-nom">
+              {% if adresse_livraison %}
+                {{ adresse_livraison.prenom }} {{ adresse_livraison.nom }}
+              {% else %}
+                {{ utilisateur.prenom }} {{ utilisateur.nom }}
+              {% endif %}
+            </div>
+            <div class="adresse-ligne">
+              {% if adresse_livraison %}
+                {{ adresse_livraison.adresse }}
+              {% else %}
+                {{ utilisateur.adresse }}
+              {% endif %}
+            </div>
+            {% if adresse_livraison and adresse_livraison.complement %}
+              <div class="adresse-ligne">{{ adresse_livraison.complement }}</div>
+            {% elif utilisateur.complement_adresse %}
+              <div class="adresse-ligne">{{ utilisateur.complement_adresse }}</div>
+            {% endif %}
+            <div class="adresse-ligne">
+              {% if adresse_livraison %}
+                {{ adresse_livraison.code_postal }}
+              {% else %}
+                {{ utilisateur.code_postal }}
+              {% endif %}
+            </div>
+            <div class="adresse-ligne">
+              {% if adresse_livraison %}
+                {{ adresse_livraison.ville }}
+              {% else %}
+                {{ utilisateur.ville }}
+              {% endif %}
+            </div>
+            <div class="adresse-ligne">
+              {% if adresse_livraison %}
+                {{ adresse_livraison.pays }}
+              {% else %}
+                {{ utilisateur.pays }}
+              {% endif %}
+            </div>
+          </div></div>
+          <div class="adresse-actions">
+            <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center btn-modifier-adresse" data-type="shipping" data-bs-toggle="modal" data-bs-target="#modalAdresses" id="btnModifierAdresseLivraison">
+              <i class="bi bi-pencil me-1"></i> Modifier
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Toggle adresse de facturation -->
+      <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" id="toggleAdresseFacturation" {% if toggle_facturation_identique %}checked{% endif %}>
+        <label class="form-check-label" for="toggleAdresseFacturation">
+          L'adresse de facturation est identique à l'adresse de livraison
+        </label>
+      </div>
+      <!-- Adresse de facturation (affichée seulement si toggle désactivé) -->
+      <div class="mb-4 adresse{% if toggle_facturation_identique %} d-none{% endif %}" id="blocAdresseFacturation">
+        <div class="carte-adresse w-100" id="carteAdresseFacturation" {% if adresse_facturation %}data-adresse-id="{{ adresse_facturation.id }}"{% endif %}>
+          <div class="w-100">
+            <div class="adresse-titre">
+              <i class="bi bi-geo-alt-fill"></i>
+              Adresse de facturation
+            </div>
+            <div class="adresse-content" id = "adresse-content-facturation">
+            <div class="adresse-nom">
+              {% if adresse_facturation %}
+                {{ adresse_facturation.prenom }} {{ adresse_facturation.nom }}
+              {% else %}
+                {{ utilisateur.prenom }} {{ utilisateur.nom }}
+              {% endif %}
+            </div>
+            <div class="adresse-ligne">
+              {% if adresse_facturation %}
+                {{ adresse_facturation.adresse }}
+              {% else %}
+                {{ utilisateur.adresse }}
+              {% endif %}
+            </div>
+            {% if adresse_facturation and adresse_facturation.complement %}
+              <div class="adresse-ligne">{{ adresse_facturation.complement }}</div>
+            {% elif utilisateur.complement_adresse %}
+              <div class="adresse-ligne">{{ utilisateur.complement_adresse }}</div>
+            {% endif %}
+            <div class="adresse-ligne">
+              {% if adresse_facturation %}
+                {{ adresse_facturation.code_postal }}
+              {% else %}
+                {{ utilisateur.code_postal }}
+              {% endif %}
+            </div>
+            <div class="adresse-ligne">
+              {% if adresse_facturation %}
+                {{ adresse_facturation.ville }}
+              {% else %}
+                {{ utilisateur.ville }}
+              {% endif %}
+            </div>
+            <div class="adresse-ligne">
+              {% if adresse_facturation %}
+                {{ adresse_facturation.pays }}
+              {% else %}
+                {{ utilisateur.pays }}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+          <div class="adresse-actions">
+            <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center btn-modifier-adresse" data-type="billing" data-bs-toggle="modal" data-bs-target="#modalAdresses" id="btnModifierAdresseFacturation">
+              <i class="bi bi-pencil me-1"></i> Modifier
+            </button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary w-100 mt-2" type="submit" id="btnValiderCommande">
+        Valider votre commande
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal pour la sélection d'adresse -->
+<div class="modal fade" id="modalAdresses" tabindex="-1" aria-labelledby="modalAdressesLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAdressesLabel">Sélectionner une adresse pour cette commande</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info mb-3" role="alert">
+          <small><i class="bi bi-info-circle-fill me-1"></i> Cette sélection s'applique uniquement à cette commande et ne change pas votre adresse par défaut.</small>
+        </div>
+        <div class="ajouter-adresse-btn text-decoration-none text-center mb-3" id="btnOuvrirAjoutAdresse" style="min-height: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border: 2px dashed #6c47ff; background: #faf8ff; color: #6c47ff; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; max-width: 100%;">
+          <div style="font-size: 2rem; line-height: 1; margin-right: 10px;">
+            <svg viewBox="0 0 24 24" width="2em" height="2em" fill="currentColor">
+              <path d="M20.25 11.2h-7.5V3.7a.75.75 0 0 0-1.5 0v7.5h-7.5a.75.75 0 0 0 0 1.5h7.5v7.5a.75.75 0 0 0 1.5 0v-7.5h7.5a.75.75 0 0 0 0-1.5"></path>
+            </svg>
+          </div>
+          <span>Ajouter une adresse</span>
+        </div>
+        <div class="list-group">
+          {% for adresse in adresses %}
+          <div class="adresse-item-container">
+            <label class="list-group-item d-flex gap-2">
+              <input class="form-check-input flex-shrink-0" type="radio" name="adresseLivraison" value="{{ adresse.id }}" {% if adresse.id == adresse_livraison.id %}checked{% endif %}>
+              <div class="adresse-popup-content">
+                <span class="adresse-popup-nom">{{ adresse.prenom }} {{ adresse.nom }}</span>
+                <span class="adresse-popup-ligne">{{ adresse.adresse }}</span>
+                {% if adresse.complement %}
+                <span class="adresse-popup-ligne">{{ adresse.complement }}</span>
+                {% endif %}
+                <span class="adresse-popup-ligne">{{ adresse.code_postal }} {{ adresse.ville }}</span>
+                <span class="adresse-popup-ligne">{{ adresse.pays }}</span>
+              </div>
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" id="validerAdresse">Valider</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal pour ajout d'adresse -->
+<div class="modal fade" id="modalAjoutAdresse" tabindex="-1" aria-labelledby="modalAjoutAdresseLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAjoutAdresseLabel">Ajouter une adresse</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body" id="modalAjoutAdresseBody">
+        <div class="text-center text-muted py-5">Chargement du formulaire...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Gestion de la sélection d'adresse
+    const modalAdresses = document.getElementById("modalAdresses");
+    const validerAdresse = document.getElementById("validerAdresse");
+    const adresseLivraison = document.getElementById("adresseLivraison");
+    const blocAdresseFacturation = document.getElementById("blocAdresseFacturation");
+
+    // Gestion des boutons Modifier pour livraison/facturation
+    let typeAdresseAModifier = "shipping";
+    document.querySelectorAll('.btn-modifier-adresse').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        typeAdresseAModifier = btn.getAttribute('data-type');
+        
+        // Mise à jour du titre de la modal selon le type d'adresse
+        const modalTitle = document.getElementById("modalAdressesLabel");
+        if (typeAdresseAModifier === "shipping") {
+          modalTitle.textContent = "Sélectionner une adresse de livraison pour cette commande";
+          
+          // Récupérer l'ID de l'adresse de livraison actuellement sélectionnée
+          const adresseId = document.getElementById('carteAdresseLivraison').getAttribute('data-adresse-id');
+          
+          // Sélectionner le bouton radio correspondant à cette adresse
+          const radioButtons = document.querySelectorAll('input[name="adresseLivraison"]');
+          radioButtons.forEach(radio => {
+            radio.checked = (radio.value === adresseId);
+          });
+          
+        } else {
+          modalTitle.textContent = "Sélectionner une adresse de facturation pour cette commande";
+          
+          // Récupérer l'ID de l'adresse de facturation actuellement sélectionnée
+          const adresseId = document.getElementById('carteAdresseFacturation').getAttribute('data-adresse-id');
+          
+          // Sélectionner le bouton radio correspondant à cette adresse
+          const radioButtons = document.querySelectorAll('input[name="adresseLivraison"]');
+          radioButtons.forEach(radio => {
+            radio.checked = (radio.value === adresseId);
+          });
+        }
+      });
+    });
+
+    validerAdresse.addEventListener("click", function () {
+      const selectedAdresse = document.querySelector(
+        'input[name="adresseLivraison"]:checked'
+      );
+      if (selectedAdresse) {
+        const adresseId = selectedAdresse.value;
+        let url = "/update-shipping-address/" + adresseId + "/";
+        if (typeAdresseAModifier === "billing") {
+          url = "/update-billing-address/" + adresseId + "/";
+        }
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Erreur lors de la mise à jour de l'adresse");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              if (typeAdresseAModifier === "shipping") {
+                // Mise à jour de l'adresse de livraison
+                const adresseContent = document.getElementById('adresse-content-livraison');
+                if (!adresseContent) {
+                  console.error("Élément adresse-content-livraison introuvable");
+                  return;
+                }
+                
+                // Mettre à jour l'attribut data-adresse-id
+                const carteAdresseLivraison = document.getElementById('carteAdresseLivraison');
+                if (carteAdresseLivraison) {
+                  carteAdresseLivraison.setAttribute('data-adresse-id', adresseId);
+                }
+                
+                // Créer le contenu HTML pour l'adresse
+                let htmlContent = `
+                  <div class="adresse-nom">${data.prenom || ''} ${data.nom || ''}</div>
+                  <div class="adresse-ligne">${data.adresse || ''}</div>`;
+                  
+                // Ajouter le complément d'adresse s'il existe
+                if (data.complement) {
+                  htmlContent += `<div class="adresse-ligne">${data.complement}</div>`;
+                }
+                
+                // Ajouter le reste des informations
+                htmlContent += `
+                  <div class="adresse-ligne">${data.code_postal || ''}</div>
+                  <div class="adresse-ligne">${data.ville || ''}</div>
+                  <div class="adresse-ligne">${data.pays || ''}</div>`;
+                  
+                // Mettre à jour le contenu HTML
+                adresseContent.innerHTML = htmlContent;
+               
+                // Si le toggle est activé, mettre automatiquement à jour l'adresse de facturation
+                const toggleAdresseFacturation = document.getElementById("toggleAdresseFacturation");
+                if (toggleAdresseFacturation && toggleAdresseFacturation.checked) {
+                  // Appeler la route pour mettre à jour l'adresse de facturation avec la même adresse
+                  fetch("/update-billing-address/" + adresseId + "/", {
+                    method: "POST",
+                    headers: {
+                      "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                    },
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    console.log("Adresse de facturation mise à jour pour cette commande uniquement");
+                   
+                    // Mettre à jour l'affichage de l'adresse de facturation avec les données de l'adresse de livraison
+                    const adresseFacturationContent = document.getElementById('adresse-content-facturation');
+                    if (adresseFacturationContent) {
+                      adresseFacturationContent.innerHTML = htmlContent;
+                    }
+                  })
+                  .catch(error => {
+                    console.error("Erreur lors de la mise à jour de l'adresse pour cette commande:", error);
+                  });
+                }
+              } else {
+                // Mise à jour de l'adresse de facturation
+                const adresseContent = document.getElementById('adresse-content-facturation');
+                if (!adresseContent) {
+                  console.error("Élément adresse-content-facturation introuvable");
+                  return;
+                }
+                
+                // Mettre à jour l'attribut data-adresse-id
+                const carteAdresseFacturation = document.getElementById('carteAdresseFacturation');
+                if (carteAdresseFacturation) {
+                  carteAdresseFacturation.setAttribute('data-adresse-id', adresseId);
+                }
+                
+                // Créer le contenu HTML pour l'adresse
+                let htmlContent = `
+                  <div class="adresse-nom">${data.prenom || ''} ${data.nom || ''}</div>
+                  <div class="adresse-ligne">${data.adresse || ''}</div>`;
+                  
+                // Ajouter le complément d'adresse s'il existe
+                if (data.complement) {
+                  htmlContent += `<div class="adresse-ligne">${data.complement}</div>`;
+                }
+                
+                // Ajouter le reste des informations
+                htmlContent += `
+                  <div class="adresse-ligne">${data.code_postal || ''}</div>
+                  <div class="adresse-ligne">${data.ville || ''}</div>
+                  <div class="adresse-ligne">${data.pays || ''}</div>`;
+                  
+                // Mettre à jour le contenu HTML
+                adresseContent.innerHTML = htmlContent;
+              }
+              // Fermer la modal
+              try {
+                const modalElement = document.getElementById('modalAdresses');
+                if (modalElement) {
+                  const modal = bootstrap.Modal.getInstance(modalElement);
+                  if (modal) {
+                    modal.hide();
+                  }
+                }
+              } catch (error) {
+                console.error("Erreur lors de la fermeture de la modal:", error);
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Erreur:", error);
+            alert(
+              "Une erreur est survenue lors de la mise à jour de l'adresse"
+            );
+          });
+      }
+    });
+
+    // Gestion ouverture modale et chargement du formulaire
+    const btnOuvrirAjoutAdresse = document.getElementById("btnOuvrirAjoutAdresse");
+    if (btnOuvrirAjoutAdresse) {
+      btnOuvrirAjoutAdresse.addEventListener("click", function () {
+        window.location.href = "/mes-adresses/?edit=shipping";
+      });
+    }
+
+    // Toggle adresse de facturation
+    const toggleAdresseFacturation = document.getElementById("toggleAdresseFacturation");
+    if (toggleAdresseFacturation && blocAdresseFacturation) {
+      toggleAdresseFacturation.addEventListener("change", function () {
+        if (this.checked) {
+          blocAdresseFacturation.classList.add("d-none");
+          
+          // Quand le toggle est activé, définir l'adresse de facturation identique à l'adresse de livraison
+          const adresseId = document.getElementById('carteAdresseLivraison').getAttribute('data-adresse-id');
+          if (adresseId) {
+            // Mettre à jour la session avec l'ID de l'adresse de livraison comme adresse de facturation
+            fetch("/update-billing-address/" + adresseId + "/", {
+              method: "POST",
+              headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+              },
+            })
+            .then(response => response.json())
+            .then(data => {
+              console.log("Adresse de facturation temporairement définie comme identique à l'adresse de livraison pour cette commande");
+              
+              // Mettre à jour l'affichage de l'adresse de facturation avec les données de l'adresse de livraison
+              const adresseLivraisonContent = document.getElementById('adresse-content-livraison');
+              const adresseFacturationContent = document.getElementById('adresse-content-facturation');
+              if (adresseLivraisonContent && adresseFacturationContent) {
+                adresseFacturationContent.innerHTML = adresseLivraisonContent.innerHTML;
+              }
+            })
+            .catch(error => {
+              console.error("Erreur lors de la mise à jour temporaire de l'adresse de facturation:", error);
+            });
+          }
+        } else {
+          blocAdresseFacturation.classList.remove("d-none");
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+  .adresse-popup-nom {
+    font-size: 1.1em;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    max-width: 220px;
+  }
+  .adresse-popup-ligne {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    max-width: 220px;
+  }
+  .adresse-livraison-bloc {
+    max-width: 320px;
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+  }
+  .adresse-livraison-nom {
+    font-size: 1.2em;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    max-width: 100%;
+  }
+  .adresse-livraison-ligne {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    max-width: 100%;
+  }
+  /* Style pour la croix de fermeture du modal Bootstrap */
+  .modal-header .btn-close:hover,
+  .modal-header .btn-close:focus {
+    filter: none;
+    background-color: #e9ecef !important;
+    border-radius: 50%;
+    opacity: 1;
+  }
+</style>
+{% endblock content %}
