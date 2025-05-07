@@ -22,7 +22,7 @@
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">{{ produit.nom }}</h5>
                             <p class="card-text text-secondary">Prix : <strong>{{ produit.prix }} €</strong></p>
-                            {% if user.is_staff %}
+                            {% if user.is_admin %}
                                 <p class="text-muted">Stock : {{ produit.stock }} articles</p>
                             {% endif %}
                             <div class="mt-auto">

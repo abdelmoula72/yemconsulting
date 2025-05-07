@@ -39,39 +39,22 @@ class InscriptionForm(UserCreationForm):
 class ModifierProfilForm(forms.ModelForm):
     class Meta:
         model = Utilisateur
-        fields = [
-            'prenom', 'nom', 'email', 'societe', 'adresse', 'complement_adresse',
-            'code_postal', 'ville', 'pays'
-        ]
+        fields = ['prenom', 'nom', 'email']
+        labels = {
+            'prenom': 'Prénom',
+            'nom': 'Nom',
+            'email': 'Email',
+        }
 
 class DonneesPersonnellesForm(forms.ModelForm):
     class Meta:
         model = Utilisateur
-        fields = ['prenom', 'nom', 'email', 'telephone', 'date_naissance']
-        widgets = {
-            'date_naissance': forms.DateInput(attrs={'type': 'date'})
+        fields = ['prenom', 'nom', 'email']
+        labels = {
+            'prenom': 'Prénom',
+            'nom': 'Nom',
+            'email': 'Email',
         }
-
-
-
-    class Meta:
-        model = Utilisateur
-        fields = [
-            'adresse', 'complement_adresse', 'code_postal', 'ville', 'pays',
-            'adresse_facturation', 'complement_adresse_facturation',
-            'code_postal_facturation', 'ville_facturation', 'pays_facturation',
-        ]
-
-    def clean(self):
-        cleaned = super().clean()
-        if cleaned.get('adresse_facturation_identique'):
-            cleaned['adresse_facturation'] = cleaned.get('adresse')
-            cleaned['complement_adresse_facturation'] = cleaned.get('complement_adresse')
-            cleaned['code_postal_facturation'] = cleaned.get('code_postal')
-            cleaned['ville_facturation'] = cleaned.get('ville')
-            cleaned['pays_facturation'] = cleaned.get('pays')
-        return cleaned
-
 
 class AdresseForm(forms.ModelForm):
     prenom = forms.CharField(label="Prénom", max_length=100, required=True)

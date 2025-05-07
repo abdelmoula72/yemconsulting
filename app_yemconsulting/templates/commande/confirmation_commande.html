@@ -77,6 +77,9 @@
 
     <div class="mt-4 text-center">
         <a href="{% url 'historique_commandes' %}" class="btn btn-secondary me-2">Retour à l'historique des commandes</a>
+        <a href="{% url 'generer_facture_pdf' commande.id %}" class="btn btn-primary me-2">
+            <i class="bi bi-file-earmark-pdf"></i> Télécharger la facture
+        </a>
         <a href="{% url 'liste_produits' %}" class="btn btn-primary">Retour aux produits</a>
     </div>
     

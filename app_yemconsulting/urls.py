@@ -33,6 +33,7 @@ urlpatterns = [
     path('confirmation_commande/<int:commande_id>/', views.confirmation_commande, name='confirmation_commande'),
     path('annuler_commande/<int:commande_id>/', views.annuler_commande, name='annuler_commande'),
     path('commandes/', views.historique_commandes, name='historique_commandes'),
+    path('facture_pdf/<int:commande_id>/', views.generer_facture_pdf, name='generer_facture_pdf'),
     path('update-shipping-address/<int:adresse_id>/', views.update_shipping_address, name='update_shipping_address'),
 
     # Authentification et profil

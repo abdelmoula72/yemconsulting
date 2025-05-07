@@ -8,10 +8,10 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+from .utils.decorators import admin_required
 from django.db import transaction
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, FileResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -32,6 +32,14 @@ import mimetypes
 from .models import Panier, LignePanier, Commande
 from django.templatetags.static import static
 from django.contrib.auth.forms import PasswordChangeForm
+import io
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.lib import utils
+from reportlab.pdfgen import canvas
 
 
 
@@ -614,6 +622,152 @@ def passer_commande(request):
     html_body = render_to_string("emails/confirmation_commande.html", ctx)
     text_body = render_to_string("emails/confirmation_commande.txt", ctx)
 
+    # ────────── envoi du mail avec facture en pièce jointe ──────────
+    # Générer le PDF de la facture pour l'attacher au mail
+    # Créer un tampon en mémoire pour le PDF
+    pdf_buffer = io.BytesIO()
+    
+    # Créer le document PDF
+    doc = SimpleDocTemplate(
+        pdf_buffer,
+        pagesize=A4,
+        rightMargin=72,
+        leftMargin=72,
+        topMargin=72,
+        bottomMargin=72,
+        title=f"Facture {commande.id}"
+    )
+    
+    # Conteneur pour les éléments du PDF
+    elements = []
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='Center', alignment=1))
+    styles.add(ParagraphStyle(
+        name='InvoiceTitle', 
+        parent=styles['Heading1'], 
+        alignment=1,
+        spaceAfter=20
+    ))
+    
+    # Classe personnalisée pour positionner le logo en haut à gauche sans tenir compte des marges
+    class LogoCanvas(canvas.Canvas):
+        def __init__(self, *args, **kwargs):
+            canvas.Canvas.__init__(self, *args, **kwargs)
+            self.logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo-header1.jpg')
+            
+        def showPage(self):
+            if os.path.exists(self.logo_path):
+                self.saveState()
+                img = utils.ImageReader(self.logo_path)
+                # Positionner le logo dans le coin supérieur gauche
+                self.drawImage(img, 20, A4[1] - 100, width=180, height=96)
+                self.restoreState()
+            canvas.Canvas.showPage(self)
+    
+    # Ajouter le logo dans l'en-tête (maintenant géré par le canvas personnalisé)
+    # Le logo sera ajouté par la classe LogoCanvas, on n'a plus besoin de l'ajouter ici
+    
+    # Titre
+    elements.append(Paragraph(f"FACTURE N° {commande.id}", styles['InvoiceTitle']))
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Date et informations
+    elements.append(Paragraph(f"Date: {commande.date_commande.strftime('%d/%m/%Y')}", styles['Normal']))
+    elements.append(Paragraph(f"Référence: CMD-{commande.id}", styles['Normal']))
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Informations client et adresses
+    elements.append(Paragraph("Client:", styles['Heading3']))
+    elements.append(Paragraph(f"{commande.utilisateur.prenom} {commande.utilisateur.nom}", styles['Normal']))
+    elements.append(Paragraph(f"Email: {commande.utilisateur.email}", styles['Normal']))
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Adresse de facturation
+    elements.append(Paragraph("Adresse de facturation:", styles['Heading4']))
+    elements.append(Paragraph(f"{adresse_facturation_json.get('prenom')} {adresse_facturation_json.get('nom')}", styles['Normal']))
+    elements.append(Paragraph(f"{adresse_facturation_json.get('adresse')}", styles['Normal']))
+    if adresse_facturation_json.get('complement'):
+        elements.append(Paragraph(f"{adresse_facturation_json.get('complement')}", styles['Normal']))
+    elements.append(Paragraph(f"{adresse_facturation_json.get('code_postal')} {adresse_facturation_json.get('ville')}", styles['Normal']))
+    elements.append(Paragraph(f"{adresse_facturation_json.get('pays')}", styles['Normal']))
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Adresse de livraison
+    elements.append(Paragraph("Adresse de livraison:", styles['Heading4']))
+    elements.append(Paragraph(f"{adresse_livraison_json.get('prenom')} {adresse_livraison_json.get('nom')}", styles['Normal']))
+    elements.append(Paragraph(f"{adresse_livraison_json.get('adresse')}", styles['Normal']))
+    if adresse_livraison_json.get('complement'):
+        elements.append(Paragraph(f"{adresse_livraison_json.get('complement')}", styles['Normal']))
+    elements.append(Paragraph(f"{adresse_livraison_json.get('code_postal')} {adresse_livraison_json.get('ville')}", styles['Normal']))
+    elements.append(Paragraph(f"{adresse_livraison_json.get('pays')}", styles['Normal']))
+    elements.append(Spacer(1, 1*cm))
+    
+    # Détails des produits
+    # En-têtes
+    data = [["Produit", "Quantité", "Prix unitaire", "Total"]]
+    
+    # Récupérer les détails des produits
+    for ligne in lignes_panier:
+        produit = ligne.produit
+        prix = produit.prix
+        quantite = ligne.quantite
+        sous_total = prix * quantite
+        
+        data.append([
+            produit.nom,
+            str(quantite),
+            f"{prix:.2f} €",
+            f"{sous_total:.2f} €"
+        ])
+    
+    # Créer la table
+    table = Table(data, colWidths=[8*cm, 2*cm, 3*cm, 3*cm])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
+        ('ALIGN', (2, 1), (3, -1), 'RIGHT'),
+    ]))
+    
+    elements.append(table)
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Totaux
+    data_totaux = [
+        ["Sous-total", f"{total_ttc - livraison_prix:.2f} €"],
+        ["Livraison", f"{livraison_prix:.2f} €" if livraison_prix > 0 else "Gratuite"],
+        ["Total TTC", f"{total_ttc:.2f} €"],
+    ]
+    
+    table_totaux = Table(data_totaux, colWidths=[12*cm, 4*cm])
+    table_totaux.setStyle(TableStyle([
+        ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+        ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+        ('LINEABOVE', (0, -1), (-1, -1), 1, colors.black),
+        ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
+    ]))
+    
+    elements.append(table_totaux)
+    
+    # Notes
+    elements.append(Spacer(1, 1*cm))
+    elements.append(Paragraph("Merci pour votre achat chez YemTech Pro !", styles['Center']))
+    elements.append(Paragraph("Cette facture a été générée automatiquement.", styles['Center']))
+    
+    # Construire le PDF avec le canvas personnalisé
+    doc.build(elements, canvasmaker=LogoCanvas)
+    
+    # Positionner le curseur au début du buffer
+    pdf_buffer.seek(0)
+    
     # ────────── mail + miniatures inline ──────────
     mail = EmailMultiAlternatives(
         subject="Confirmation de votre commande",
@@ -622,6 +776,9 @@ def passer_commande(request):
         to=[utilisateur.email],
     )
     mail.attach_alternative(html_body, "text/html")
+
+    # Attacher la facture en pièce jointe
+    mail.attach(f"facture_{commande.id}.pdf", pdf_buffer.getvalue(), 'application/pdf')
 
     for cid, path in images_a_attacher:
         try:
@@ -912,7 +1069,7 @@ def editer_adresse(request, pk=None, first_address=False):
 
 
 
-@staff_member_required
+@admin_required
 def liste_utilisateurs(request):
     utilisateurs = Utilisateur.objects.all()
     return render(request, 'admin/liste_utilisateurs.html', {'utilisateurs': utilisateurs})
@@ -1135,6 +1292,163 @@ def update_billing_address(request, adresse_id):
         'ville': adresse.ville,
         'pays': adresse.pays
     })
+
+@login_required
+def generer_facture_pdf(request, commande_id):
+    # Récupérer la commande
+    commande = get_object_or_404(Commande, id=commande_id, utilisateur=request.user)
+    
+    # Créer un tampon en mémoire pour le PDF
+    buffer = io.BytesIO()
+    
+    # Créer le document PDF
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=72,
+        leftMargin=72,
+        topMargin=72,
+        bottomMargin=72,
+        title=f"Facture {commande.id}"
+    )
+    
+    # Conteneur pour les éléments du PDF
+    elements = []
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='Center', alignment=1))
+    styles.add(ParagraphStyle(
+        name='InvoiceTitle', 
+        parent=styles['Heading1'], 
+        alignment=1,
+        spaceAfter=20
+    ))
+    
+    # Classe personnalisée pour positionner le logo en haut à gauche sans tenir compte des marges
+    class LogoCanvas(canvas.Canvas):
+        def __init__(self, *args, **kwargs):
+            canvas.Canvas.__init__(self, *args, **kwargs)
+            self.logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo-header1.jpg')
+            
+        def showPage(self):
+            if os.path.exists(self.logo_path):
+                self.saveState()
+                img = utils.ImageReader(self.logo_path)
+                # Positionner le logo dans le coin supérieur gauche
+                self.drawImage(img, 20, A4[1] - 100, width=180, height=96)
+                self.restoreState()
+            canvas.Canvas.showPage(self)
+    
+    # Ajouter le logo dans l'en-tête (maintenant géré par le canvas personnalisé)
+    # Le logo sera ajouté par la classe LogoCanvas, on n'a plus besoin de l'ajouter ici
+    
+    # Titre
+    elements.append(Paragraph(f"FACTURE N° {commande.id}", styles['InvoiceTitle']))
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Date et informations
+    elements.append(Paragraph(f"Date: {commande.date_commande.strftime('%d/%m/%Y')}", styles['Normal']))
+    elements.append(Paragraph(f"Référence: CMD-{commande.id}", styles['Normal']))
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Informations client et adresses
+    elements.append(Paragraph("Client:", styles['Heading3']))
+    elements.append(Paragraph(f"{commande.utilisateur.prenom} {commande.utilisateur.nom}", styles['Normal']))
+    elements.append(Paragraph(f"Email: {commande.utilisateur.email}", styles['Normal']))
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Adresse de facturation
+    elements.append(Paragraph("Adresse de facturation:", styles['Heading4']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.get('prenom')} {commande.adresse_facturation.get('nom')}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.get('adresse')}", styles['Normal']))
+    if commande.adresse_facturation.get('complement'):
+        elements.append(Paragraph(f"{commande.adresse_facturation.get('complement')}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.get('code_postal')} {commande.adresse_facturation.get('ville')}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.get('pays')}", styles['Normal']))
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Adresse de livraison
+    elements.append(Paragraph("Adresse de livraison:", styles['Heading4']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.get('prenom')} {commande.adresse_livraison.get('nom')}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.get('adresse')}", styles['Normal']))
+    if commande.adresse_livraison.get('complement'):
+        elements.append(Paragraph(f"{commande.adresse_livraison.get('complement')}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.get('code_postal')} {commande.adresse_livraison.get('ville')}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.get('pays')}", styles['Normal']))
+    elements.append(Spacer(1, 1*cm))
+    
+    # Détails des produits
+    # En-têtes
+    data = [["Produit", "Quantité", "Prix unitaire", "Total"]]
+    
+    # Récupérer les détails des produits
+    total = Decimal('0.00')
+    for produit_id, item_data in commande.get_quantites_initiales().items():
+        produit = get_object_or_404(Produit, id=produit_id)
+        quantite = Decimal(str(item_data["quantity"]))
+        prix = Decimal(str(item_data["price"]))
+        sous_total = prix * quantite
+        
+        data.append([
+            produit.nom,
+            str(quantite),
+            f"{prix:.2f} €",
+            f"{sous_total:.2f} €"
+        ])
+        
+        total += sous_total
+    
+    # Créer la table
+    table = Table(data, colWidths=[8*cm, 2*cm, 3*cm, 3*cm])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
+        ('ALIGN', (2, 1), (3, -1), 'RIGHT'),
+    ]))
+    
+    elements.append(table)
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Totaux
+    total_avec_livraison = total + commande.livraison
+    
+    data_totaux = [
+        ["Sous-total", f"{total:.2f} €"],
+        ["Livraison", f"{commande.livraison:.2f} €" if commande.livraison > 0 else "Gratuite"],
+        ["Total TTC", f"{total_avec_livraison:.2f} €"],
+    ]
+    
+    table_totaux = Table(data_totaux, colWidths=[12*cm, 4*cm])
+    table_totaux.setStyle(TableStyle([
+        ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+        ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+        ('LINEABOVE', (0, -1), (-1, -1), 1, colors.black),
+        ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
+    ]))
+    
+    elements.append(table_totaux)
+    
+    # Notes
+    elements.append(Spacer(1, 1*cm))
+    elements.append(Paragraph("Merci pour votre achat chez YemTech Pro !", styles['Center']))
+    elements.append(Paragraph("Cette facture a été générée automatiquement.", styles['Center']))
+    
+    # Construire le PDF avec le canvas personnalisé
+    doc.build(elements, canvasmaker=LogoCanvas)
+    
+    # Positionner le curseur au début du buffer
+    buffer.seek(0)
+    
+    # Retourner le PDF comme une réponse à télécharger
+    return FileResponse(buffer, as_attachment=True, filename=f"facture_{commande.id}.pdf")
 
 
 

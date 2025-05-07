@@ -32,30 +32,21 @@ class UtilisateurManager(BaseUserManager):
 
 class Utilisateur(AbstractBaseUser, PermissionsMixin):
     prenom = models.CharField(max_length=100, blank=True)
-    nom    = models.CharField(max_length=100)
-    # ← ici, il faut absolument ce champ :
-    email  = models.EmailField('Adresse email', unique=True)
-    societe = models.CharField(max_length=255, blank=True)
-    # Tes autres champs…
-    telephone                     = models.CharField("Téléphone", max_length=20, blank=True)
-    date_naissance                = models.DateField("Date de naissance", null=True, blank=True)
-    adresse                       = models.CharField(max_length=255, blank=True)
-    complement_adresse            = models.CharField(max_length=255, blank=True)
-    code_postal                   = models.CharField(max_length=20, blank=True)
-    ville                         = models.CharField(max_length=100, blank=True)
-    pays                          = models.CharField(max_length=100, default="Belgique")
-    # … et tous les champs facturation que tu as ajoutés …
-
-    adresse_facturation            = models.CharField("Adresse facturation",     max_length=255, blank=True)
-    complement_adresse_facturation = models.CharField("Complément facturation",   max_length=255, blank=True)
-    code_postal_facturation        = models.CharField("Code postal facturation",  max_length=20,  blank=True)
-    ville_facturation              = models.CharField("Ville facturation",        max_length=100, blank=True)
-    pays_facturation               = models.CharField("Pays facturation",        max_length=100, default="Belgique")
+    nom = models.CharField(max_length=100)
+    email = models.EmailField('Adresse email', unique=True)
+    is_admin = models.BooleanField(default=False)
 
     objects = UtilisateurManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['nom']
+
+    def __str__(self):
+        return self.email
+
+    @property
+    def is_staff(self):
+        return self.is_admin
 
 
 
