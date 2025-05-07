@@ -39,10 +39,14 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(redirect_authenticated_user=True), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('inscription/', views.inscription, name='inscription'),
-    path('compte/adresses/', views.mes_adresses,             name='mes_adresses'),
-    path('compte/adresses/supprimer/<int:adresse_id>/', views.supprimer_adresse, name='supprimer_adresse'),
-    path('compte/', views.mon_compte, name='mon_compte'),
     
+    # Gestion du compte et des adresses
+    path('mon-compte/', views.mon_compte, name='mon_compte'),
+    path('mes-adresses/', views.mes_adresses, name='mes_adresses'),
+    path('adresse/editer/<int:pk>/', views.editer_adresse, name='editer_adresse'),
+    path('adresse/supprimer/<int:adresse_id>/', views.supprimer_adresse, name='supprimer_adresse'),
+    path('adresse/definir-livraison/<int:pk>/', views.definir_adresse_livraison, name='definir_adresse_livraison'),
+    path('adresse/definir-facturation/<int:pk>/', views.definir_adresse_facturation, name='definir_adresse_facturation'),
 
     # Administration
     path('admin/utilisateurs/', views.liste_utilisateurs, name='liste_utilisateurs'),
@@ -54,6 +58,8 @@ urlpatterns = [
 
     # Test
     path('test-template/', views.test_template, name='test_template'),
+
+    path('update-billing-address/<int:adresse_id>/', views.update_billing_address, name='update_billing_address'),
 ]
 
 

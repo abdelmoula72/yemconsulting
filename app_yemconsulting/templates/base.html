@@ -38,13 +38,22 @@
           <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuUser">
-            <li><a class="dropdown-header" href="{% url 'mon_compte' %}">Mon compte</a></li>
-            <li><a class="dropdown-item" href="{% url 'mes_adresses' %}">Mes adresses</a></li>
+            <li><a class="dropdown-item" href="{% url 'mon_compte' %}">
+                <i class="bi bi-person me-2"></i>Mon compte
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'mes_adresses' %}">
+                <i class="bi bi-geo-alt me-2"></i>Mes adresses
+            </a></li>
+            <li><a class="dropdown-item" href="{% url 'historique_commandes' %}">
+                <i class="bi bi-clock-history me-2"></i>Mes commandes
+            </a></li>
             <li><hr class="dropdown-divider"></li>
             <li>
               <form action="{% url 'logout' %}" method="post" class="m-0">
                 {% csrf_token %}
-                <button class="dropdown-item text-danger">Déconnexion</button>
+                <button class="dropdown-item text-danger">
+                    <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
+                </button>
               </form>
             </li>
           </ul>

@@ -12,6 +12,29 @@
         <p><strong>Statut :</strong> {{ commande.statut }}</p>
     </div>
 
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h3 class="mb-3">Adresse de livraison</h3>
+            <address>
+                {{ adresse_livraison.prenom }} {{ adresse_livraison.nom }}<br>
+                {{ adresse_livraison.adresse }}<br>
+                {% if adresse_livraison.complement %}{{ adresse_livraison.complement }}<br>{% endif %}
+                {{ adresse_livraison.code_postal }} {{ adresse_livraison.ville }}<br>
+                {{ adresse_livraison.pays }}
+            </address>
+        </div>
+        <div class="col-md-6">
+            <h3 class="mb-3">Adresse de facturation</h3>
+            <address>
+                {{ adresse_facturation.prenom }} {{ adresse_facturation.nom }}<br>
+                {{ adresse_facturation.adresse }}<br>
+                {% if adresse_facturation.complement %}{{ adresse_facturation.complement }}<br>{% endif %}
+                {{ adresse_facturation.code_postal }} {{ adresse_facturation.ville }}<br>
+                {{ adresse_facturation.pays }}
+            </address>
+        </div>
+    </div>
+
     <h2 class="mb-3">Détails de la commande</h2>
     {% if lignes_commande %}
     <table class="table table-bordered">
@@ -36,19 +59,20 @@
                 </div>
               </td>
               <td class="align-middle">{{ ligne.quantite }}</td>
-              <td class="align-middle">{{ ligne.prix }} €</td>
-              <td class="align-middle">{{ ligne.sous_total }} €</td>
+              <td class="align-middle">{{ ligne.prix|floatformat:2 }} €</td>
+              <td class="align-middle">{{ ligne.sous_total|floatformat:2 }} €</td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
-      <p class="text-end"><strong>Total :</strong> {{ total }} €</p>
       
-      
-    <p class="text-end"><strong>Total :</strong> {{ total }} €</p>
-      
+      <div class="text-end">
+        <p><strong>Sous-total :</strong> {{ total|floatformat:2 }} €</p>
+        <p><strong>Livraison :</strong> {% if commande.livraison == 0 %}Gratuite{% else %}{{ commande.livraison|floatformat:2 }} €{% endif %}</p>
+        <p class="fs-5"><strong>Total TTC :</strong> {{ total_avec_livraison|floatformat:2 }} €</p>
+      </div>
     {% else %}
-        <p class="text-center text-muted">Aucun détail disponible pour cette commande.</p>
+      <p class="text-center">Aucun produit dans cette commande.</p>
     {% endif %}
 
     <div class="mt-4 text-center">

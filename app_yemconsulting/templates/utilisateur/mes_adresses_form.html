@@ -5,184 +5,101 @@
 {% block title %}Adresse{% endblock %}
 
 {% block content %}
-<style>
-  .form-carte {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    padding: 32px 28px 24px 28px;
-    max-width: 520px;
-    margin: 40px auto 0 auto;
-  }
-  .form-carte h2 {
-    text-align: center;
-    font-size: 1.6rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-  }
-  .form-label {
-    font-weight: 600;
-    margin-bottom: 0.3rem;
-    display: flex;
-    align-items: center;
-    gap: 0.3em;
-  }
-  .form-label .required-star {
-    color: #e53935;
-    font-size: 1.1em;
-    margin-left: 2px;
-  }
-  .form-control {
-    border-radius: 6px;
-    font-size: 1.08rem;
-    padding: 0.6rem 0.9rem;
-  }
-  .form-control:required:valid {
-    border-color: #4caf50;
-    box-shadow: 0 0 0 1.5px #b9f6ca;
-  }
-  .form-control:required:invalid {
-    border-color: #e53935;
-    box-shadow: 0 0 0 1.5px #ffcdd2;
-  }
-  .form-control.is-invalid {
-    border-color: #e53935 !important;
-    box-shadow: 0 0 0 1.5px #ffcdd2 !important;
-  }
-  .invalid-feedback.d-block {
-    color: #e53935;
-    font-size: 0.97em;
-    margin-top: 2px;
-  }
-  .form-check {
-    margin-bottom: 1rem;
-  }
-  .form-check-label {
-    font-weight: 400;
-    margin-left: 0.4rem;
-  }
-  .btn-primary, .btn-secondary {
-    min-width: 120px;
-    font-size: 1.08rem;
-    border-radius: 6px;
-    padding: 0.6rem 1.2rem;
-  }
-  .btn-primary {
-    background: #6c47ff;
-    border-color: #6c47ff;
-  }
-  .btn-primary:hover {
-    background: #5436c7;
-    border-color: #5436c7;
-  }
-  .btn-secondary {
-    background: #f3f3f3;
-    color: #333;
-    border: none;
-  }
-  .btn-secondary:hover {
-    background: #e0e0e0;
-  }
-  .form-actions {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    margin-top: 2.2rem;
-  }
-</style>
-<div class="form-carte">
-  <h2>{% if adresse.pk %}Modifier l'adresse{% else %}Ajouter une adresse{% endif %}</h2>
-  <form method="post" class="needs-validation" novalidate autocomplete="on">
-    {% csrf_token %}
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="{{ form.prenom.id_for_label }}" class="form-label">
-          Prénom
+<div class="container mt-5" style="max-width: 500px;">
+  <div class="card shadow-sm p-4">
+    <h2 class="text-center mb-4">{% if adresse.pk %}Modifier l'adresse{% else %}Ajouter une adresse{% endif %}</h2>
+    <form method="post" class="needs-validation" novalidate autocomplete="on">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="{{ form.prenom.id_for_label }}" class="form-label">
+            Prénom
+            <span class="required-star">*</span>
+          </label>
+          {{ form.prenom|add_class:'form-control'|add_class:is_invalid_prenom|attr:'placeholder:ex: Jean' }}
+          {% if form.prenom.errors %}
+            <div class="invalid-feedback d-block">{{ form.prenom.errors }}</div>
+          {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="{{ form.nom.id_for_label }}" class="form-label">
+            Nom
+            <span class="required-star">*</span>
+          </label>
+          {{ form.nom|add_class:'form-control'|add_class:is_invalid_nom|attr:'placeholder:ex: Dupont' }}
+          {% if form.nom.errors %}
+            <div class="invalid-feedback d-block">{{ form.nom.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="{{ form.adresse.id_for_label }}" class="form-label">
+          Adresse
           <span class="required-star">*</span>
         </label>
-        {{ form.prenom|add_class:'form-control'|add_class:is_invalid_prenom|attr:'placeholder:ex: Jean' }}
-        {% if form.prenom.errors %}
-          <div class="invalid-feedback d-block">{{ form.prenom.errors }}</div>
+        {{ form.adresse|add_class:'form-control'|add_class:is_invalid_adresse|attr:'placeholder:Rue et numéro' }}
+        {% if form.adresse.errors %}
+          <div class="invalid-feedback d-block">{{ form.adresse.errors }}</div>
         {% endif %}
       </div>
-      <div class="col-md-6 mb-3">
-        <label for="{{ form.nom.id_for_label }}" class="form-label">
-          Nom
+      <div class="mb-3">
+        <label for="{{ form.complement.id_for_label }}" class="form-label">
+          Complément d'adresse
+        </label>
+        {{ form.complement|add_class:'form-control'|add_class:is_invalid_complement|attr:'placeholder:Complément (facultatif)' }}
+        {% if form.complement.errors %}
+          <div class="invalid-feedback d-block">{{ form.complement.errors }}</div>
+        {% endif %}
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="{{ form.code_postal.id_for_label }}" class="form-label">
+            Code postal
+            <span class="required-star">*</span>
+          </label>
+          {{ form.code_postal|add_class:'form-control'|add_class:is_invalid_code_postal|attr:'placeholder:ex: 1000' }}
+          {% if form.code_postal.errors %}
+            <div class="invalid-feedback d-block">{{ form.code_postal.errors }}</div>
+          {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="{{ form.ville.id_for_label }}" class="form-label">
+            Ville
+            <span class="required-star">*</span>
+          </label>
+          {{ form.ville|add_class:'form-control'|add_class:is_invalid_ville|attr:'placeholder:ex: Bruxelles' }}
+          {% if form.ville.errors %}
+            <div class="invalid-feedback d-block">{{ form.ville.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="{{ form.pays.id_for_label }}" class="form-label">
+          Pays
           <span class="required-star">*</span>
         </label>
-        {{ form.nom|add_class:'form-control'|add_class:is_invalid_nom|attr:'placeholder:ex: Dupont' }}
-        {% if form.nom.errors %}
-          <div class="invalid-feedback d-block">{{ form.nom.errors }}</div>
+        {{ form.pays|add_class:'form-control'|add_class:is_invalid_pays|attr:'placeholder:ex: Belgique' }}
+        {% if form.pays.errors %}
+          <div class="invalid-feedback d-block">{{ form.pays.errors }}</div>
         {% endif %}
       </div>
-    </div>
-    <div class="mb-3">
-      <label for="{{ form.adresse.id_for_label }}" class="form-label">
-        Adresse
-        <span class="required-star">*</span>
-      </label>
-      {{ form.adresse|add_class:'form-control'|add_class:is_invalid_adresse|attr:'placeholder:Rue et numéro' }}
-      {% if form.adresse.errors %}
-        <div class="invalid-feedback d-block">{{ form.adresse.errors }}</div>
-      {% endif %}
-    </div>
-    <div class="mb-3">
-      <label for="{{ form.complement.id_for_label }}" class="form-label">
-        Complément d'adresse
-      </label>
-      {{ form.complement|add_class:'form-control'|add_class:is_invalid_complement|attr:'placeholder:Complément (facultatif)' }}
-      {% if form.complement.errors %}
-        <div class="invalid-feedback d-block">{{ form.complement.errors }}</div>
-      {% endif %}
-    </div>
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="{{ form.code_postal.id_for_label }}" class="form-label">
-          Code postal
-          <span class="required-star">*</span>
+      <div class="form-check mb-2">
+        {{ form.is_default_shipping }}
+        <label class="form-check-label" for="{{ form.is_default_shipping.id_for_label }}">
+          {{ form.is_default_shipping.label }}
         </label>
-        {{ form.code_postal|add_class:'form-control'|add_class:is_invalid_code_postal|attr:'placeholder:ex: 1000' }}
-        {% if form.code_postal.errors %}
-          <div class="invalid-feedback d-block">{{ form.code_postal.errors }}</div>
-        {% endif %}
       </div>
-      <div class="col-md-6 mb-3">
-        <label for="{{ form.ville.id_for_label }}" class="form-label">
-          Ville
-          <span class="required-star">*</span>
+      <div class="form-check mb-2">
+        {{ form.is_default_billing }}
+        <label class="form-check-label" for="{{ form.is_default_billing.id_for_label }}">
+          {{ form.is_default_billing.label }}
         </label>
-        {{ form.ville|add_class:'form-control'|add_class:is_invalid_ville|attr:'placeholder:ex: Bruxelles' }}
-        {% if form.ville.errors %}
-          <div class="invalid-feedback d-block">{{ form.ville.errors }}</div>
-        {% endif %}
       </div>
-    </div>
-    <div class="mb-3">
-      <label for="{{ form.pays.id_for_label }}" class="form-label">
-        Pays
-        <span class="required-star">*</span>
-      </label>
-      {{ form.pays|add_class:'form-control'|add_class:is_invalid_pays|attr:'placeholder:ex: Belgique' }}
-      {% if form.pays.errors %}
-        <div class="invalid-feedback d-block">{{ form.pays.errors }}</div>
-      {% endif %}
-    </div>
-    <div class="form-check mb-2">
-      {{ form.is_default_shipping }}
-      <label class="form-check-label" for="{{ form.is_default_shipping.id_for_label }}">
-        {{ form.is_default_shipping.label }}
-      </label>
-    </div>
-    <div class="form-check mb-2">
-      {{ form.is_default_billing }}
-      <label class="form-check-label" for="{{ form.is_default_billing.id_for_label }}">
-        {{ form.is_default_billing.label }}
-      </label>
-    </div>
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary">Enregistrer</button>
-      <a href="{% url 'mes_adresses' %}" class="btn btn-secondary">Annuler</a>
-    </div>
-  </form>
+      <div class="form-actions d-flex justify-content-center gap-3 mt-4">
+        <button type="submit" class="btn btn-primary px-4">Enregistrer</button>
+        <a href="{% url 'mes_adresses' %}" class="btn btn-secondary">Annuler</a>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

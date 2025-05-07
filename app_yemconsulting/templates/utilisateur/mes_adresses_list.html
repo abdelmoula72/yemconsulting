@@ -1,29 +1,48 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}Mes adresses{% endblock %}
 
 {% block content %}
 <style>
   .carte-adresse {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 24px 20px 16px 20px;
-    background: #fff;
+    border-radius: 20px;
     min-height: 320px;
-    position: relative;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    max-height: 320px;
+    height: 100%;
+    width: 100%;
+    max-width: 340px;
+    min-width: 240px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    align-items: stretch;
+    border: 2px solid #d1d5db;
+    background: #fff;
+    box-sizing: border-box;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    padding: 24px 20px 16px 20px;
+    margin-bottom: 24px;
+    margin-right: 24px;
   }
   .adresse-nom {
     font-weight: bold;
     font-size: 1.3rem;
     margin-bottom: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    max-width: 100%;
   }
   .adresse-ligne {
     font-size: 1.05rem;
     margin-bottom: 0.1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    max-width: 100%;
   }
   .adresse-defaults {
     display: flex;
@@ -52,74 +71,157 @@
     border: 2px dashed #6c47ff;
     background: #faf8ff;
     color: #6c47ff;
-    border-radius: 8px;
-    min-height: 320px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     font-weight: 600;
     font-size: 1.1rem;
     cursor: pointer;
     transition: background 0.2s;
+    min-height: 320px;
+    height: 100%;
+    width: auto;
+    max-width: none;
+    padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
   }
   .ajouter-adresse-btn:hover {
     background: #f3edff;
+  }
+  .ajouter-adresse-btn span {
+    white-space: nowrap;
+  }
+  .row.g-4 {
+    --bs-gutter-x: 0;
+    --bs-gutter-y: 0;
+  }
+  .col-adresse, .row.g-4 > [class^='col-'] {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    padding: 0;
+  }
+  @media (min-width: 576px) {
+    .row.g-4 > [class^='col-'] {
+      flex: 0 0 48%;
+      max-width: 48%;
+    }
+  }
+  @media (min-width: 992px) {
+    .row.g-4 > [class^='col-'] {
+      flex: 0 0 32%;
+      max-width: 32%;
+    }
   }
 </style>
 <div class="container mt-5">
   <h2 class="mb-4">Adresses</h2>
   <p class="mb-4">Ajoutez ou modifiez vos adresses ici</p>
-  <div class="row g-4">
-    <!-- Bouton Ajouter une adresse -->
-    <div class="col-md-4">
-      <a href="?edit=shipping" class="ajouter-adresse-btn text-decoration-none text-center">
-        <div style="font-size:2.5rem;line-height:1;">
-          <svg viewBox="0 0 24 24" width="2.5em" height="2.5em" fill="currentColor"><path d="M20.25 11.2h-7.5V3.7a.75.75 0 0 0-1.5 0v7.5h-7.5a.75.75 0 0 0 0 1.5h7.5v7.5a.75.75 0 0 0 1.5 0v-7.5h7.5a.75.75 0 0 0 0-1.5"></path></svg>
+  <div class="row">
+    <!-- Colonne gauche : bouton ajouter -->
+    <div class="col-12 col-md-3 mb-4 mb-md-0 d-flex align-items-start">
+      <a
+        href="?edit=shipping"
+        class="ajouter-adresse-btn text-decoration-none text-center w-100"
+        style="height: 100%; min-height: 320px; display: flex; align-items: center; justify-content: center;"
+      >
+        <div style="font-size: 2.5rem; line-height: 1">
+          <svg
+            viewBox="0 0 24 24"
+            width="2.5em"
+            height="2.5em"
+            fill="currentColor"
+          >
+            <path
+              d="M20.25 11.2h-7.5V3.7a.75.75 0 0 0-1.5 0v7.5h-7.5a.75.75 0 0 0 0 1.5h7.5v7.5a.75.75 0 0 0 1.5 0v-7.5h7.5a.75.75 0 0 0 0-1.5"
+            ></path>
+          </svg>
         </div>
-        <span class="mt-2" style="color:#6c47ff;">Ajouter une adresse</span>
+        <span class="mt-2" style="color: #6c47ff">Ajouter une adresse</span>
       </a>
     </div>
-    <!-- Affichage des adresses uniques -->
-    {% for adresse in adresses %}
-      <div class="col-md-4">
-        <div class="carte-adresse">
-          <div>
-            <div class="adresse-nom">{{ adresse.prenom }} {{ adresse.nom }}</div>
-            <div class="adresse-ligne">{{ adresse.adresse }}</div>
-            {% if adresse.complement %}<div class="adresse-ligne">{{ adresse.complement }}</div>{% endif %}
-            <div class="adresse-ligne">{{ adresse.code_postal }}</div>
-            <div class="adresse-ligne">{{ adresse.ville }}</div>
-            <div class="adresse-ligne">{{ adresse.pays }}</div>
-            <div class="adresse-defaults" style="flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 12px;">
-              {% if adresse.is_default_shipping %}
+    <!-- Colonne droite : galerie d'adresses -->
+    <div class="col-12 col-md-9">
+      <div class="row g-4">
+        {% for adresse in adresses %}
+        <div class="col-12 col-sm-6 col-lg-4 d-flex align-items-stretch">
+          <div class="carte-adresse w-100">
+            <div>
+              <div class="adresse-nom">{{ adresse.prenom }} {{ adresse.nom }}</div>
+              <div class="adresse-ligne">{{ adresse.adresse }}</div>
+              {% if adresse.complement %}
+              <div class="adresse-ligne">{{ adresse.complement }}</div>
+              {% endif %}
+              <div class="adresse-ligne">{{ adresse.code_postal }}</div>
+              <div class="adresse-ligne">{{ adresse.ville }}</div>
+              <div class="adresse-ligne">{{ adresse.pays }}</div>
+              <div
+                class="adresse-defaults"
+                style="flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 12px;"
+              >
+                {% if adresse.is_default_shipping %}
                 <span class="adresse-default">
-                  <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" fill="currentColor"><path d="M19.993 6.185a.75.75 0 0 1 .072 1.058L10.96 17.668a3.09 3.09 0 0 1-4.81-.194l-3-3.972a.75.75 0 1 1 1.198-.904l3.005 3.982a1.59 1.59 0 0 0 2.476.102l9.105-10.425a.75.75 0 0 1 1.058-.072"></path></svg>
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="1.2em"
+                    height="1.2em"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M19.993 6.185a.75.75 0 0 1 .072 1.058L10.96 17.668a3.09 3.09 0 0 1-4.81-.194l-3-3.972a.75.75 0 1 1 1.198-.904l3.005 3.982a1.59 1.59 0 0 0 2.476.102l9.105-10.425a.75.75 0 0 1 1.058-.072"
+                    ></path>
+                  </svg>
                   Adresse de livraison
                 </span>
-              {% endif %}
-              {% if adresse.is_default_billing %}
+                {% endif %} {% if adresse.is_default_billing %}
                 <span class="adresse-default">
-                  <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" fill="currentColor"><path d="M19.993 6.185a.75.75 0 0 1 .072 1.058L10.96 17.668a3.09 3.09 0 0 1-4.81-.194l-3-3.972a.75.75 0 1 1 1.198-.904l3.005 3.982a1.59 1.59 0 0 0 2.476.102l9.105-10.425a.75.75 0 0 1 1.058-.072"></path></svg>
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="1.2em"
+                    height="1.2em"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M19.993 6.185a.75.75 0 0 1 .072 1.058L10.96 17.668a3.09 3.09 0 0 1-4.81-.194l-3-3.972a.75.75 0 1 1 1.198-.904l3.005 3.982a1.59 1.59 0 0 0 2.476.102l9.105-10.425a.75.75 0 0 1 1.058-.072"
+                    ></path>
+                  </svg>
                   Adresse de facturation
                 </span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="adresse-actions">
+              {% if adresses.count > 1 %}
+                {% if not adresse.is_default_shipping and not adresse.is_default_billing %}
+                  <form
+                    method="post"
+                    action="{% url 'supprimer_adresse' adresse.id %}"
+                    style="display: inline"
+                  >
+                    {% csrf_token %}
+                    <button
+                      type="submit"
+                      class="btn btn-outline-danger btn-sm"
+                      title="Supprimer"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                {% endif %}
               {% endif %}
+              <a
+                href="?edit=shipping&pk={{ adresse.id }}"
+                class="btn btn-outline-primary btn-sm d-flex align-items-center"
+              >
+                <i class="bi bi-pencil me-1"></i> Modifier
+              </a>
             </div>
           </div>
-          <div class="adresse-actions">
-            {% if adresses.count > 1 and not adresse.is_default_shipping and not adresse.is_default_billing %}
-            <form method="post" action="{% url 'supprimer_adresse' adresse.id %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-outline-danger btn-sm" title="Supprimer"><i class="bi bi-trash"></i></button>
-            </form>
-            {% endif %}
-            <a href="?edit=shipping&pk={{ adresse.id }}" class="btn btn-outline-primary btn-sm d-flex align-items-center">
-              <i class="bi bi-pencil me-1"></i> Modifier
-            </a>
-          </div>
         </div>
+        {% endfor %}
       </div>
-    {% endfor %}
+    </div>
   </div>
 </div>
 {% endblock %}

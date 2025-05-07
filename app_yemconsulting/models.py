@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 import os
+from decimal import Decimal
 
 
 
@@ -197,17 +198,40 @@ class Commande(models.Model):
         ('en_cours', 'En cours de traitement'),
         ('livree', 'Livrée'),
         ('annulee', 'Annulée'),
+        ('confirmee', 'Confirmée'),
     ]
+
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
     panier = models.ForeignKey(Panier, on_delete=models.CASCADE)
     date_commande = models.DateTimeField(auto_now_add=True)
     statut = models.CharField(max_length=50, choices=STATUT_CHOICES, default='en_attente')
     traitée = models.BooleanField(default=False)
-    quantites_initiales = models.JSONField(default=dict)
-    address = models.ForeignKey(Adresse, on_delete=models.SET_NULL, null=True, related_name='commandes')
+    quantites_initiales = models.JSONField(default=dict, null=True, blank=True)
+    adresse_livraison = models.JSONField(default=dict, help_text="Adresse de livraison au format JSON")
+    adresse_facturation = models.JSONField(default=dict, help_text="Adresse de facturation au format JSON")
+    livraison = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Prix de la livraison")
 
     def __str__(self):
-        return f"Commande {self.id} par {self.utilisateur.nom}"
+        return f"Commande {self.id} de {self.utilisateur.nom}"
+
+    def get_quantites_initiales(self):
+        return self.quantites_initiales or {}
+
+    def set_quantites_initiales(self, lignes_panier):
+        self.quantites_initiales = {
+            str(ligne.produit.id): {
+                "quantity": ligne.quantite,
+                "price": float(ligne.produit.prix),
+            }
+            for ligne in lignes_panier
+        }
+        self.save()
+
+    def get_total_initial(self):
+        return sum(
+            data["price"] * data["quantity"]
+            for data in self.get_quantites_initiales().values()
+        )
 
 
 
