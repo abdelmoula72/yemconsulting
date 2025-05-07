@@ -74,16 +74,26 @@ class AdresseForm(forms.ModelForm):
         model = Adresse
         fields = ['prenom', 'nom', 'adresse', 'complement', 'code_postal', 'ville', 'pays']
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk:
-            self.fields['is_default_shipping'].initial = self.instance.is_default_shipping
-            self.fields['is_default_billing'].initial = self.instance.is_default_billing
-            user = self.instance.utilisateur
-            if self.instance.is_default_shipping and user.adresses.filter(is_default_shipping=True).count() == 1:
+        self.user = user if user else self.instance.utilisateur if self.instance.pk else None
+        
+        if self.user:
+            # Compter le nombre d'adresses actives
+            nb_adresses = self.user.adresses.filter(active=True).count()
+            
+            # Si c'est la première adresse ou modification de la seule adresse
+            if nb_adresses == 0 or (self.instance.pk and nb_adresses == 1):
+                self.fields['is_default_shipping'].initial = True
+                self.fields['is_default_billing'].initial = True
                 self.fields['is_default_shipping'].widget.attrs['disabled'] = True
-            if self.instance.is_default_billing and user.adresses.filter(is_default_billing=True).count() == 1:
                 self.fields['is_default_billing'].widget.attrs['disabled'] = True
+            # Si c'est une modification d'adresse par défaut et qu'il n'y en a qu'une
+            elif self.instance.pk:
+                if self.instance.is_default_shipping and self.user.adresses.filter(is_default_shipping=True, active=True).count() == 1:
+                    self.fields['is_default_shipping'].widget.attrs['disabled'] = True
+                if self.instance.is_default_billing and self.user.adresses.filter(is_default_billing=True, active=True).count() == 1:
+                    self.fields['is_default_billing'].widget.attrs['disabled'] = True
 
     def clean_prenom(self):
         prenom = self.cleaned_data['prenom']
@@ -124,14 +134,18 @@ class AdresseForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        if self.fields['is_default_shipping'].widget.attrs.get('disabled'):
-            instance.is_default_shipping = self.instance.is_default_shipping
+        
+        # Si c'est la première adresse, forcer les valeurs par défaut
+        if self.user and self.user.adresses.filter(active=True).count() == 0:
+            instance.is_default_shipping = True
+            instance.is_default_billing = True
         else:
-            instance.is_default_shipping = self.cleaned_data.get('is_default_shipping', False)
-        if self.fields['is_default_billing'].widget.attrs.get('disabled'):
-            instance.is_default_billing = self.instance.is_default_billing
-        else:
-            instance.is_default_billing = self.cleaned_data.get('is_default_billing', False)
+            # Sinon utiliser les valeurs du formulaire sauf si disabled
+            if not self.fields['is_default_shipping'].widget.attrs.get('disabled'):
+                instance.is_default_shipping = self.cleaned_data.get('is_default_shipping', False)
+            if not self.fields['is_default_billing'].widget.attrs.get('disabled'):
+                instance.is_default_billing = self.cleaned_data.get('is_default_billing', False)
+        
         if commit:
             instance.save()
         return instance

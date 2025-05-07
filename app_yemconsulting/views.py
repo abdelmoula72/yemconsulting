@@ -185,17 +185,32 @@ def confirmer_panier(request):
 
     lignes      = []
     sous_total  = Decimal("0.00")
+    total_ht    = Decimal("0.00")
+    total_tva   = Decimal("0.00")
 
     for lp in lignes_qs:
         prod = lp.produit
+        prix_ht = Decimal(str(prod.prix_ht))
+        montant_tva = Decimal(str(prod.montant_tva))
+        
         img_url = prod.image.url if prod.image else static("default.jpg")
+        
+        sous_total_ligne = prod.prix * lp.quantite
+        sous_total_ht_ligne = prix_ht * lp.quantite
+        sous_total_tva_ligne = montant_tva * lp.quantite
+        
         lignes.append({
             "image_url": img_url,
             "nom"      : prod.nom,
             "quantite" : lp.quantite,
             "prix"     : prod.prix,
+            "prix_ht"  : prix_ht,
+            "montant_tva": montant_tva,
         })
-        sous_total += prod.prix * lp.quantite
+        
+        sous_total += sous_total_ligne
+        total_ht += sous_total_ht_ligne
+        total_tva += sous_total_tva_ligne
 
     total_ttc = sous_total + livraison_info["prix"]
 
@@ -205,6 +220,8 @@ def confirmer_panier(request):
         "utilisateur"      : utilisateur,
         "lignes"           : lignes,
         "sous_total"       : sous_total,
+        "total_ht"        : total_ht,
+        "total_tva"       : total_tva,
         "total_ttc"        : total_ttc,
         "livraisons"       : LIVRAISON_OPTIONS,
         "livraison_select" : livraison_select,
@@ -384,10 +401,13 @@ def ajouter_au_panier(request, produit_id):
 @login_required
 def afficher_panier(request):
     utilisateur = get_object_or_404(Utilisateur, email=request.user.email)
-    panier      = get_object_or_404(Panier, utilisateur=utilisateur)
+    panier, created = Panier.objects.get_or_create(utilisateur=utilisateur)
 
     lignes_commande = []
     total = Decimal("0.00")
+    total_ht = Decimal("0.00")
+    total_tva = Decimal("0.00")
+    total_articles = 0
 
     for ligne in (
         LignePanier.objects
@@ -395,24 +415,41 @@ def afficher_panier(request):
         .filter(panier=panier)
     ):
         prod = ligne.produit
+        prix_ht = Decimal(str(prod.prix_ht))
+        montant_tva = Decimal(str(prod.montant_tva))
 
         img_url = prod.image.url if prod.image else static("default.jpg")
 
+        sous_total = prod.prix * ligne.quantite
+        sous_total_ht = prix_ht * ligne.quantite
+        sous_total_tva = montant_tva * ligne.quantite
+        total_articles += ligne.quantite
+
         lignes_commande.append({
-            "id"        : ligne.id,            # ← OBLIGATOIRE !
+            "id"        : ligne.id,
             "nom"       : prod.nom,
             "prix"      : prod.prix,
+            "prix_ht"   : prix_ht,
+            "montant_tva": montant_tva,
             "quantite"  : ligne.quantite,
-            "sous_total": prod.prix * ligne.quantite,
+            "sous_total": sous_total,
             "img_url"   : img_url,
         })
 
-        total += prod.prix * ligne.quantite
+        total += sous_total
+        total_ht += sous_total_ht
+        total_tva += sous_total_tva
 
     return render(
         request,
         "panier/afficher_panier.html",
-        {"lignes_commande": lignes_commande, "total": total}
+        {
+            "lignes_commande": lignes_commande,
+            "total": total,
+            "total_ht": total_ht,
+            "total_tva": total_tva,
+            "total_articles": total_articles
+        }
     )
 
 
@@ -560,17 +597,12 @@ def passer_commande(request):
 
     # ────────── totaux (HT / TVA / TTC) ──────────
     total_ttc = Decimal(str(commande.get_total_initial()))
-
-    # ► prix de livraison éventuellement stocké en session (page confirmation-panier)
-    livraison_prix = Decimal(request.session.pop("livraison_prix", "0.00"))
-    total_ttc += livraison_prix
-
     coeff_tva = Decimal("1.21")
-    total_ht  = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
+    total_ht = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
     total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
 
     # ────────── préparation des lignes pour l'e-mail ──────────
-    email_lignes      = []
+    email_lignes = []
     images_a_attacher = []        # [(cid, path), …]
 
     for ligne in lignes_panier:
@@ -609,7 +641,7 @@ def passer_commande(request):
         "lignes"          : email_lignes,
         "total_ht"        : total_ht,
         "total_tva"       : total_tva,
-        "total_ttc"       : total_ttc,
+        "total_ttc"       : total_ttc + livraison_prix,  # Total TTC incluant la livraison
         "methode_paiement": methode_paiement,
         "url_commande"    : request.build_absolute_uri( reverse("confirmation_commande", args=[commande.id]) ),
         "livraison_debut": livraison_debut.strftime("%a %d %b %Y"),
@@ -617,6 +649,7 @@ def passer_commande(request):
         "livraison_express": f"{express.strftime('%a')}, {express.day} {express.strftime('%b %Y')}",
         "livraison_prix"  : livraison_prix,
         "adresse_livraison": adresse_livraison_json,
+        "adresse_facturation": adresse_facturation_json,
     }
 
     html_body = render_to_string("emails/confirmation_commande.html", ctx)
@@ -742,9 +775,11 @@ def passer_commande(request):
     
     # Totaux
     data_totaux = [
-        ["Sous-total", f"{total_ttc - livraison_prix:.2f} €"],
-        ["Livraison", f"{livraison_prix:.2f} €" if livraison_prix > 0 else "Gratuite"],
+        ["Sous-total HT", f"{total_ht:.2f} €"],
+        ["TVA (21%)", f"{total_tva:.2f} €"],
         ["Total TTC", f"{total_ttc:.2f} €"],
+        ["Livraison", f"{livraison_prix:.2f} €" if livraison_prix > 0 else "Gratuite"],
+        ["Total TTC avec livraison", f"{total_ttc + livraison_prix:.2f} €"],
     ]
     
     table_totaux = Table(data_totaux, colWidths=[12*cm, 4*cm])
@@ -860,11 +895,12 @@ def confirmation_commande(request, commande_id):
 
     # Utiliser les données de `quantites_initiales` pour les lignes de commande
     lignes_commande = []
-    total = Decimal('0.00')
+    total_ht = Decimal('0.00')
 
     for produit_id, data in commande.get_quantites_initiales().items():
         produit = get_object_or_404(Produit, id=produit_id)
-        sous_total = Decimal(str(data["price"])) * Decimal(str(data["quantity"]))
+        prix_ht = Decimal(str(data["price"])) / Decimal('1.21')  # Calculer le prix HT
+        sous_total_ht = prix_ht * Decimal(str(data["quantity"]))
 
         # calcul de l'URL de la miniature
         if produit.image and produit.image.url:
@@ -876,18 +912,25 @@ def confirmation_commande(request, commande_id):
             'produit': produit,
             'quantite': data["quantity"],
             'prix': data["price"],
-            'sous_total': sous_total,
+            'prix_ht': prix_ht,
+            'sous_total_ht': sous_total_ht,
             'image_url': img_url,
         })
-        total += sous_total
+        total_ht += sous_total_ht
 
-    # Ajouter le prix de livraison au total
-    total_avec_livraison = total + commande.livraison
+    # Calculer la TVA et les totaux
+    total_tva = total_ht * Decimal('0.21')
+    total_ttc = total_ht + total_tva
+    
+    # Ajouter le prix de livraison au total TTC
+    total_avec_livraison = total_ttc + commande.livraison
 
     return render(request, 'commande/confirmation_commande.html', {
         'commande': commande,
         'lignes_commande': lignes_commande,
-        'total': total,
+        'total_ht': total_ht,
+        'total_tva': total_tva,
+        'total_ttc': total_ttc,
         'total_avec_livraison': total_avec_livraison,
         'adresse_livraison': commande.adresse_livraison,
         'adresse_facturation': commande.adresse_facturation,
@@ -1011,7 +1054,7 @@ def editer_adresse(request, pk=None, first_address=False):
         adresse = Adresse(utilisateur=user)
 
     if request.method == 'POST':
-        form = AdresseForm(request.POST, instance=adresse)
+        form = AdresseForm(request.POST, instance=adresse, user=user)
         if form.is_valid():
             cd = form.cleaned_data
             if pk:
@@ -1036,7 +1079,7 @@ def editer_adresse(request, pk=None, first_address=False):
             messages.success(request, 'Adresse enregistrée avec succès.')
             return redirect('mes_adresses')
     else:
-        form = AdresseForm(instance=adresse)
+        form = AdresseForm(instance=adresse, user=user)
         if first_address:
             form.fields['is_default_shipping'].initial = True
             form.fields['is_default_billing'].initial = True
@@ -1052,7 +1095,6 @@ def editer_adresse(request, pk=None, first_address=False):
 
     return render(request, 'utilisateur/mes_adresses_form.html', {
         'form': form,
-        'adresse': adresse,
         'is_invalid_prenom': is_invalid_prenom,
         'is_invalid_nom': is_invalid_nom,
         'is_invalid_adresse': is_invalid_adresse,
@@ -1418,12 +1460,12 @@ def generer_facture_pdf(request, commande_id):
     elements.append(Spacer(1, 0.5*cm))
     
     # Totaux
-    total_avec_livraison = total + commande.livraison
-    
     data_totaux = [
-        ["Sous-total", f"{total:.2f} €"],
-        ["Livraison", f"{commande.livraison:.2f} €" if commande.livraison > 0 else "Gratuite"],
-        ["Total TTC", f"{total_avec_livraison:.2f} €"],
+        ["Sous-total HT", f"{total_ht:.2f} €"],
+        ["TVA (21%)", f"{total_tva:.2f} €"],
+        ["Total TTC", f"{total_ttc:.2f} €"],
+        ["Livraison", f"{livraison_prix:.2f} €" if livraison_prix > 0 else "Gratuite"],
+        ["Total TTC avec livraison", f"{total_ttc + livraison_prix:.2f} €"],
     ]
     
     table_totaux = Table(data_totaux, colWidths=[12*cm, 4*cm])

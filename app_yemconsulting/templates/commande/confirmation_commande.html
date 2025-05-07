@@ -42,8 +42,8 @@
           <tr>
             <th>Produit</th>
             <th>Quantité</th>
-            <th>Prix unitaire</th>
-            <th>Sous-total</th>
+            <th>Prix unitaire HT</th>
+            <th>Sous-total HT</th>
           </tr>
         </thead>
         <tbody>
@@ -59,17 +59,19 @@
                 </div>
               </td>
               <td class="align-middle">{{ ligne.quantite }}</td>
-              <td class="align-middle">{{ ligne.prix|floatformat:2 }} €</td>
-              <td class="align-middle">{{ ligne.sous_total|floatformat:2 }} €</td>
+              <td class="align-middle">{{ ligne.prix_ht|floatformat:2 }} €</td>
+              <td class="align-middle">{{ ligne.sous_total_ht|floatformat:2 }} €</td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
       
       <div class="text-end">
-        <p><strong>Sous-total :</strong> {{ total|floatformat:2 }} €</p>
+        <p><strong>Total HT :</strong> {{ total_ht|floatformat:2 }} €</p>
+        <p><strong>TVA (21%) :</strong> {{ total_tva|floatformat:2 }} €</p>
+        <p><strong>Total TTC :</strong> {{ total_ttc|floatformat:2 }} €</p>
         <p><strong>Livraison :</strong> {% if commande.livraison == 0 %}Gratuite{% else %}{{ commande.livraison|floatformat:2 }} €{% endif %}</p>
-        <p class="fs-5"><strong>Total TTC :</strong> {{ total_avec_livraison|floatformat:2 }} €</p>
+        <p class="fs-5"><strong>Total TTC avec livraison :</strong> {{ total_avec_livraison|floatformat:2 }} €</p>
       </div>
     {% else %}
       <p class="text-center">Aucun produit dans cette commande.</p>
