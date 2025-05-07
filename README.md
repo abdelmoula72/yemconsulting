@@ -1,16 +1,21 @@
 # YEM Consulting
 
 ## Description
-Site web de YEM Consulting, une entreprise de conseil en informatique.
+Site web de YemTech Pro, une entreprise de vente de matériel informatique professionnel.
 
 ## Prérequis
+
+### Pour tous les systèmes
 - Python (version 3.8 ou supérieure)
-- pip (gestionnaire de paquets Python)
-- Git Bash (pour Windows) ou Terminal (pour Linux/MacOS)
+- Git
+
+### Dépendances système supplémentaires
+
+#### Windows
+- Git Bash
 
 ## Installation
 
-### Installation automatique (recommandée)
 1. Clonez le dépôt :
 ```bash
 git clone https://github.com/votre-nom/yemconsulting.git
@@ -26,78 +31,40 @@ cd yemconsulting
 bash install.sh
 ```
 
-### Installation manuelle
-Si vous préférez installer manuellement :
+Le script d'installation va automatiquement :
+- Créer un environnement virtuel
+- Installer toutes les dépendances Python
+- Effectuer les migrations de la base de données
+- Créer les dossiers nécessaires (media, static)
 
-1. Clonez le dépôt :
-```bash
-git clone https://github.com/votre-nom/yemconsulting.git
-cd yemconsulting
-```
+## Configuration
 
-2. Créez et activez un environnement virtuel :
-```bash
-# Windows
-python -m venv venv
-.\venv\Scripts\activate
-
-# Linux/MacOS
-python -m venv venv
-source venv/bin/activate
-```
-
-3. Installez les dépendances :
-```bash
-pip install -r requirements.txt
-```
-
-4. Effectuez les migrations de la base de données :
-```bash
-python manage.py migrate
-```
-
-## Lancement du projet
-
-### En mode développement
-Pour lancer le serveur de développement :
-```bash
-python manage.py runserver
-```
-Le site sera accessible à l'adresse : `http://localhost:8000`
-
-### Création d'un superutilisateur
-Pour créer un compte administrateur :
-```bash
-python manage.py createsuperuser
+Créez un fichier `.env` à la racine du projet avec les variables suivantes :
+```env
+DEBUG=True
+SECRET_KEY=votre_clé_secrète
+STRIPE_PUBLIC_KEY=votre_clé_publique_stripe
+STRIPE_SECRET_KEY=votre_clé_secrète_stripe
 ```
 
 ## Technologies utilisées
-- Django
-- Python
-- SQLite (base de données par défaut)
-- HTML/CSS
-- JavaScript
+- Django 4.2+ : Framework web Python
+- Django Widget Tweaks : Personnalisation des formulaires
+- Pillow : Traitement d'images
+- Requests : Gestion des requêtes HTTP
+- Stripe : Système de paiement
+- Django Extensions : Outils de développement supplémentaires
+- ReportLab : Génération de documents PDF
 
 ## Structure du projet
 ```
 yemconsulting/
 ├── yemconsulting/        # Configuration principale du projet Django
-│   ├── settings.py       # Paramètres du projet
-│   ├── urls.py          # URLs principales
-│   ├── wsgi.py          # Configuration WSGI
-│   └── asgi.py          # Configuration ASGI
-│
 ├── app_yemconsulting/    # Application principale
-│   ├── admin.py         # Configuration de l'interface d'administration
-│   ├── models.py        # Modèles de données
-│   ├── views.py         # Vues et logique métier
-│   ├── forms.py         # Formulaires
-│   ├── urls.py          # URLs de l'application
-│   ├── templates/       # Templates HTML
-│   ├── utils/           # Utilitaires
-│   └── management/      # Commandes personnalisées
-│
-└── requirements.txt      # Dépendances du projet
+├── media/               # Fichiers média uploadés
+├── static/              # Fichiers statiques
+├── requirements.txt     # Dépendances du projet
+└── install.sh          # Script d'installation automatique
 ```
 
 ## Contact
