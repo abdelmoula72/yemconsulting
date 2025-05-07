@@ -6,9 +6,28 @@ Site web de YEM Consulting, une entreprise de conseil en informatique.
 ## Prérequis
 - Python (version 3.8 ou supérieure)
 - pip (gestionnaire de paquets Python)
-- virtualenv (recommandé)
+- Git Bash (pour Windows) ou Terminal (pour Linux/MacOS)
 
 ## Installation
+
+### Installation automatique (recommandée)
+1. Clonez le dépôt :
+```bash
+git clone https://github.com/votre-nom/yemconsulting.git
+cd yemconsulting
+```
+
+2. Lancez le script d'installation :
+```bash
+# Windows (avec Git Bash)
+./install.sh
+
+# Linux/MacOS
+bash install.sh
+```
+
+### Installation manuelle
+Si vous préférez installer manuellement :
 
 1. Clonez le dépôt :
 ```bash
