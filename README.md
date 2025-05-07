@@ -4,8 +4,9 @@
 Site web de YEM Consulting, une entreprise de conseil en informatique.
 
 ## Prérequis
-- Node.js (version 18 ou supérieure)
-- npm (gestionnaire de paquets Node.js)
+- Python (version 3.8 ou supérieure)
+- pip (gestionnaire de paquets Python)
+- virtualenv (recommandé)
 
 ## Installation
 
@@ -15,40 +16,69 @@ git clone https://github.com/votre-nom/yemconsulting.git
 cd yemconsulting
 ```
 
-2. Installez les dépendances :
+2. Créez et activez un environnement virtuel :
 ```bash
-npm install
+# Windows
+python -m venv venv
+.\venv\Scripts\activate
+
+# Linux/MacOS
+python -m venv venv
+source venv/bin/activate
+```
+
+3. Installez les dépendances :
+```bash
+pip install -r requirements.txt
+```
+
+4. Effectuez les migrations de la base de données :
+```bash
+python manage.py migrate
 ```
 
 ## Lancement du projet
 
 ### En mode développement
-Pour lancer le projet en mode développement avec rechargement à chaud :
+Pour lancer le serveur de développement :
 ```bash
-npm run dev
+python manage.py runserver
 ```
-Le site sera accessible à l'adresse : `http://localhost:3000`
+Le site sera accessible à l'adresse : `http://localhost:8000`
 
-### En mode production
-Pour construire et lancer le projet en production :
+### Création d'un superutilisateur
+Pour créer un compte administrateur :
 ```bash
-npm run build
-npm start
+python manage.py createsuperuser
 ```
 
 ## Technologies utilisées
-- Next.js
-- React
-- Tailwind CSS
-- TypeScript
+- Django
+- Python
+- SQLite (base de données par défaut)
+- HTML/CSS
+- JavaScript
 
 ## Structure du projet
 ```
 yemconsulting/
-├── app/               # Dossier principal de l'application
-├── components/        # Composants React réutilisables
-├── public/           # Fichiers statiques
-└── styles/           # Fichiers de style
+├── yemconsulting/        # Configuration principale du projet Django
+│   ├── settings.py       # Paramètres du projet
+│   ├── urls.py          # URLs principales
+│   ├── wsgi.py          # Configuration WSGI
+│   └── asgi.py          # Configuration ASGI
+│
+├── app_yemconsulting/    # Application principale
+│   ├── admin.py         # Configuration de l'interface d'administration
+│   ├── models.py        # Modèles de données
+│   ├── views.py         # Vues et logique métier
+│   ├── forms.py         # Formulaires
+│   ├── urls.py          # URLs de l'application
+│   ├── templates/       # Templates HTML
+│   ├── utils/           # Utilitaires
+│   └── management/      # Commandes personnalisées
+│
+└── requirements.txt      # Dépendances du projet
 ```
 
 ## Contact
