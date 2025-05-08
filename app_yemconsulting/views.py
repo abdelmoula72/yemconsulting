@@ -739,20 +739,28 @@ def passer_commande(request):
     
     # Détails des produits
     # En-têtes
-    data = [["Produit", "Quantité", "Prix unitaire", "Total"]]
+    data = [["Produit", "Quantité", "Prix unitaire HT", "Total HT"]]
+    
+    # Calcul des totaux
+    total_ttc = Decimal(str(commande.get_total_initial()))
+    coeff_tva = Decimal("1.21")
+    total_ht = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
+    total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
+    livraison_prix = commande.livraison
     
     # Récupérer les détails des produits
-    for ligne in lignes_panier:
-        produit = ligne.produit
-        prix = produit.prix
-        quantite = ligne.quantite
-        sous_total = prix * quantite
+    for produit_id, item_data in commande.get_quantites_initiales().items():
+        produit = get_object_or_404(Produit, id=produit_id)
+        quantite = Decimal(str(item_data["quantity"]))
+        prix_ttc = Decimal(str(item_data["price"]))
+        prix_ht = prix_ttc / coeff_tva
+        sous_total_ht = prix_ht * quantite
         
         data.append([
             produit.nom,
             str(quantite),
-            f"{prix:.2f} €",
-            f"{sous_total:.2f} €"
+            f"{prix_ht:.2f} €",
+            f"{sous_total_ht:.2f} €"
         ])
     
     # Créer la table
@@ -1202,8 +1210,9 @@ def supprimer_article(request, ligne_panier_id):
 def rechercher_produits(request):
     query = request.GET.get('q', '').strip()  # Récupère la requête et enlève les espaces
     produits = Produit.objects.filter(
-        Q(nom__icontains=query)  # Recherche insensible à la casse
-    ) if query else []
+        Q(nom__icontains=query) |  # Recherche insensible à la casse dans le nom
+        Q(description__icontains=query)  # Recherche dans la description
+    ).select_related('categorie').order_by('categorie__nom', 'nom') if query else []
 
     return render(request, 'produits/rechercher.html', {'produits': produits, 'query': query})
 
@@ -1382,9 +1391,6 @@ def generer_facture_pdf(request, commande_id):
                 self.restoreState()
             canvas.Canvas.showPage(self)
     
-    # Ajouter le logo dans l'en-tête (maintenant géré par le canvas personnalisé)
-    # Le logo sera ajouté par la classe LogoCanvas, on n'a plus besoin de l'ajouter ici
-    
     # Titre
     elements.append(Paragraph(f"FACTURE N° {commande.id}", styles['InvoiceTitle']))
     elements.append(Spacer(1, 0.5*cm))
@@ -1422,24 +1428,29 @@ def generer_facture_pdf(request, commande_id):
     
     # Détails des produits
     # En-têtes
-    data = [["Produit", "Quantité", "Prix unitaire", "Total"]]
+    data = [["Produit", "Quantité", "Prix unitaire HT", "Total HT"]]
+    
+    # Calcul des totaux
+    total_ttc = Decimal(str(commande.get_total_initial()))
+    coeff_tva = Decimal("1.21")
+    total_ht = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
+    total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
+    livraison_prix = commande.livraison
     
     # Récupérer les détails des produits
-    total = Decimal('0.00')
     for produit_id, item_data in commande.get_quantites_initiales().items():
         produit = get_object_or_404(Produit, id=produit_id)
         quantite = Decimal(str(item_data["quantity"]))
-        prix = Decimal(str(item_data["price"]))
-        sous_total = prix * quantite
+        prix_ttc = Decimal(str(item_data["price"]))
+        prix_ht = prix_ttc / coeff_tva
+        sous_total_ht = prix_ht * quantite
         
         data.append([
             produit.nom,
             str(quantite),
-            f"{prix:.2f} €",
-            f"{sous_total:.2f} €"
+            f"{prix_ht:.2f} €",
+            f"{sous_total_ht:.2f} €"
         ])
-        
-        total += sous_total
     
     # Créer la table
     table = Table(data, colWidths=[8*cm, 2*cm, 3*cm, 3*cm])

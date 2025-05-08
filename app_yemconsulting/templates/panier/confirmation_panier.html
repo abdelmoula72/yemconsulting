@@ -141,11 +141,6 @@
   <div class="card shadow-sm p-4">
     <h2 class="text-center mb-4">Vérifiez votre commande</h2>
     
-    <!-- Message d'information sur les adresses -->
-    <div class="alert alert-info mb-4" role="alert">
-      <small><i class="bi bi-info-circle-fill me-1"></i> Les adresses sélectionnées ci-dessous seront utilisées uniquement pour cette commande.</small>
-    </div>
-    
     <form method="post" id="confirm-form">
       {% csrf_token %}
       <div class="mb-4">
