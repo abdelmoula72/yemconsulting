@@ -79,8 +79,8 @@ class AdresseForm(forms.ModelForm):
         self.user = user if user else self.instance.utilisateur if self.instance.pk else None
         
         if self.user:
-            # Compter le nombre d'adresses actives
-            nb_adresses = self.user.adresses.filter(active=True).count()
+            # Compter le nombre d'adresses
+            nb_adresses = self.user.adresses.count()
             
             # Si c'est la première adresse ou modification de la seule adresse
             if nb_adresses == 0 or (self.instance.pk and nb_adresses == 1):
@@ -90,9 +90,9 @@ class AdresseForm(forms.ModelForm):
                 self.fields['is_default_billing'].widget.attrs['disabled'] = True
             # Si c'est une modification d'adresse par défaut et qu'il n'y en a qu'une
             elif self.instance.pk:
-                if self.instance.is_default_shipping and self.user.adresses.filter(is_default_shipping=True, active=True).count() == 1:
+                if self.instance.is_default_shipping and self.user.adresses.filter(is_default_shipping=True).count() == 1:
                     self.fields['is_default_shipping'].widget.attrs['disabled'] = True
-                if self.instance.is_default_billing and self.user.adresses.filter(is_default_billing=True, active=True).count() == 1:
+                if self.instance.is_default_billing and self.user.adresses.filter(is_default_billing=True).count() == 1:
                     self.fields['is_default_billing'].widget.attrs['disabled'] = True
 
     def clean_prenom(self):
@@ -136,7 +136,7 @@ class AdresseForm(forms.ModelForm):
         instance = super().save(commit=False)
         
         # Si c'est la première adresse, forcer les valeurs par défaut
-        if self.user and self.user.adresses.filter(active=True).count() == 0:
+        if self.user and self.user.adresses.count() == 0:
             instance.is_default_shipping = True
             instance.is_default_billing = True
         else:

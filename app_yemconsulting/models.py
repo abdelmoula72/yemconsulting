@@ -61,7 +61,6 @@ class Adresse(models.Model):
     pays = models.CharField(max_length=100)
     is_default_shipping = models.BooleanField(default=False, help_text='Adresse de livraison par défaut')
     is_default_billing = models.BooleanField(default=False, help_text='Adresse de facturation par défaut')
-    active = models.BooleanField(default=True, help_text='Indique si l\'adresse est active')
 
     class Meta:
         verbose_name = 'Adresse'
@@ -81,11 +80,6 @@ class Adresse(models.Model):
 
     def __str__(self):
         return f"{self.prenom} {self.nom}, {self.adresse}, {self.code_postal} {self.ville}, {self.pays}"
-
-    def delete(self, *args, **kwargs):
-        """Soft delete : marque l'adresse comme inactive au lieu de la supprimer"""
-        self.active = False
-        self.save()
 
 
 
@@ -128,8 +122,6 @@ class Produit(models.Model):
     categorie = models.ForeignKey(
         'Categorie',
         on_delete=models.CASCADE,
-        null=True,
-        blank=True,
         related_name="produits"
     )
 
