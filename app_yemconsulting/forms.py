@@ -57,44 +57,55 @@ class DonneesPersonnellesForm(forms.ModelForm):
         }
 
 class AdresseForm(forms.ModelForm):
+    prenom = forms.CharField(label="Prénom", max_length=100, required=True)
+    nom = forms.CharField(label="Nom", max_length=100, required=True)
     is_default_shipping = forms.BooleanField(
         required=False,
-        label='Définir comme adresse de livraison par défaut'
+        label='Définir comme adresse de livraison par défaut',
+        help_text=''
     )
     is_default_billing = forms.BooleanField(
         required=False,
-        label='Définir comme adresse de facturation par défaut'
+        label='Définir comme adresse de facturation par défaut',
+        help_text=''
     )
-    
+
     class Meta:
         model = Adresse
-        fields = ['prenom', 'nom', 'adresse', 'complement', 'code_postal', 'ville', 'pays', 'is_default_shipping', 'is_default_billing']
-        widgets = {
-            'prenom': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Prénom'}),
-            'nom': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nom'}),
-            'adresse': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Adresse'}),
-            'complement': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Complément d\'adresse (facultatif)'}),
-            'code_postal': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Code postal'}),
-            'ville': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ville'}),
-            'pays': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Pays', 'value': 'Belgique'}),
-        }
-        labels = {
-            'prenom': 'Prénom',
-            'nom': 'Nom',
-            'adresse': 'Adresse',
-            'complement': 'Complément d\'adresse',
-            'code_postal': 'Code postal',
-            'ville': 'Ville',
-            'pays': 'Pays',
-        }
+        fields = ['prenom', 'nom', 'adresse', 'complement', 'code_postal', 'ville', 'pays']
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.user = user
+        self.user = user if user else self.instance.utilisateur if self.instance.pk else None
         
-        # Définir la valeur par défaut du pays si c'est une nouvelle adresse
-        if not self.instance.pk:
-            self.initial['pays'] = 'Belgique'
+        if self.user:
+            # Compter le nombre d'adresses
+            nb_adresses = self.user.adresses.count()
+            
+            # Si c'est la première adresse ou modification de la seule adresse
+            if nb_adresses == 0 or (self.instance.pk and nb_adresses == 1):
+                self.fields['is_default_shipping'].initial = True
+                self.fields['is_default_billing'].initial = True
+                self.fields['is_default_shipping'].widget.attrs['disabled'] = True
+                self.fields['is_default_billing'].widget.attrs['disabled'] = True
+            # Si c'est une modification d'adresse par défaut et qu'il n'y en a qu'une
+            elif self.instance.pk:
+                if self.instance.is_default_shipping and self.user.adresses.filter(is_default_shipping=True).count() == 1:
+                    self.fields['is_default_shipping'].widget.attrs['disabled'] = True
+                if self.instance.is_default_billing and self.user.adresses.filter(is_default_billing=True).count() == 1:
+                    self.fields['is_default_billing'].widget.attrs['disabled'] = True
+
+    def clean_prenom(self):
+        prenom = self.cleaned_data['prenom']
+        if not re.match(r'^[A-Za-zÀ-ÿ\-\s]+$', prenom):
+            raise ValidationError("Le prénom ne doit contenir que des lettres.")
+        return prenom
+
+    def clean_nom(self):
+        nom = self.cleaned_data['nom']
+        if not re.match(r'^[A-Za-zÀ-ÿ\-\s]+$', nom):
+            raise ValidationError("Le nom ne doit contenir que des lettres.")
+        return nom
 
     def clean_code_postal(self):
         code_postal = self.cleaned_data['code_postal']
@@ -125,7 +136,7 @@ class AdresseForm(forms.ModelForm):
         instance = super().save(commit=False)
         
         # Si c'est la première adresse, forcer les valeurs par défaut
-        if self.user and self.user.adresses.filter(active=True).count() == 0:
+        if self.user and self.user.adresses.count() == 0:
             instance.is_default_shipping = True
             instance.is_default_billing = True
         else:

@@ -31,6 +31,35 @@ class CommandeAdmin(admin.ModelAdmin):
         self.message_user(request, "Les commandes sélectionnées ont été annulées.")
     marquer_commande_comme_annulee.short_description = "Marquer comme annulées"
 
+class ProduitAdmin(admin.ModelAdmin):
+    list_display = ('nom', 'categorie', 'prix', 'stock')
+    list_filter = ('categorie',)
+    search_fields = ('nom', 'description')
+    ordering = ('categorie', 'nom')
+    
+    fieldsets = (
+        ('Informations principales', {
+            'fields': ('nom', 'description', 'categorie')
+        }),
+        ('Prix et Stock', {
+            'fields': ('prix', 'stock')
+        }),
+        ('Image', {
+            'fields': ('image',),
+            'classes': ('collapse',)
+        }),
+    )
+
+class CategorieAdmin(admin.ModelAdmin):
+    list_display = ('nom', 'parent', 'get_nombre_produits')
+    list_filter = ('parent',)
+    search_fields = ('nom',)
+    ordering = ('nom',)
+
+    def get_nombre_produits(self, obj):
+        return obj.produits.count()
+    get_nombre_produits.short_description = 'Nombre de produits'
+
 class CustomUserAdmin(UserAdmin):
     list_display = ('email', 'nom', 'prenom', 'is_admin', 'is_staff')
     list_filter = ('is_admin', 'is_superuser')
@@ -51,6 +80,6 @@ class CustomUserAdmin(UserAdmin):
     )
 
 admin.site.register(Commande, CommandeAdmin)
-admin.site.register(Produit)
-admin.site.register(Categorie)
+admin.site.register(Produit, ProduitAdmin)
+admin.site.register(Categorie, CategorieAdmin)
 admin.site.register(Utilisateur, CustomUserAdmin)
