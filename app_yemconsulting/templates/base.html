@@ -64,6 +64,7 @@
       {% endif %}
       <form class="d-flex position-relative" action="{% url 'rechercher_produits' %}" method="GET">
         <input id="search-bar" type="search" name="q" class="form-control" placeholder="Rechercher un produit">
+        <div id="suggestion-box" class="position-absolute top-100 start-0 w-100 bg-white border rounded mt-1 shadow-sm" style="display: none; z-index: 1050;"></div>
       </form>
     </div>
   </div>

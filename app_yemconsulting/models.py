@@ -52,13 +52,13 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
 class Adresse(models.Model):
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='adresses')
-    prenom = models.CharField(max_length=100, blank=True)
-    nom = models.CharField(max_length=100, blank=True)
-    adresse = models.CharField(max_length=250)
-    complement = models.CharField(max_length=250, blank=True)
+    prenom = models.CharField(max_length=100)
+    nom = models.CharField(max_length=100)
+    adresse = models.CharField(max_length=255)
+    complement = models.CharField(max_length=255, blank=True, null=True)
     code_postal = models.CharField(max_length=10)
     ville = models.CharField(max_length=100)
-    pays = models.CharField(max_length=100)
+    pays = models.CharField(max_length=100, default='Belgique')
     is_default_shipping = models.BooleanField(default=False, help_text='Adresse de livraison par défaut')
     is_default_billing = models.BooleanField(default=False, help_text='Adresse de facturation par défaut')
     active = models.BooleanField(default=True, help_text='Indique si l\'adresse est active')

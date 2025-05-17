@@ -34,53 +34,103 @@ $(document).ready(function () {
     });
 
     // 📌 Gestion du champ de recherche avec autocomplétion
-    $("#search-bar").on("input", function () {
-        const terme = $(this).val().trim();
-        const suggestionBox = $("#suggestion-box");
+    const searchBar = $('#search-bar');
+    const resultsContainer = $('<div>')
+        .addClass('position-absolute top-100 start-0 w-100 bg-white border rounded mt-1 shadow-sm')
+        .attr('id', 'suggestion-box')
+        .css('z-index', '1050')
+        .hide();
+    
+    searchBar.after(resultsContainer);
 
-        if (terme.length > 0) {
-            $.ajax({
-                url: "/suggestions/",
-                type: "GET",
-                data: { q: terme },
-                success: function (data) {
-                    suggestionBox.empty();
-                    if (data.length > 0) {
-                        data.forEach(function (produit) {
-                            suggestionBox.append(
-                                `<div class="suggestion-item">${produit.nom}</div>`
-                            );
-                        });
-                    } else {
-                        suggestionBox.append(
-                            `<div class="p-2 text-muted">Aucun résultat</div>`
-                        );
-                    }
-                    suggestionBox.show();
-                },
-                error: function () {
-                    suggestionBox.empty().append(
-                        `<div class="p-2 text-danger">Erreur de chargement</div>`
-                    );
-                    suggestionBox.show();
-                },
+    searchBar.on('input', function() {
+        const query = $(this).val().trim();
+        if (query.length >= 2) {
+            $.get('/suggestions/', { q: query }, function(data) {
+                resultsContainer.empty();
+                if (data.length > 0) {
+                    data.forEach(function(item) {
+                        const suggestionDiv = $(`
+                            <div class="suggestion-item p-2 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-bold">${item.nom}</div>
+                                    ${item.categorie ? `<small class="text-muted">${item.categorie}</small>` : ''}
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-primary">${item.prix} €</span>
+                                </div>
+                            </div>
+                        `).data('product-id', item.id);
+
+                        suggestionDiv
+                            .css('cursor', 'pointer')
+                            .hover(
+                                function() { $(this).addClass('bg-light'); },
+                                function() { $(this).removeClass('bg-light'); }
+                            )
+                            .click(function() {
+                                window.location.href = `/produit/${$(this).data('product-id')}/`;
+                            });
+
+                        resultsContainer.append(suggestionDiv);
+                    });
+                    resultsContainer.show();
+                } else {
+                    resultsContainer.hide();
+                }
             });
         } else {
-            suggestionBox.hide();
+            resultsContainer.hide();
         }
     });
 
-    // 📌 Gestion du clic sur une suggestion
-    $(document).on("click", ".suggestion-item", function () {
-        const produitNom = $(this).text().trim();
-        $("#search-bar").val(produitNom);
-        $("#suggestion-box").hide();
+    $(document).click(function(e) {
+        if (!$(e.target).closest('#search-bar, #suggestion-box').length) {
+            resultsContainer.hide();
+        }
     });
 
-    // 📌 Cache les suggestions lorsqu'on clique en dehors
-    $(document).on("click", function (e) {
-        if (!$(e.target).closest("#search-bar, #suggestion-box").length) {
-            $("#suggestion-box").hide();
+    // Gestion des touches du clavier
+    searchBar.on('keydown', function(e) {
+        const items = resultsContainer.find('.suggestion-item');
+        const current = resultsContainer.find('.bg-light');
+        
+        switch(e.keyCode) {
+            case 40: // Flèche bas
+                e.preventDefault();
+                if (current.length === 0) {
+                    items.first().addClass('bg-light');
+                } else {
+                    current.removeClass('bg-light')
+                          .next('.suggestion-item')
+                          .addClass('bg-light');
+                }
+                break;
+                
+            case 38: // Flèche haut
+                e.preventDefault();
+                if (current.length === 0) {
+                    items.last().addClass('bg-light');
+                } else {
+                    current.removeClass('bg-light')
+                          .prev('.suggestion-item')
+                          .addClass('bg-light');
+                }
+                break;
+                
+            case 13: // Touche Entrée
+                if (current.length > 0) {
+                    e.preventDefault();
+                    const productId = current.data('product-id');
+                    if (productId) {
+                        window.location.href = `/produit/${productId}/`;
+                    }
+                }
+                break;
+                
+            case 27: // Touche Échap
+                resultsContainer.hide();
+                break;
         }
     });
 });

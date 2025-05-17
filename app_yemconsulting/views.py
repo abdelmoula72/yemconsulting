@@ -79,8 +79,8 @@ def business_days_after(n, base=None):
 @login_required
 def confirmer_panier(request):
     utilisateur = request.user
-    panier      = get_object_or_404(Panier, utilisateur=utilisateur)
-    lignes_qs   = (
+    panier = get_object_or_404(Panier, utilisateur=utilisateur)
+    lignes_qs = (
         LignePanier.objects
         .filter(panier=panier)
         .select_related("produit")
@@ -90,35 +90,31 @@ def confirmer_panier(request):
         messages.error(request, "Votre panier est vide.")
         return redirect("afficher_panier")
 
-    # Récupérer les adresses existantes de la session ou utiliser les adresses par défaut
-    adresse_livraison_id = request.session.get('adresse_livraison_id')
-    adresse_facturation_id = request.session.get('adresse_facturation_id')
-    
-    if adresse_livraison_id:
-        # Utiliser l'adresse de livraison de la session
-        adresse_livraison = get_object_or_404(Adresse, id=adresse_livraison_id, utilisateur=utilisateur, active=True)
-    else:
-        # Charger l'adresse de livraison par défaut pour l'affichage initial seulement
-        adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True, active=True).first()
-        # Mettre à jour la session uniquement si aucune adresse n'est déjà sélectionnée
-        if adresse_livraison:
-            request.session['adresse_livraison_id'] = adresse_livraison.id
-    
-    if adresse_facturation_id:
-        # Utiliser l'adresse de facturation de la session
-        adresse_facturation = get_object_or_404(Adresse, id=adresse_facturation_id, utilisateur=utilisateur, active=True)
-    else:
-        # Charger l'adresse de facturation par défaut pour l'affichage initial seulement
-        adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True, active=True).first()
-        # Mettre à jour la session uniquement si aucune adresse n'est déjà sélectionnée
-        if adresse_facturation:
-            request.session['adresse_facturation_id'] = adresse_facturation.id
+    # Récupérer les adresses par défaut de l'utilisateur
+    adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True, active=True).first()
+    adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True, active=True).first()
 
-    # Récupérer toutes les adresses actives de l'utilisateur
+    # Si pas d'adresse de livraison par défaut, prendre la première adresse active
+    if not adresse_livraison:
+        adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, active=True).first()
+
+    # Si pas d'adresse de facturation par défaut, utiliser l'adresse de livraison
+    if not adresse_facturation:
+        adresse_facturation = adresse_livraison
+
+    # Déterminer si les adresses sont identiques
+    adresses_identiques = False
+    if adresse_livraison and adresse_facturation:
+        adresses_identiques = (
+            adresse_livraison.adresse == adresse_facturation.adresse and
+            adresse_livraison.complement == adresse_facturation.complement and
+            adresse_livraison.code_postal == adresse_facturation.code_postal and
+            adresse_livraison.ville == adresse_facturation.ville and
+            adresse_livraison.pays == adresse_facturation.pays
+        )
+
+    # Récupérer toutes les adresses actives pour la modal
     adresses = Adresse.objects.filter(utilisateur=utilisateur, active=True)
-
-    # Déterminer si les deux adresses sont identiques (même id)
-    toggle_facturation_identique = adresse_livraison and adresse_facturation and adresse_livraison.id == adresse_facturation.id
 
     # ────────── fonctions utilitaires dates ouvrables ──────────
     def business_days_after(n):
@@ -217,20 +213,20 @@ def confirmer_panier(request):
     form = ModifierProfilForm(instance=request.user)
 
     context = {
-        "utilisateur"      : utilisateur,
-        "lignes"           : lignes,
-        "sous_total"       : sous_total,
-        "total_ht"        : total_ht,
-        "total_tva"       : total_tva,
-        "total_ttc"        : total_ttc,
-        "livraisons"       : LIVRAISON_OPTIONS,
-        "livraison_select" : livraison_select,
-        "livraison"        : livraison_info,
-        "form"             : form,
+        "utilisateur": utilisateur,
+        "lignes": lignes,
+        "sous_total": sous_total,
+        "total_ht": total_ht,
+        "total_tva": total_tva,
+        "total_ttc": total_ttc,
+        "livraisons": LIVRAISON_OPTIONS,
+        "livraison_select": livraison_select,
+        "livraison": livraison_info,
+        "form": form,
         "adresse_livraison": adresse_livraison,
         "adresse_facturation": adresse_facturation,
-        "adresses"         : adresses,
-        "toggle_facturation_identique": toggle_facturation_identique,
+        "adresses_identiques": adresses_identiques,
+        "adresses": adresses,
     }
     return render(request, "panier/confirmation_panier.html", context)
 
@@ -493,12 +489,12 @@ def passer_commande(request):
     # Si l'ID existe dans la session, récupérer cette adresse spécifique
     if adresse_livraison_id:
         try:
-            adresse_livraison = Adresse.objects.get(id=adresse_livraison_id, utilisateur=utilisateur, active=True)
+            adresse_livraison = Adresse.objects.get(id=adresse_livraison_id, utilisateur=utilisateur)
             print(f"Utilisation de l'adresse de livraison sélectionnée: {adresse_livraison.id} - {adresse_livraison}")
         except Adresse.DoesNotExist:
             print(f"L'adresse de livraison ID {adresse_livraison_id} n'existe pas ou n'est pas active")
             # Fallback à l'adresse par défaut
-            adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True, active=True).first()
+            adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True).first()
             if adresse_livraison:
                 adresse_livraison_id = adresse_livraison.id
                 request.session['adresse_livraison_id'] = adresse_livraison_id
@@ -511,7 +507,7 @@ def passer_commande(request):
                 )
     else:
         # Aucune adresse en session, utiliser l'adresse par défaut
-        adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True, active=True).first()
+        adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True).first()
         if adresse_livraison:
             adresse_livraison_id = adresse_livraison.id
             request.session['adresse_livraison_id'] = adresse_livraison_id
@@ -530,12 +526,12 @@ def passer_commande(request):
     # Si l'ID existe dans la session, récupérer cette adresse spécifique
     if adresse_facturation_id:
         try:
-            adresse_facturation = Adresse.objects.get(id=adresse_facturation_id, utilisateur=utilisateur, active=True)
+            adresse_facturation = Adresse.objects.get(id=adresse_facturation_id, utilisateur=utilisateur)
             print(f"Utilisation de l'adresse de facturation sélectionnée: {adresse_facturation.id} - {adresse_facturation}")
         except Adresse.DoesNotExist:
             print(f"L'adresse de facturation ID {adresse_facturation_id} n'existe pas ou n'est pas active")
             # Fallback à l'adresse par défaut ou à l'adresse de livraison
-            adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True, active=True).first()
+            adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True).first()
             if adresse_facturation:
                 print(f"Fallback à l'adresse de facturation par défaut: {adresse_facturation.id}")
             else:
@@ -543,7 +539,7 @@ def passer_commande(request):
                 adresse_facturation = adresse_livraison
     else:
         # Aucune adresse en session, utiliser l'adresse par défaut ou l'adresse de livraison
-        adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True, active=True).first()
+        adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True).first()
         if adresse_facturation:
             print(f"Utilisation de l'adresse de facturation par défaut: {adresse_facturation.id}")
         else:
@@ -1054,6 +1050,7 @@ def mes_adresses(request):
 @login_required
 def editer_adresse(request, pk=None, first_address=False):
     user = request.user
+    next_url = request.GET.get('next', 'mes_adresses')
 
     # Choix de l'instance (modification vs création)
     if pk:
@@ -1085,31 +1082,20 @@ def editer_adresse(request, pk=None, first_address=False):
             
             adresse.save()
             messages.success(request, 'Adresse enregistrée avec succès.')
-            return redirect('mes_adresses')
+            
+            # Si on revient de la page de confirmation du panier, ajouter l'ID de la nouvelle adresse
+            if 'confirmation-panier' in next_url:
+                return redirect(f"{next_url}?nouvelle_adresse={adresse.id}")
+            return redirect(next_url)
     else:
         form = AdresseForm(instance=adresse, user=user)
         if first_address:
             form.fields['is_default_shipping'].initial = True
             form.fields['is_default_billing'].initial = True
 
-    # Ajout des classes d'erreur pour chaque champ
-    is_invalid_prenom = "is-invalid" if form['prenom'].errors else ""
-    is_invalid_nom = "is-invalid" if form['nom'].errors else ""
-    is_invalid_adresse = "is-invalid" if form['adresse'].errors else ""
-    is_invalid_complement = "is-invalid" if form['complement'].errors else ""
-    is_invalid_code_postal = "is-invalid" if form['code_postal'].errors else ""
-    is_invalid_ville = "is-invalid" if form['ville'].errors else ""
-    is_invalid_pays = "is-invalid" if form['pays'].errors else ""
-
     return render(request, 'utilisateur/mes_adresses_form.html', {
         'form': form,
-        'is_invalid_prenom': is_invalid_prenom,
-        'is_invalid_nom': is_invalid_nom,
-        'is_invalid_adresse': is_invalid_adresse,
-        'is_invalid_complement': is_invalid_complement,
-        'is_invalid_code_postal': is_invalid_code_postal,
-        'is_invalid_ville': is_invalid_ville,
-        'is_invalid_pays': is_invalid_pays,
+        'next': next_url,
     })
 
 
@@ -1235,9 +1221,17 @@ def autocomplete_produits(request):
 
 def suggestions_produits(request):
     terme = request.GET.get('q', '').strip()
-    if terme:
-        produits = Produit.objects.filter(nom__icontains=terme)[:10]  # Limitez les résultats
-        suggestions = [{'id': p.id, 'nom': p.nom} for p in produits]
+    if terme and len(terme) >= 2:  # Minimum 2 caractères pour la recherche
+        produits = Produit.objects.filter(
+            Q(nom__icontains=terme) |  # Recherche dans le nom
+            Q(description__icontains=terme)  # Et dans la description
+        )[:10]  # Limite à 10 résultats
+        suggestions = [{
+            'id': p.id,
+            'nom': p.nom,
+            'prix': str(p.prix),
+            'categorie': p.categorie.nom if p.categorie else None
+        } for p in produits]
         return JsonResponse(suggestions, safe=False)
     return JsonResponse([], safe=False)
 
