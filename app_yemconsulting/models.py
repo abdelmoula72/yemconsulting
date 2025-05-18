@@ -54,7 +54,7 @@ class Adresse(models.Model):
     utilisateur = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='adresses')
     prenom = models.CharField(max_length=100)
     nom = models.CharField(max_length=100)
-    adresse = models.CharField(max_length=255)
+    rue = models.CharField(max_length=255)
     complement = models.CharField(max_length=255, blank=True, null=True)
     code_postal = models.CharField(max_length=10)
     ville = models.CharField(max_length=100)
@@ -79,7 +79,7 @@ class Adresse(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.prenom} {self.nom}, {self.adresse}, {self.code_postal} {self.ville}, {self.pays}"
+        return f"{self.prenom} {self.nom}, {self.rue}, {self.code_postal} {self.ville}, {self.pays}"
 
 
 
@@ -182,39 +182,94 @@ class Commande(models.Model):
         ('livree', 'Livrée'),
         ('annulee', 'Annulée'),
         ('confirmee', 'Confirmée'),
+        ('payee', 'Payée'),
     ]
 
-    utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
-    panier = models.ForeignKey(Panier, on_delete=models.CASCADE)
+    utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='commandes')
     date_commande = models.DateTimeField(auto_now_add=True)
+    produits = models.ManyToManyField(Produit, through='LigneCommande')
     statut = models.CharField(max_length=50, choices=STATUT_CHOICES, default='en_attente')
-    traitée = models.BooleanField(default=False)
-    quantites_initiales = models.JSONField(default=dict, null=True, blank=True)
-    adresse_livraison = models.JSONField(default=dict, help_text="Adresse de livraison au format JSON")
-    adresse_facturation = models.JSONField(default=dict, help_text="Adresse de facturation au format JSON")
-    livraison = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Prix de la livraison")
+    traitee = models.BooleanField(default=False)
+    adresse_livraison = models.ForeignKey(
+        Adresse, 
+        on_delete=models.PROTECT,
+        related_name='commandes_livraison',
+        null=True,
+        blank=True
+    )
+    adresse_facturation = models.ForeignKey(
+        Adresse,
+        on_delete=models.PROTECT,
+        related_name='commandes_facturation',
+        null=True,
+        blank=True
+    )
+    livraison = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        help_text='Montant total de la commande, incluant la livraison'
+    )
+    quantites_initiales = models.JSONField(
+        default=dict,
+        help_text='Stockage des quantités initiales des produits au moment de la commande'
+    )
 
     def __str__(self):
         return f"Commande {self.id} de {self.utilisateur.nom}"
 
-    def get_quantites_initiales(self):
-        return self.quantites_initiales or {}
+    def get_quantites(self) -> dict:
+        return dict(self.lignes_commande.values_list('produit_id', 'quantite'))
 
-    def set_quantites_initiales(self, lignes_panier):
+    def get_total(self) -> Decimal:
+        return sum(ligne.produit.prix * ligne.quantite for ligne in self.lignes_commande.all())
+
+    def get_total_with_shipping(self) -> Decimal:
+        return self.get_total() + self.livraison
+
+    def calculer_total(self):
+        self.total = self.get_total_with_shipping()
+        self.save()
+
+    def enregistrer_quantites_initiales(self):
+        """Enregistre les quantités initiales des produits au moment de la commande."""
         self.quantites_initiales = {
             str(ligne.produit.id): {
                 "quantity": ligne.quantite,
-                "price": float(ligne.produit.prix),
+                "price": str(ligne.prix_unitaire)
             }
-            for ligne in lignes_panier
+            for ligne in self.lignes_commande.all()
         }
         self.save()
 
-    def get_total_initial(self):
-        return sum(
-            data["price"] * data["quantity"]
-            for data in self.get_quantites_initiales().values()
-        )
+class LigneCommande(models.Model):
+    commande = models.ForeignKey(
+        Commande, 
+        on_delete=models.CASCADE,
+        related_name='lignes_commande'
+    )
+    produit = models.ForeignKey(
+        Produit, 
+        on_delete=models.PROTECT,
+        related_name='lignes_commande'
+    )
+    quantite = models.PositiveIntegerField(default=1)
+    prix_unitaire = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.00'),
+        help_text='Prix unitaire du produit au moment de la commande'
+    )
+
+    def __str__(self):
+        return f"{self.quantite} x {self.produit.nom} dans la commande {self.commande.id}"
+
+    def save(self, *args, **kwargs):
+        # Enregistrer le prix unitaire au moment de la création
+        if not self.prix_unitaire:
+            self.prix_unitaire = self.produit.prix
+        super().save(*args, **kwargs)
 
 
 
