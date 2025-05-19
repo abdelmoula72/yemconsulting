@@ -18,7 +18,7 @@ from django.urls import reverse
 from django.utils.html import format_html, strip_tags
 from django.utils.formats import date_format
 from django.views.decorators.http import require_http_methods, require_POST
-from .models import Produit, Categorie, Panier, LignePanier, Utilisateur, Commande, Adresse
+from .models import Produit, Categorie, Panier, LignePanier, Utilisateur, Commande, Adresse, LigneCommande
 from .forms import (InscriptionForm, ModifierProfilForm, DonneesPersonnellesForm, AdresseForm)
 import stripe
 from email.mime.image import MIMEImage
@@ -29,7 +29,6 @@ import datetime as dt
 from django.utils import timezone
 from app_yemconsulting.utils.date_helpers import business_days_after
 import mimetypes
-from .models import Panier, LignePanier, Commande
 from django.templatetags.static import static
 from django.contrib.auth.forms import PasswordChangeForm
 import io
@@ -246,41 +245,78 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 @login_required
 def stripe_checkout(request):
     utilisateur = request.user
-    panier      = get_object_or_404(Panier, utilisateur=utilisateur)
-    lignes      = LignePanier.objects.filter(panier=panier)
+    
+    # Vérifier si on paye une commande existante ou le panier
+    commande_id = request.POST.get('commande_id')
+    
+    if commande_id:
+        # Paiement d'une commande existante
+        commande = get_object_or_404(Commande, id=commande_id, utilisateur=utilisateur, statut='confirmee')
+        
+        # Stocker l'ID de la commande dans la session pour la retrouver après
+        request.session['commande_id_a_payer'] = commande_id
+        
+        line_items = []
+        
+        # Articles de la commande
+        for ligne in commande.lignes_commande.all():
+            p = ligne.produit
+            line_items.append({
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {"name": p.nom},
+                    "unit_amount": int(ligne.prix_unitaire * 100),  # centimes
+                },
+                "quantity": ligne.quantite,
+            })
+        
+        # Frais de livraison
+        if commande.livraison > 0:
+            line_items.append({
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {"name": "Frais de livraison"},
+                    "unit_amount": int(commande.livraison * 100),
+                },
+                "quantity": 1,
+            })
+    else:
+        # Paiement du panier actuel
+        panier = get_object_or_404(Panier, utilisateur=utilisateur)
+        lignes = LignePanier.objects.filter(panier=panier)
 
-    if not lignes.exists():
-        messages.error(request, "Votre panier est vide.")
-        return redirect("afficher_panier")
+        if not lignes.exists():
+            messages.error(request, "Votre panier est vide.")
+            return redirect("afficher_panier")
 
-    # Debug: afficher les adresses stockées en session avant la création de session Stripe
-    print(f"Adresses avant Stripe: livraison={request.session.get('adresse_livraison_id')}, facturation={request.session.get('adresse_facturation_id')}")
+        # Debug: afficher les adresses stockées en session avant la création de session Stripe
+        print(f"Adresses avant Stripe: livraison={request.session.get('adresse_livraison_id')}, facturation={request.session.get('adresse_facturation_id')}")
 
-    line_items = []
+        line_items = []
 
-    # 🟦 articles du panier
-    for ligne in lignes:
-        p = ligne.produit
-        line_items.append({
-            "price_data": {
-                "currency"    : "eur",
-                "product_data": {"name": p.nom},
-                "unit_amount" : int(p.prix * 100),   # centimes
-            },
-            "quantity": ligne.quantite,
-        })
+        # 🟦 articles du panier
+        for ligne in lignes:
+            p = ligne.produit
+            line_items.append({
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {"name": p.nom},
+                    "unit_amount": int(p.prix * 100),  # centimes
+                },
+                "quantity": ligne.quantite,
+            })
 
-    # 🟪 frais de livraison éventuels
-    livraison_prix = Decimal(request.session.get("livraison_prix", "0.00"))
-    if livraison_prix > 0:
-        line_items.append({
-            "price_data": {
-                "currency"    : "eur",
-                "product_data": {"name": "Frais de livraison"},
-                "unit_amount" : int(livraison_prix * 100),
-            },
-            "quantity": 1,
-        })
+        # 🟪 frais de livraison éventuels
+        livraison_prix = Decimal(request.session.get("livraison_prix", "0.00"))
+        if livraison_prix > 0:
+            line_items.append({
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {"name": "Frais de livraison"},
+                    "unit_amount": int(livraison_prix * 100),
+                },
+                "quantity": 1,
+            })
 
     # création de la Session Stripe
     session = stripe.checkout.Session.create(
@@ -288,7 +324,10 @@ def stripe_checkout(request):
         line_items=line_items,
         mode="payment",
         success_url=request.build_absolute_uri(reverse("stripe_success")),
-        cancel_url=request.build_absolute_uri(reverse("afficher_panier")),
+        cancel_url=request.build_absolute_uri(
+            reverse("confirmation_commande", args=[commande_id]) if commande_id 
+            else reverse("afficher_panier")
+        ),
     )
 
     return redirect(session.url, code=303)
@@ -300,11 +339,29 @@ def stripe_success(request):
     # 💳 Indiquer que le paiement a été effectué via Stripe
     request.session['methode_paiement'] = 'Stripe'
     
-    # Debug: Afficher les adresses en session après paiement réussi
-    print(f"Session après paiement Stripe réussi: livraison_id={request.session.get('adresse_livraison_id')}, facturation_id={request.session.get('adresse_facturation_id')}")
+    # Vérifier si on payait une commande existante
+    commande_id_a_payer = request.session.pop('commande_id_a_payer', None)
+    
+    if commande_id_a_payer:
+        # Mettre à jour le statut de la commande existante
+        try:
+            commande = Commande.objects.get(id=commande_id_a_payer, utilisateur=request.user)
+            commande.statut = 'payee'
+            commande.save()
+            messages.success(request, "Paiement effectué avec succès!")
+            return redirect('confirmation_commande', commande_id=commande_id_a_payer)
+        except Commande.DoesNotExist:
+            messages.error(request, "Commande introuvable.")
+            return redirect('historique_commandes')
+    else:
+        # Indiquer que le paiement a réussi pour la création d'une nouvelle commande
+        request.session['paiement_reussi'] = True
+        
+        # Debug: Afficher les adresses en session après paiement réussi
+        print(f"Session après paiement Stripe réussi: livraison_id={request.session.get('adresse_livraison_id')}, facturation_id={request.session.get('adresse_facturation_id')}")
 
-    # ⏩ Rediriger vers la création de commande
-    return redirect('passer_commande')
+        # ⏩ Rediriger vers la création de commande
+        return redirect('passer_commande')
 
 
 
@@ -563,40 +620,34 @@ def passer_commande(request):
     # ────────── création de la commande ──────────
     livraison_prix = Decimal(request.session.pop("livraison_prix", "0.00"))
     
-    # Préparer les adresses au format JSON
-    adresse_livraison_json = {
-        'prenom': adresse_livraison.prenom,
-        'nom': adresse_livraison.nom,
-        'adresse': adresse_livraison.adresse,
-        'complement': adresse_livraison.complement,
-        'code_postal': adresse_livraison.code_postal,
-        'ville': adresse_livraison.ville,
-        'pays': adresse_livraison.pays
-    }
+    # Vérifier si le paiement a été effectué avec succès
+    paiement_reussi = request.session.pop("paiement_reussi", False)
+    statut_commande = "payee" if paiement_reussi else "confirmee"
     
-    adresse_facturation_json = {
-        'prenom': adresse_facturation.prenom,
-        'nom': adresse_facturation.nom,
-        'adresse': adresse_facturation.adresse,
-        'complement': adresse_facturation.complement,
-        'code_postal': adresse_facturation.code_postal,
-        'ville': adresse_facturation.ville,
-        'pays': adresse_facturation.pays
-    }
-    
+    # Utiliser directement les instances d'adresses
     commande = Commande.objects.create(
         utilisateur=utilisateur,
-        panier=panier,
-        statut="confirmee",
-        adresse_livraison=adresse_livraison_json,
-        adresse_facturation=adresse_facturation_json,
+        statut=statut_commande,
+        adresse_livraison=adresse_livraison,
+        adresse_facturation=adresse_facturation,
         livraison=livraison_prix
     )
 
-    commande.set_quantites_initiales(lignes_panier)
+    # Créer les lignes de commande à partir des lignes de panier
+    for ligne in lignes_panier:
+        LigneCommande.objects.create(
+            commande=commande,
+            produit=ligne.produit,
+            quantite=ligne.quantite,
+            prix_unitaire=ligne.produit.prix
+        )
+    
+    # Calcul du total et sauvegarde
+    commande.total = commande.get_total_with_shipping()
+    commande.save(update_fields=['total'])
 
     # ────────── totaux (HT / TVA / TTC) ──────────
-    total_ttc = Decimal(str(commande.get_total_initial()))
+    total_ttc = commande.get_total()
     coeff_tva = Decimal("1.21")
     total_ht = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
     total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
@@ -648,8 +699,8 @@ def passer_commande(request):
         "livraison_fin"  : livraison_fin.strftime("%a %d %b %Y"),
         "livraison_express": f"{express.strftime('%a')}, {express.day} {express.strftime('%b %Y')}",
         "livraison_prix"  : livraison_prix,
-        "adresse_livraison": adresse_livraison_json,
-        "adresse_facturation": adresse_facturation_json,
+        "adresse_livraison": adresse_livraison,
+        "adresse_facturation": adresse_facturation,
     }
 
     html_body = render_to_string("emails/confirmation_commande.html", ctx)
@@ -719,22 +770,22 @@ def passer_commande(request):
     
     # Adresse de facturation
     elements.append(Paragraph("Adresse de facturation:", styles['Heading4']))
-    elements.append(Paragraph(f"{adresse_facturation_json.get('prenom')} {adresse_facturation_json.get('nom')}", styles['Normal']))
-    elements.append(Paragraph(f"{adresse_facturation_json.get('adresse')}", styles['Normal']))
-    if adresse_facturation_json.get('complement'):
-        elements.append(Paragraph(f"{adresse_facturation_json.get('complement')}", styles['Normal']))
-    elements.append(Paragraph(f"{adresse_facturation_json.get('code_postal')} {adresse_facturation_json.get('ville')}", styles['Normal']))
-    elements.append(Paragraph(f"{adresse_facturation_json.get('pays')}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.prenom} {commande.adresse_facturation.nom}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.rue}", styles['Normal']))
+    if commande.adresse_facturation.complement:
+        elements.append(Paragraph(f"{commande.adresse_facturation.complement}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.code_postal} {commande.adresse_facturation.ville}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.pays}", styles['Normal']))
     elements.append(Spacer(1, 0.5*cm))
     
     # Adresse de livraison
     elements.append(Paragraph("Adresse de livraison:", styles['Heading4']))
-    elements.append(Paragraph(f"{adresse_livraison_json.get('prenom')} {adresse_livraison_json.get('nom')}", styles['Normal']))
-    elements.append(Paragraph(f"{adresse_livraison_json.get('adresse')}", styles['Normal']))
-    if adresse_livraison_json.get('complement'):
-        elements.append(Paragraph(f"{adresse_livraison_json.get('complement')}", styles['Normal']))
-    elements.append(Paragraph(f"{adresse_livraison_json.get('code_postal')} {adresse_livraison_json.get('ville')}", styles['Normal']))
-    elements.append(Paragraph(f"{adresse_livraison_json.get('pays')}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.prenom} {commande.adresse_livraison.nom}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.rue}", styles['Normal']))
+    if commande.adresse_livraison.complement:
+        elements.append(Paragraph(f"{commande.adresse_livraison.complement}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.code_postal} {commande.adresse_livraison.ville}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.pays}", styles['Normal']))
     elements.append(Spacer(1, 1*cm))
     
     # Détails des produits
@@ -742,17 +793,17 @@ def passer_commande(request):
     data = [["Produit", "Quantité", "Prix unitaire HT", "Total HT"]]
     
     # Calcul des totaux
-    total_ttc = Decimal(str(commande.get_total_initial()))
+    total_ttc = commande.get_total()
     coeff_tva = Decimal("1.21")
     total_ht = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
     total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
     livraison_prix = commande.livraison
     
     # Récupérer les détails des produits
-    for produit_id, item_data in commande.get_quantites_initiales().items():
-        produit = get_object_or_404(Produit, id=produit_id)
-        quantite = Decimal(str(item_data["quantity"]))
-        prix_ttc = Decimal(str(item_data["price"]))
+    for ligne in commande.lignes_commande.all():
+        produit = ligne.produit
+        quantite = ligne.quantite
+        prix_ttc = ligne.prix_unitaire
         prix_ht = prix_ttc / coeff_tva
         sous_total_ht = prix_ht * quantite
         
@@ -901,14 +952,16 @@ def test_template(request):
 def confirmation_commande(request, commande_id):
     commande = get_object_or_404(Commande, id=commande_id, utilisateur=request.user)
 
-    # Utiliser les données de `quantites_initiales` pour les lignes de commande
+    # Récupérer les lignes de commande
     lignes_commande = []
     total_ht = Decimal('0.00')
 
-    for produit_id, data in commande.get_quantites_initiales().items():
-        produit = get_object_or_404(Produit, id=produit_id)
-        prix_ht = Decimal(str(data["price"])) / Decimal('1.21')  # Calculer le prix HT
-        sous_total_ht = prix_ht * Decimal(str(data["quantity"]))
+    for ligne in commande.lignes_commande.all().select_related('produit'):
+        produit = ligne.produit
+        prix_ttc = ligne.prix_unitaire
+        prix_ht = prix_ttc / Decimal('1.21')  # Calculer le prix HT
+        sous_total_ht = prix_ht * ligne.quantite
+        sous_total = prix_ttc * ligne.quantite  # Calculer le sous-total TTC
 
         # calcul de l'URL de la miniature
         if produit.image and produit.image.url:
@@ -918,10 +971,11 @@ def confirmation_commande(request, commande_id):
 
         lignes_commande.append({
             'produit': produit,
-            'quantite': data["quantity"],
-            'prix': data["price"],
+            'quantite': ligne.quantite,
+            'prix': prix_ttc,
             'prix_ht': prix_ht,
             'sous_total_ht': sous_total_ht,
+            'sous_total': sous_total,  # Ajouter le sous-total TTC
             'image_url': img_url,
         })
         total_ht += sous_total_ht
@@ -971,11 +1025,11 @@ def annuler_commande(request, commande_id):
         messages.error(request, "Cette commande ne peut plus être annulée.")
         return redirect('historique_commandes')
 
-    # Restaurer le stock en utilisant les quantités initiales enregistrées
+    # Restaurer le stock en utilisant les lignes de commande
     with transaction.atomic():  
-        for produit_id, data in commande.get_quantites_initiales().items():
-            produit = Produit.objects.select_for_update().get(id=produit_id)
-            produit.stock += data["quantity"]
+        for ligne in commande.lignes_commande.select_for_update().all():
+            produit = Produit.objects.select_for_update().get(id=ligne.produit.id)
+            produit.stock += ligne.quantite
             produit.save()
 
         commande.statut = 'annulee'
@@ -1095,7 +1149,7 @@ def editer_adresse(request, pk=None, first_address=False):
     # Ajout des classes d'erreur pour chaque champ
     is_invalid_prenom = "is-invalid" if form['prenom'].errors else ""
     is_invalid_nom = "is-invalid" if form['nom'].errors else ""
-    is_invalid_adresse = "is-invalid" if form['adresse'].errors else ""
+    is_invalid_rue = "is-invalid" if form['rue'].errors else ""
     is_invalid_complement = "is-invalid" if form['complement'].errors else ""
     is_invalid_code_postal = "is-invalid" if form['code_postal'].errors else ""
     is_invalid_ville = "is-invalid" if form['ville'].errors else ""
@@ -1105,7 +1159,7 @@ def editer_adresse(request, pk=None, first_address=False):
         'form': form,
         'is_invalid_prenom': is_invalid_prenom,
         'is_invalid_nom': is_invalid_nom,
-        'is_invalid_adresse': is_invalid_adresse,
+        'is_invalid_rue': is_invalid_rue,
         'is_invalid_complement': is_invalid_complement,
         'is_invalid_code_postal': is_invalid_code_postal,
         'is_invalid_ville': is_invalid_ville,
@@ -1287,7 +1341,7 @@ def update_shipping_address(request, adresse_id):
                 'success': True,
                 'prenom': adresse.prenom,
                 'nom': adresse.nom,
-                'adresse': adresse.adresse,
+                'rue': adresse.rue,
                 'complement': adresse.complement,
                 'code_postal': adresse.code_postal,
                 'ville': adresse.ville,
@@ -1337,7 +1391,7 @@ def update_billing_address(request, adresse_id):
         'success': True,
         'prenom': adresse.prenom,
         'nom': adresse.nom,
-        'adresse': adresse.adresse,
+        'rue': adresse.rue,
         'complement': adresse.complement,
         'code_postal': adresse.code_postal,
         'ville': adresse.ville,
@@ -1408,22 +1462,22 @@ def generer_facture_pdf(request, commande_id):
     
     # Adresse de facturation
     elements.append(Paragraph("Adresse de facturation:", styles['Heading4']))
-    elements.append(Paragraph(f"{commande.adresse_facturation.get('prenom')} {commande.adresse_facturation.get('nom')}", styles['Normal']))
-    elements.append(Paragraph(f"{commande.adresse_facturation.get('adresse')}", styles['Normal']))
-    if commande.adresse_facturation.get('complement'):
-        elements.append(Paragraph(f"{commande.adresse_facturation.get('complement')}", styles['Normal']))
-    elements.append(Paragraph(f"{commande.adresse_facturation.get('code_postal')} {commande.adresse_facturation.get('ville')}", styles['Normal']))
-    elements.append(Paragraph(f"{commande.adresse_facturation.get('pays')}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.prenom} {commande.adresse_facturation.nom}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.rue}", styles['Normal']))
+    if commande.adresse_facturation.complement:
+        elements.append(Paragraph(f"{commande.adresse_facturation.complement}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.code_postal} {commande.adresse_facturation.ville}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_facturation.pays}", styles['Normal']))
     elements.append(Spacer(1, 0.5*cm))
     
     # Adresse de livraison
     elements.append(Paragraph("Adresse de livraison:", styles['Heading4']))
-    elements.append(Paragraph(f"{commande.adresse_livraison.get('prenom')} {commande.adresse_livraison.get('nom')}", styles['Normal']))
-    elements.append(Paragraph(f"{commande.adresse_livraison.get('adresse')}", styles['Normal']))
-    if commande.adresse_livraison.get('complement'):
-        elements.append(Paragraph(f"{commande.adresse_livraison.get('complement')}", styles['Normal']))
-    elements.append(Paragraph(f"{commande.adresse_livraison.get('code_postal')} {commande.adresse_livraison.get('ville')}", styles['Normal']))
-    elements.append(Paragraph(f"{commande.adresse_livraison.get('pays')}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.prenom} {commande.adresse_livraison.nom}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.rue}", styles['Normal']))
+    if commande.adresse_livraison.complement:
+        elements.append(Paragraph(f"{commande.adresse_livraison.complement}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.code_postal} {commande.adresse_livraison.ville}", styles['Normal']))
+    elements.append(Paragraph(f"{commande.adresse_livraison.pays}", styles['Normal']))
     elements.append(Spacer(1, 1*cm))
     
     # Détails des produits
@@ -1431,17 +1485,17 @@ def generer_facture_pdf(request, commande_id):
     data = [["Produit", "Quantité", "Prix unitaire HT", "Total HT"]]
     
     # Calcul des totaux
-    total_ttc = Decimal(str(commande.get_total_initial()))
+    total_ttc = commande.get_total()
     coeff_tva = Decimal("1.21")
     total_ht = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
     total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
     livraison_prix = commande.livraison
     
     # Récupérer les détails des produits
-    for produit_id, item_data in commande.get_quantites_initiales().items():
-        produit = get_object_or_404(Produit, id=produit_id)
-        quantite = Decimal(str(item_data["quantity"]))
-        prix_ttc = Decimal(str(item_data["price"]))
+    for ligne in commande.lignes_commande.all():
+        produit = ligne.produit
+        quantite = ligne.quantite
+        prix_ttc = ligne.prix_unitaire
         prix_ht = prix_ttc / coeff_tva
         sous_total_ht = prix_ht * quantite
         
