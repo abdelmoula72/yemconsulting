@@ -234,7 +234,7 @@
             <div id="adresse-content-shipping">
               {% if adresse_livraison %}
                 <div class="adresse-nom">{{ adresse_livraison.prenom }} {{ adresse_livraison.nom }}</div>
-                <div class="adresse-ligne">{{ adresse_livraison.adresse }}</div>
+                <div class="adresse-ligne">{{ adresse_livraison.rue }}</div>
                 {% if adresse_livraison.complement %}
                   <div class="adresse-ligne">{{ adresse_livraison.complement }}</div>
                 {% endif %}
@@ -266,7 +266,7 @@
             <div id="adresse-content-billing">
               {% if adresse_facturation %}
                 <div class="adresse-nom">{{ adresse_facturation.prenom }} {{ adresse_facturation.nom }}</div>
-                <div class="adresse-ligne">{{ adresse_facturation.adresse }}</div>
+                <div class="adresse-ligne">{{ adresse_facturation.rue }}</div>
                 {% if adresse_facturation.complement %}
                   <div class="adresse-ligne">{{ adresse_facturation.complement }}</div>
                 {% endif %}
@@ -318,7 +318,7 @@
               <input class="form-check-input flex-shrink-0" type="radio" name="adresseLivraison" value="{{ adresse.id }}" {% if adresse.id == adresse_livraison.id %}checked{% endif %}>
               <div class="adresse-popup-content">
                 <span class="adresse-popup-nom">{{ adresse.prenom }} {{ adresse.nom }}</span>
-                <span class="adresse-popup-ligne">{{ adresse.adresse }}</span>
+                <span class="adresse-popup-ligne">{{ adresse.rue }}</span>
                 {% if adresse.complement %}
                 <span class="adresse-popup-ligne">{{ adresse.complement }}</span>
                 {% endif %}
@@ -481,10 +481,9 @@
             targetCard.setAttribute('data-adresse-id', adresseId);
             targetContent.innerHTML = `
               <div class="adresse-nom">${data.prenom} ${data.nom}</div>
-              <div class="adresse-ligne">${data.adresse}</div>
+              <div class="adresse-ligne">${data.rue}</div>
               ${data.complement ? `<div class="adresse-ligne">${data.complement}</div>` : ''}
-              <div class="adresse-ligne">${data.code_postal}</div>
-              <div class="adresse-ligne">${data.ville}</div>
+              <div class="adresse-ligne">${data.code_postal} ${data.ville}</div>
               <div class="adresse-ligne">${data.pays}</div>
             `;
 

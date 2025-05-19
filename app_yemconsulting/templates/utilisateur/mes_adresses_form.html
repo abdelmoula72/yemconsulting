@@ -46,14 +46,14 @@
               
               <!-- Adresse -->
               <div class="col-12">
-                <label for="{{ form.adresse.id_for_label }}" class="form-label">Adresse</label>
-                <input type="text" class="form-control {% if form.adresse.errors %}is-invalid{% endif %}" 
-                       id="{{ form.adresse.id_for_label }}" 
-                       name="{{ form.adresse.name }}"
-                       value="{{ form.adresse.value|default:'' }}"
+                <label for="{{ form.rue.id_for_label }}" class="form-label">Adresse</label>
+                <input type="text" class="form-control {% if form.rue.errors %}is-invalid{% endif %}" 
+                       id="{{ form.rue.id_for_label }}" 
+                       name="{{ form.rue.name }}"
+                       value="{{ form.rue.value|default:'' }}"
                        required>
-                {% if form.adresse.errors %}
-                <div class="invalid-feedback">{{ form.adresse.errors|join:", " }}</div>
+                {% if form.rue.errors %}
+                <div class="invalid-feedback">{{ form.rue.errors|join:", " }}</div>
                 {% endif %}
               </div>
               

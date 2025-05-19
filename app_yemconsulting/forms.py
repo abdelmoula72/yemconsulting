@@ -72,7 +72,7 @@ class AdresseForm(forms.ModelForm):
 
     class Meta:
         model = Adresse
-        fields = ['prenom', 'nom', 'adresse', 'complement', 'code_postal', 'ville', 'pays']
+        fields = ['prenom', 'nom', 'rue', 'complement', 'code_postal', 'ville', 'pays']
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -126,11 +126,11 @@ class AdresseForm(forms.ModelForm):
             raise ValidationError("Le pays ne doit contenir que des lettres.")
         return pays
 
-    def clean_adresse(self):
-        adresse = self.cleaned_data['adresse']
-        if len(adresse) < 5:
+    def clean_rue(self):
+        rue = self.cleaned_data['rue']
+        if len(rue) < 5:
             raise ValidationError("L'adresse doit contenir au moins 5 caractères.")
-        return adresse
+        return rue
 
     def save(self, commit=True):
         instance = super().save(commit=False)

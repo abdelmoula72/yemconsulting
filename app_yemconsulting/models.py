@@ -189,7 +189,6 @@ class Commande(models.Model):
     date_commande = models.DateTimeField(auto_now_add=True)
     produits = models.ManyToManyField(Produit, through='LigneCommande')
     statut = models.CharField(max_length=50, choices=STATUT_CHOICES, default='en_attente')
-    traitee = models.BooleanField(default=False)
     adresse_livraison = models.ForeignKey(
         Adresse, 
         on_delete=models.PROTECT,
@@ -211,10 +210,7 @@ class Commande(models.Model):
         default=Decimal('0.00'),
         help_text='Montant total de la commande, incluant la livraison'
     )
-    quantites_initiales = models.JSONField(
-        default=dict,
-        help_text='Stockage des quantités initiales des produits au moment de la commande'
-    )
+    
 
     def __str__(self):
         return f"Commande {self.id} de {self.utilisateur.nom}"
@@ -228,20 +224,9 @@ class Commande(models.Model):
     def get_total_with_shipping(self) -> Decimal:
         return self.get_total() + self.livraison
 
-    def calculer_total(self):
-        self.total = self.get_total_with_shipping()
-        self.save()
+    
 
-    def enregistrer_quantites_initiales(self):
-        """Enregistre les quantités initiales des produits au moment de la commande."""
-        self.quantites_initiales = {
-            str(ligne.produit.id): {
-                "quantity": ligne.quantite,
-                "price": str(ligne.prix_unitaire)
-            }
-            for ligne in self.lignes_commande.all()
-        }
-        self.save()
+    
 
 class LigneCommande(models.Model):
     commande = models.ForeignKey(
