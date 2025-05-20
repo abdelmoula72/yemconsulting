@@ -26,7 +26,9 @@ urlpatterns = [
     path('panier/', views.afficher_panier, name='afficher_panier'),
     path('mettre_a_jour_quantite/<int:ligne_panier_id>/', views.mettre_a_jour_quantite, name='mettre_a_jour_quantite'),
     path('supprimer_article/<int:ligne_panier_id>/', views.supprimer_article, name='supprimer_article'),
+    path('vider_panier/', views.vider_panier, name='vider_panier'),
     path("confirmation-panier/", views.confirmer_panier, name="confirmer_panier"),
+    path('api-ajouter-adresse/', views.api_ajouter_adresse, name='api_ajouter_adresse'),
 
     # Commandes
     path('commande/', views.passer_commande, name='passer_commande'),

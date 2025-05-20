@@ -19,7 +19,7 @@ from django.utils.html import format_html, strip_tags
 from django.utils.formats import date_format
 from django.views.decorators.http import require_http_methods, require_POST
 from .models import Produit, Categorie, Panier, LignePanier, Utilisateur, Commande, Adresse, LigneCommande
-from .forms import (InscriptionForm, ModifierProfilForm, DonneesPersonnellesForm, AdresseForm)
+from .forms import (InscriptionForm, ModifierProfilForm, DonneesPersonnellesForm, AdresseForm, ModifierMotDePasseForm)
 import stripe
 from email.mime.image import MIMEImage
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -89,35 +89,58 @@ def confirmer_panier(request):
         messages.error(request, "Votre panier est vide.")
         return redirect("afficher_panier")
 
-    # Récupérer les adresses existantes de la session ou utiliser les adresses par défaut
-    adresse_livraison_id = request.session.get('adresse_livraison_id')
-    adresse_facturation_id = request.session.get('adresse_facturation_id')
-    
-    if adresse_livraison_id:
-        # Utiliser l'adresse de livraison de la session
-        adresse_livraison = get_object_or_404(Adresse, id=adresse_livraison_id, utilisateur=utilisateur)
-    else:
-        # Charger l'adresse de livraison par défaut pour l'affichage initial seulement
-        adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True).first()
-        # Mettre à jour la session uniquement si aucune adresse n'est déjà sélectionnée
+    # Récupérer les adresses par défaut de l'utilisateur
+    adresse_livraison_defaut = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True).first()
+    adresse_facturation_defaut = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True).first()
+
+    # Lors du premier chargement de la page, toujours utiliser les adresses par défaut
+    # ou si une adresse par défaut a été modifiée depuis la dernière visite
+    if 'adresse_livraison_id' not in request.session or \
+       (adresse_livraison_defaut and str(adresse_livraison_defaut.id) != request.session.get('adresse_livraison_id')):
+        adresse_livraison = adresse_livraison_defaut
         if adresse_livraison:
-            request.session['adresse_livraison_id'] = adresse_livraison.id
-    
-    if adresse_facturation_id:
-        # Utiliser l'adresse de facturation de la session
-        adresse_facturation = get_object_or_404(Adresse, id=adresse_facturation_id, utilisateur=utilisateur)
+            request.session['adresse_livraison_id'] = str(adresse_livraison.id)
     else:
-        # Charger l'adresse de facturation par défaut pour l'affichage initial seulement
-        adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True).first()
-        # Mettre à jour la session uniquement si aucune adresse n'est déjà sélectionnée
+        # Sinon, utiliser l'adresse de la session
+        adresse_livraison_id = request.session.get('adresse_livraison_id')
+        try:
+            adresse_livraison = Adresse.objects.get(id=adresse_livraison_id, utilisateur=utilisateur)
+        except Adresse.DoesNotExist:
+            # Si l'adresse n'existe plus, revenir à l'adresse par défaut
+            adresse_livraison = adresse_livraison_defaut
+            if adresse_livraison:
+                request.session['adresse_livraison_id'] = str(adresse_livraison.id)
+
+    # Logique modifiée pour l'adresse de facturation: ne pas réinitialiser l'adresse choisie
+    if 'adresse_facturation_id' not in request.session:
+        # Premier chargement: utiliser l'adresse de facturation par défaut ou l'adresse de livraison si elle n'existe pas
+        if adresse_facturation_defaut:
+            adresse_facturation = adresse_facturation_defaut
+        else:
+            adresse_facturation = adresse_livraison
+
         if adresse_facturation:
-            request.session['adresse_facturation_id'] = adresse_facturation.id
+            request.session['adresse_facturation_id'] = str(adresse_facturation.id)
+    else:
+        # Sinon, utiliser l'adresse de la session
+        adresse_facturation_id = request.session.get('adresse_facturation_id')
+        try:
+            adresse_facturation = Adresse.objects.get(id=adresse_facturation_id, utilisateur=utilisateur)
+        except Adresse.DoesNotExist:
+            # Si l'adresse n'existe plus, revenir à l'adresse par défaut ou à l'adresse de livraison
+            if adresse_facturation_defaut:
+                adresse_facturation = adresse_facturation_defaut
+            else:
+                adresse_facturation = adresse_livraison
+                
+            if adresse_facturation:
+                request.session['adresse_facturation_id'] = str(adresse_facturation.id)
 
     # Récupérer toutes les adresses de l'utilisateur
     adresses = Adresse.objects.filter(utilisateur=utilisateur)
 
     # Déterminer si les deux adresses sont identiques (même id)
-    toggle_facturation_identique = adresse_livraison and adresse_facturation and adresse_livraison.id == adresse_facturation.id
+    adresses_identiques = adresse_livraison and adresse_facturation and adresse_livraison.id == adresse_facturation.id
 
     # ────────── fonctions utilitaires dates ouvrables ──────────
     def business_days_after(n):
@@ -183,45 +206,60 @@ def confirmer_panier(request):
     livraison_info   = LIVRAISON_OPTIONS[livraison_select]
 
     lignes      = []
-    sous_total  = Decimal("0.00")
+    total = Decimal("0.00")
     total_ht    = Decimal("0.00")
     total_tva   = Decimal("0.00")
+    total_articles = 0
 
     for lp in lignes_qs:
         prod = lp.produit
-        prix_ht = Decimal(str(prod.prix_ht))
-        montant_tva = Decimal(str(prod.montant_tva))
+        # Convertir le prix à Decimal et calculer correctement en conservant le prix exact
+        prix_ttc = prod.prix
+        # Calculer le prix HT de manière exacte (2 décimales)
+        prix_ht = (prix_ttc / Decimal('1.21')).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        # Calculer la TVA par différence pour s'assurer que la somme égale le prix TTC
+        montant_tva = (prix_ttc - prix_ht).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         
         img_url = prod.image.url if prod.image else static("default.jpg")
         
-        sous_total_ligne = prod.prix * lp.quantite
-        sous_total_ht_ligne = prix_ht * lp.quantite
-        sous_total_tva_ligne = montant_tva * lp.quantite
+        sous_total = (prix_ttc * lp.quantite).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        sous_total_ht = (prix_ht * lp.quantite).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        sous_total_tva = (montant_tva * lp.quantite).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        total_articles += lp.quantite
         
         lignes.append({
             "image_url": img_url,
             "nom"      : prod.nom,
             "quantite" : lp.quantite,
-            "prix"     : prod.prix,
+            "prix"     : prix_ttc,
             "prix_ht"  : prix_ht,
             "montant_tva": montant_tva,
+            "sous_total": sous_total,
         })
         
-        sous_total += sous_total_ligne
-        total_ht += sous_total_ht_ligne
-        total_tva += sous_total_tva_ligne
+        total += sous_total
+        total_ht += sous_total_ht
+        total_tva += sous_total_tva
 
-    total_ttc = sous_total + livraison_info["prix"]
+    # S'assurer que tous les totaux sont arrondis à 2 décimales
+    total = total.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    total_ht = total_ht.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    total_tva = total_tva.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    
+    # Calculer le total TTC avec livraison
+    total_ttc = total
+    total_avec_livraison = total + livraison_info["prix"]
 
     form = ModifierProfilForm(instance=request.user)
 
     context = {
         "utilisateur"      : utilisateur,
         "lignes"           : lignes,
-        "sous_total"       : sous_total,
+        "sous_total"       : total,
         "total_ht"        : total_ht,
         "total_tva"       : total_tva,
         "total_ttc"        : total_ttc,
+        "total_avec_livraison": total_avec_livraison,
         "livraisons"       : LIVRAISON_OPTIONS,
         "livraison_select" : livraison_select,
         "livraison"        : livraison_info,
@@ -229,7 +267,7 @@ def confirmer_panier(request):
         "adresse_livraison": adresse_livraison,
         "adresse_facturation": adresse_facturation,
         "adresses"         : adresses,
-        "toggle_facturation_identique": toggle_facturation_identique,
+        "toggle_facturation_identique": adresses_identiques,
     }
     return render(request, "panier/confirmation_panier.html", context)
 
@@ -410,8 +448,7 @@ def ajouter_au_panier(request, produit_id):
     produit = get_object_or_404(Produit, id=produit_id)
     quantite = int(request.POST.get('quantite', 1))
 
-    
-
+    # Vérifier simplement si le stock est suffisant, sans le décrémenter
     if produit.stock < quantite:
         return JsonResponse({'success': False, 'message': f"Stock insuffisant ({produit.stock} restants)."}, status=400)
 
@@ -419,7 +456,7 @@ def ajouter_au_panier(request, produit_id):
     panier, created = Panier.objects.get_or_create(utilisateur=utilisateur)
     ligne_panier, created = LignePanier.objects.get_or_create(panier=panier, produit=produit)
 
-    # ✅ Vérifie si la quantité est bien mise à jour
+    # Mettre à jour la quantité sans décrémenter le stock
     if not created:
         ligne_panier.quantite += quantite
     else:
@@ -427,7 +464,6 @@ def ajouter_au_panier(request, produit_id):
     ligne_panier.save()
 
     total_articles = sum(ligne.quantite for ligne in LignePanier.objects.filter(panier=panier))
-
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({
@@ -472,30 +508,37 @@ def afficher_panier(request):
         .filter(panier=panier)
     ):
         prod = ligne.produit
-        prix_ht = Decimal(str(prod.prix_ht))
-        montant_tva = Decimal(str(prod.montant_tva))
+        prix_ttc = prod.prix
+        prix_ht = (prix_ttc / Decimal('1.21')).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        montant_tva = (prix_ttc - prix_ht).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
         img_url = prod.image.url if prod.image else static("default.jpg")
 
-        sous_total = prod.prix * ligne.quantite
-        sous_total_ht = prix_ht * ligne.quantite
-        sous_total_tva = montant_tva * ligne.quantite
+        sous_total = (prix_ttc * ligne.quantite).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        sous_total_ht = (prix_ht * ligne.quantite).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        sous_total_tva = (montant_tva * ligne.quantite).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         total_articles += ligne.quantite
 
         lignes_commande.append({
             "id"        : ligne.id,
             "nom"       : prod.nom,
-            "prix"      : prod.prix,
+            "prix"      : prix_ttc,
             "prix_ht"   : prix_ht,
             "montant_tva": montant_tva,
             "quantite"  : ligne.quantite,
             "sous_total": sous_total,
             "img_url"   : img_url,
+            "stock"     : prod.stock  # Ajout du stock disponible
         })
 
         total += sous_total
         total_ht += sous_total_ht
         total_tva += sous_total_tva
+    
+    # Arrondir les totaux finaux
+    total = total.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    total_ht = total_ht.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP) 
+    total_tva = total_tva.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
     return render(
         request,
@@ -592,12 +635,14 @@ def passer_commande(request):
         except Adresse.DoesNotExist:
             print(f"L'adresse de facturation ID {adresse_facturation_id} n'existe pas ou n'est pas active")
             # Fallback à l'adresse par défaut ou à l'adresse de livraison
-            adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True).first()
-            if adresse_facturation:
-                print(f"Fallback à l'adresse de facturation par défaut: {adresse_facturation.id}")
+            adresse_facturation_defaut = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True).first()
+            if adresse_facturation_defaut:
+                adresse_facturation = adresse_facturation_defaut
             else:
-                print(f"Utilisation de l'adresse de livraison comme adresse de facturation: {adresse_livraison.id}")
                 adresse_facturation = adresse_livraison
+                
+            if adresse_facturation:
+                print(f"Utilisation de l'adresse de livraison comme adresse de facturation: {adresse_livraison.id}")
     else:
         # Aucune adresse en session, utiliser l'adresse par défaut ou l'adresse de livraison
         adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True).first()
@@ -607,22 +652,12 @@ def passer_commande(request):
             print(f"Aucune adresse de facturation par défaut, utilisation de l'adresse de livraison: {adresse_livraison.id}")
             adresse_facturation = adresse_livraison
 
-    # ────────── gestion du stock ──────────
-    produits_alerte_stock = set()
-    for ligne in lignes_panier:
-        prod = ligne.produit
-        if prod.stock >= ligne.quantite:
-            prod.stock -= ligne.quantite
-            prod.save(update_fields=["stock"])
-            if prod.stock <= 15:
-                produits_alerte_stock.add(prod)
-
-    # ────────── création de la commande ──────────
-    livraison_prix = Decimal(request.session.pop("livraison_prix", "0.00"))
-    
     # Vérifier si le paiement a été effectué avec succès
     paiement_reussi = request.session.pop("paiement_reussi", False)
     statut_commande = "payee" if paiement_reussi else "confirmee"
+    
+    # ────────── création de la commande ──────────
+    livraison_prix = Decimal(request.session.pop("livraison_prix", "0.00"))
     
     # Utiliser directement les instances d'adresses
     commande = Commande.objects.create(
@@ -645,13 +680,25 @@ def passer_commande(request):
     # Calcul du total et sauvegarde
     commande.total = commande.get_total_with_shipping()
     commande.save(update_fields=['total'])
+    
+    # ────────── gestion du stock ──────────
+    # Ne décrémenter le stock que si le paiement a été confirmé
+    if paiement_reussi:
+        produits_alerte_stock = set()
+        for ligne in lignes_panier:
+            prod = ligne.produit
+            if prod.stock >= ligne.quantite:
+                prod.stock -= ligne.quantite
+                prod.save(update_fields=["stock"])
+                if prod.stock <= 15:
+                    produits_alerte_stock.add(prod)
 
     # ────────── totaux (HT / TVA / TTC) ──────────
     total_ttc = commande.get_total()
     coeff_tva = Decimal("1.21")
     total_ht = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
     total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
-
+    
     # ────────── préparation des lignes pour l'e-mail ──────────
     email_lignes = []
     images_a_attacher = []        # [(cid, path), …]
@@ -959,9 +1006,10 @@ def confirmation_commande(request, commande_id):
     for ligne in commande.lignes_commande.all().select_related('produit'):
         produit = ligne.produit
         prix_ttc = ligne.prix_unitaire
-        prix_ht = prix_ttc / Decimal('1.21')  # Calculer le prix HT
-        sous_total_ht = prix_ht * ligne.quantite
-        sous_total = prix_ttc * ligne.quantite  # Calculer le sous-total TTC
+        prix_ht = (prix_ttc / Decimal('1.21')).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        montant_tva = (prix_ttc - prix_ht).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        sous_total_ht = (prix_ht * ligne.quantite).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        sous_total = (prix_ttc * ligne.quantite).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
         # calcul de l'URL de la miniature
         if produit.image and produit.image.url:
@@ -974,18 +1022,20 @@ def confirmation_commande(request, commande_id):
             'quantite': ligne.quantite,
             'prix': prix_ttc,
             'prix_ht': prix_ht,
+            'montant_tva': montant_tva,
             'sous_total_ht': sous_total_ht,
-            'sous_total': sous_total,  # Ajouter le sous-total TTC
+            'sous_total': sous_total,
             'image_url': img_url,
         })
         total_ht += sous_total_ht
 
     # Calculer la TVA et les totaux
-    total_tva = total_ht * Decimal('0.21')
-    total_ttc = total_ht + total_tva
+    total_ht = total_ht.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    total_tva = (total_ht * Decimal('0.21')).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    total_ttc = (total_ht + total_tva).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     
     # Ajouter le prix de livraison au total TTC
-    total_avec_livraison = total_ttc + commande.livraison
+    total_avec_livraison = (total_ttc + commande.livraison).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
     return render(request, 'commande/confirmation_commande.html', {
         'commande': commande,
@@ -1191,9 +1241,8 @@ def mettre_a_jour_quantite(request, ligne_panier_id):
         difference = nouvelle_quantite - ligne_panier.quantite
 
         if difference > 0:
+            # Vérifier si le stock est suffisant sans le décrémenter
             if ligne_panier.produit.stock >= difference:
-                ligne_panier.produit.stock -= difference
-                ligne_panier.produit.save()
                 ligne_panier.quantite = nouvelle_quantite
                 ligne_panier.save()
             else:
@@ -1203,15 +1252,10 @@ def mettre_a_jour_quantite(request, ligne_panier_id):
                 # Sinon, affichage d'un message d'erreur classique
                 messages.error(request, f"Stock insuffisant pour augmenter la quantité à {nouvelle_quantite}.")
                 return redirect('afficher_panier')
-                
-
         else:
-            # Réincrémentation du stock si la quantité est réduite
-            ligne_panier.produit.stock += abs(difference)
-            ligne_panier.produit.save()
+            # Simplement mettre à jour la quantité sans toucher au stock
             ligne_panier.quantite = nouvelle_quantite
             ligne_panier.save()
-            
 
         # Calcul des sous-totaux et du total général
         sous_total = ligne_panier.produit.prix * ligne_panier.quantite
@@ -1261,6 +1305,65 @@ def supprimer_article(request, ligne_panier_id):
 
 
 
+def suggestions_produits(request):
+    terme = request.GET.get('q', '').strip()
+    if terme:
+        produits = Produit.objects.filter(nom__icontains=terme).select_related('categorie')[:10]  # Limitez les résultats
+        suggestions = [
+            {
+                'id': p.id, 
+                'nom': p.nom,
+                'prix': float(p.prix),  # Convertir Decimal en float pour la sérialisation JSON
+                'categorie': p.categorie.nom if p.categorie else None
+            } 
+            for p in produits
+        ]
+        return JsonResponse(suggestions, safe=False)
+    return JsonResponse([], safe=False)
+
+
+
+
+@login_required
+def supprimer_adresse(request, adresse_id):
+    adresse = get_object_or_404(Adresse, id=adresse_id, utilisateur=request.user)
+    
+    # Vérifier si l'adresse est utilisée dans des commandes
+    commandes_livraison = Commande.objects.filter(adresse_livraison=adresse)
+    commandes_facturation = Commande.objects.filter(adresse_facturation=adresse)
+    
+    if commandes_livraison.exists() or commandes_facturation.exists():
+        # Si l'adresse est utilisée, informer l'utilisateur et ne pas la supprimer
+        messages.error(request, "Cette adresse ne peut pas être supprimée car elle est utilisée dans une ou plusieurs commandes.")
+        return redirect('mes_adresses')
+    
+    if request.method == 'POST':
+        # Si l'adresse est par défaut, il faut gérer ce cas
+        if adresse.is_default_shipping:
+            # Chercher une autre adresse pour la définir comme adresse de livraison par défaut
+            autre_adresse = Adresse.objects.filter(utilisateur=request.user).exclude(id=adresse_id).first()
+            if autre_adresse:
+                autre_adresse.is_default_shipping = True
+                autre_adresse.save()
+        
+        if adresse.is_default_billing:
+            # Chercher une autre adresse pour la définir comme adresse de facturation par défaut
+            autre_adresse = Adresse.objects.filter(utilisateur=request.user).exclude(id=adresse_id).first()
+            if autre_adresse:
+                autre_adresse.is_default_billing = True
+                autre_adresse.save()
+        
+        adresse.delete()
+        messages.success(request, "Adresse supprimée avec succès.")
+    
+    return redirect('mes_adresses')
+
+
+
+
+
+
+
 def rechercher_produits(request):
     query = request.GET.get('q', '').strip()  # Récupère la requête et enlève les espaces
     produits = Produit.objects.filter(
@@ -1290,8 +1393,16 @@ def autocomplete_produits(request):
 def suggestions_produits(request):
     terme = request.GET.get('q', '').strip()
     if terme:
-        produits = Produit.objects.filter(nom__icontains=terme)[:10]  # Limitez les résultats
-        suggestions = [{'id': p.id, 'nom': p.nom} for p in produits]
+        produits = Produit.objects.filter(nom__icontains=terme).select_related('categorie')[:10]  # Limitez les résultats
+        suggestions = [
+            {
+                'id': p.id, 
+                'nom': p.nom,
+                'prix': float(p.prix),  # Convertir Decimal en float pour la sérialisation JSON
+                'categorie': p.categorie.nom if p.categorie else None
+            } 
+            for p in produits
+        ]
         return JsonResponse(suggestions, safe=False)
     return JsonResponse([], safe=False)
 
@@ -1299,30 +1410,38 @@ def suggestions_produits(request):
 
 
 @login_required
-def supprimer_adresse(request, adresse_id):
-    adresse = get_object_or_404(Adresse, id=adresse_id, utilisateur=request.user)
-    if request.method == 'POST':
-        adresse.delete()
-        messages.success(request, "Adresse supprimée avec succès.")
-    return redirect('mes_adresses')
-
-
-
-
-@login_required
 def mon_compte(request):
     user = request.user
+    
+    # Déterminer le formulaire actif (profil ou mot de passe)
+    form_type = request.GET.get('form', 'profil')
+    
+    # Initialiser les deux formulaires
+    profile_form = ModifierProfilForm(instance=user)
+    password_form = ModifierMotDePasseForm(user)
+    
     if request.method == 'POST':
-        pwd_form = PasswordChangeForm(user, request.POST)
-        if pwd_form.is_valid():
-            pwd_form.save()
-            messages.success(request, "Mot de passe mis à jour ✔")
-            return redirect('mon_compte')
-    else:
-        pwd_form = PasswordChangeForm(user)
+        # Déterminer le type de formulaire soumis
+        form_type = request.POST.get('form_type', 'profil')
+        
+        if form_type == 'profil':
+            profile_form = ModifierProfilForm(request.POST, instance=user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Profil mis à jour avec succès ✓")
+                return redirect('mon_compte')
+        else:  # form_type == 'password'
+            password_form = ModifierMotDePasseForm(user, request.POST)
+            if password_form.is_valid():
+                password_form.save()
+                messages.success(request, "Mot de passe mis à jour avec succès ✓")
+                return redirect('mon_compte')
+    
     return render(request, 'utilisateur/mon_compte.html', {
         'user': user,
-        'pwd_form': pwd_form,
+        'profile_form': profile_form,
+        'password_form': password_form,
+        'form_type': form_type
     })
 
 
@@ -1337,11 +1456,17 @@ def update_shipping_address(request, adresse_id):
             # Mettre à jour l'adresse de livraison pour cette commande
             request.session['adresse_livraison_id'] = adresse_id
             
+            # Déboguer la valeur de l'adresse
+            print(f"DEBUG - Adresse livraison ID {adresse_id}: rue='{adresse.rue}', type={type(adresse.rue)}")
+            
+            # Si la rue est None ou vide, mettre une valeur par défaut
+            rue = adresse.rue if adresse.rue else ""
+            
             return JsonResponse({
                 'success': True,
                 'prenom': adresse.prenom,
                 'nom': adresse.nom,
-                'rue': adresse.rue,
+                'rue': rue,
                 'complement': adresse.complement,
                 'code_postal': adresse.code_postal,
                 'ville': adresse.ville,
@@ -1387,11 +1512,18 @@ def update_billing_address(request, adresse_id):
     adresse = get_object_or_404(Adresse, pk=adresse_id, utilisateur=request.user)
     # Stocke l'id dans la session pour la commande
     request.session['adresse_facturation_id'] = adresse_id
+    
+    # Déboguer la valeur de l'adresse
+    print(f"DEBUG - Adresse ID {adresse_id}: rue='{adresse.rue}', type={type(adresse.rue)}")
+    
+    # Si la rue est None ou vide, mettre une valeur par défaut
+    rue = adresse.rue if adresse.rue else ""
+    
     return JsonResponse({
         'success': True,
         'prenom': adresse.prenom,
         'nom': adresse.nom,
-        'rue': adresse.rue,
+        'rue': rue,
         'complement': adresse.complement,
         'code_postal': adresse.code_postal,
         'ville': adresse.ville,
@@ -1556,6 +1688,94 @@ def generer_facture_pdf(request, commande_id):
     
     # Retourner le PDF comme une réponse à télécharger
     return FileResponse(buffer, as_attachment=True, filename=f"facture_{commande.id}.pdf")
+
+
+
+
+@login_required
+def vider_panier(request):
+    """
+    Supprime tous les articles du panier de l'utilisateur.
+    """
+    utilisateur = request.user
+    panier = get_object_or_404(Panier, utilisateur=utilisateur)
+    
+    # Supprimer toutes les lignes du panier
+    LignePanier.objects.filter(panier=panier).delete()
+    
+    messages.success(request, "Votre panier a été vidé avec succès.")
+    return redirect('afficher_panier')
+
+
+
+
+@require_POST
+def api_ajouter_adresse(request):
+    """
+    Vue API pour ajouter une adresse sans redirection.
+    Renvoie l'adresse créée au format JSON pour mise à jour côté client.
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'message': 'Authentification requise'}, status=401)
+
+    user = request.user
+    adresse = Adresse(utilisateur=user)
+    
+    # Récupérer les données du formulaire
+    prenom = request.POST.get('prenom', '')
+    nom = request.POST.get('nom', '')
+    rue = request.POST.get('rue', '')
+    complement = request.POST.get('complement', '')
+    code_postal = request.POST.get('code_postal', '')
+    ville = request.POST.get('ville', '')
+    pays = request.POST.get('pays', 'Belgique')
+    is_default_shipping = request.POST.get('is_default_shipping') == 'on'
+    is_default_billing = request.POST.get('is_default_billing') == 'on'
+    
+    # Validation minimale
+    if not prenom or not nom or not rue or not code_postal or not ville:
+        return JsonResponse({
+            'success': False, 
+            'message': 'Veuillez remplir tous les champs obligatoires'
+        }, status=400)
+    
+    # Mettre à jour l'adresse
+    adresse.prenom = prenom
+    adresse.nom = nom
+    adresse.rue = rue
+    adresse.complement = complement
+    adresse.code_postal = code_postal
+    adresse.ville = ville
+    adresse.pays = pays
+    adresse.is_default_shipping = is_default_shipping
+    adresse.is_default_billing = is_default_billing
+    
+    # Gérer les adresses par défaut
+    if is_default_shipping:
+        Adresse.objects.filter(utilisateur=user, is_default_shipping=True).update(is_default_shipping=False)
+    
+    if is_default_billing:
+        Adresse.objects.filter(utilisateur=user, is_default_billing=True).update(is_default_billing=False)
+    
+    adresse.save()
+    
+    # Renvoyer les données de l'adresse créée
+    return JsonResponse({
+        'success': True,
+        'message': 'Adresse ajoutée avec succès',
+        'adresse': {
+            'id': adresse.id,
+            'prenom': adresse.prenom,
+            'nom': adresse.nom,
+            'rue': adresse.rue,
+            'complement': adresse.complement,
+            'code_postal': adresse.code_postal,
+            'ville': adresse.ville,
+            'pays': adresse.pays,
+            'is_default_shipping': adresse.is_default_shipping,
+            'is_default_billing': adresse.is_default_billing
+        }
+    })
 
 
 

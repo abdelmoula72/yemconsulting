@@ -221,10 +221,13 @@
         </div>
         <div class="d-flex justify-content-between fs-5">
           <span>Total TTC :</span>
-          <strong id="totttc">{{ total_ttc|floatformat:2 }} €</strong>
+          <strong id="totttc">{{ total_avec_livraison|floatformat:2 }} €</strong>
         </div>
       </div>
-      <div class="mb-4 adresse">
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Adresses de livraison et facturation</h5>
+        </div>
         <div class="carte-adresse w-100" id="carteAdresseLivraison" {% if adresse_livraison %}data-adresse-id="{{ adresse_livraison.id }}"{% endif %}>
           <div>
             <div class="adresse-titre">
@@ -301,16 +304,98 @@
         <div class="alert alert-info mb-3" role="alert">
           <small><i class="bi bi-info-circle-fill me-1"></i> Cette sélection s'applique uniquement à cette commande et ne change pas votre adresse par défaut.</small>
         </div>
-        <a href="{% url 'mes_adresses' %}?edit=shipping" class="ajouter-adresse-btn text-decoration-none text-center mb-3 d-block" id="btnOuvrirAjoutAdresse" style="height: 100px; display: flex; align-items: center; justify-content: center; border: 2px dashed #6c47ff; background: #faf8ff; color: #6c47ff; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s ease; border-radius: 12px; padding: 15px;">
-          <div class="d-flex align-items-center justify-content-center" style="height: 100%;">
-            <div style="font-size: 1.5rem; line-height: 1; margin-right: 12px; display: flex; align-items: center;">
-              <svg viewBox="0 0 24 24" width="1.5em" height="1.5em" fill="currentColor">
-                <path d="M20.25 11.2h-7.5V3.7a.75.75 0 0 0-1.5 0v7.5h-7.5a.75.75 0 0 0 0 1.5h7.5v7.5a.75.75 0 0 0 1.5 0v-7.5h7.5a.75.75 0 0 0 0-1.5"></path>
-              </svg>
+        <button type="button" class="btn btn-primary mb-3 w-100" id="btnAfficherFormulaireAdresse">
+          <i class="bi bi-plus-circle me-2"></i> Ajouter une nouvelle adresse
+        </button>
+        
+        <!-- Formulaire d'ajout d'adresse (caché initialement) -->
+        <div id="formulaireNouvelleAdresse" class="mb-4" style="display: none;">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Ajouter une adresse</h5>
+              <button type="button" class="btn-close" id="fermerFormulaireAdresse" aria-label="Fermer"></button>
             </div>
-            <span style="line-height: 1;">Ajouter une adresse</span>
+            <div class="card-body">
+              <form id="formAjouterAdresse" method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="row g-3">
+                  <!-- Prénom -->
+                  <div class="col-md-6">
+                    <label for="prenom" class="form-label">Prénom</label>
+                    <input type="text" class="form-control" id="prenom" name="prenom" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre prénom.</div>
+                  </div>
+                  
+                  <!-- Nom -->
+                  <div class="col-md-6">
+                    <label for="nom" class="form-label">Nom</label>
+                    <input type="text" class="form-control" id="nom" name="nom" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre nom.</div>
+                  </div>
+                  
+                  <!-- Adresse -->
+                  <div class="col-12">
+                    <label for="rue" class="form-label">Adresse</label>
+                    <input type="text" class="form-control" id="rue" name="rue" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre adresse.</div>
+                  </div>
+                  
+                  <!-- Complément -->
+                  <div class="col-12">
+                    <label for="complement" class="form-label">Complément d'adresse</label>
+                    <input type="text" class="form-control" id="complement" name="complement">
+                  </div>
+                  
+                  <!-- Code postal -->
+                  <div class="col-md-4">
+                    <label for="code_postal" class="form-label">Code postal</label>
+                    <input type="text" class="form-control" id="code_postal" name="code_postal" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre code postal.</div>
+                  </div>
+                  
+                  <!-- Ville -->
+                  <div class="col-md-8">
+                    <label for="ville" class="form-label">Ville</label>
+                    <input type="text" class="form-control" id="ville" name="ville" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre ville.</div>
+                  </div>
+                  
+                  <!-- Pays -->
+                  <div class="col-12">
+                    <label for="pays" class="form-label">Pays</label>
+                    <input type="text" class="form-control" id="pays" name="pays" value="Belgique" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre pays.</div>
+                  </div>
+                  
+                  <!-- Options par défaut -->
+                  <div class="col-md-6">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="is_default_shipping" name="is_default_shipping">
+                      <label class="form-check-label" for="is_default_shipping">
+                        Adresse de livraison par défaut
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="is_default_billing" name="is_default_billing">
+                      <label class="form-check-label" for="is_default_billing">
+                        Adresse de facturation par défaut
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-4">
+                  <button type="submit" class="btn btn-primary">Enregistrer</button>
+                  <button type="button" class="btn btn-secondary" id="annulerAjoutAdresse">Annuler</button>
+                </div>
+              </form>
+            </div>
           </div>
-        </a>
+        </div>
+        
         <div class="list-group">
           {% for adresse in adresses %}
           <div class="adresse-item-container">
@@ -361,26 +446,137 @@
     const toggleAdresseFacturation = document.getElementById("toggleAdresseFacturation");
     const carteAdresseLivraison = document.getElementById("carteAdresseLivraison");
     const carteAdresseFacturation = document.getElementById("carteAdresseFacturation");
-    const btnOuvrirAjoutAdresse = document.getElementById("btnOuvrirAjoutAdresse");
+    
+    // Éléments pour le formulaire d'ajout d'adresse
+    const btnAfficherFormulaireAdresse = document.getElementById("btnAfficherFormulaireAdresse");
+    const formulaireNouvelleAdresse = document.getElementById("formulaireNouvelleAdresse");
+    const fermerFormulaireAdresse = document.getElementById("fermerFormulaireAdresse");
+    const annulerAjoutAdresse = document.getElementById("annulerAjoutAdresse");
+    const formAjouterAdresse = document.getElementById("formAjouterAdresse");
 
     let typeAdresseAModifier = "shipping";
+
+    // Fonctions d'affichage et masquage du formulaire d'adresse
+    function afficherFormulaireAdresse() {
+      formulaireNouvelleAdresse.style.display = "block";
+      btnAfficherFormulaireAdresse.style.display = "none";
+    }
+    
+    function masquerFormulaireAdresse() {
+      formulaireNouvelleAdresse.style.display = "none";
+      btnAfficherFormulaireAdresse.style.display = "block";
+      formAjouterAdresse.reset();
+    }
+    
+    // Gestionnaires d'événements pour le formulaire d'adresse
+    btnAfficherFormulaireAdresse.addEventListener('click', afficherFormulaireAdresse);
+    fermerFormulaireAdresse.addEventListener('click', masquerFormulaireAdresse);
+    annulerAjoutAdresse.addEventListener('click', masquerFormulaireAdresse);
+    
+    // Soumission du formulaire d'ajout d'adresse
+    formAjouterAdresse.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Validation HTML5
+      if (!this.checkValidity()) {
+        e.stopPropagation();
+        this.classList.add('was-validated');
+        return;
+      }
+      
+      // Créer FormData à partir du formulaire
+      const formData = new FormData(this);
+      
+      // Envoyer la requête AJAX
+      fetch("{% url 'api_ajouter_adresse' %}", {
+        method: "POST",
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Créer un nouvel élément d'adresse et l'ajouter à la liste
+          const adresseElement = creerElementAdresse(data.adresse);
+          document.querySelector('.list-group').prepend(adresseElement);
+          
+          // Sélectionner automatiquement la nouvelle adresse
+          const radioInput = adresseElement.querySelector('input[type="radio"]');
+          if (radioInput) {
+            radioInput.checked = true;
+            validerAdresse.disabled = false;
+          }
+          
+          // Afficher un message de succès
+          afficherAlerte('Adresse ajoutée avec succès', 'success');
+          
+          // Masquer le formulaire
+          masquerFormulaireAdresse();
+        } else {
+          // Afficher un message d'erreur
+          afficherAlerte(data.message || 'Une erreur est survenue', 'danger');
+        }
+      })
+      .catch(error => {
+        console.error('Erreur:', error);
+        afficherAlerte('Une erreur est survenue lors de la communication avec le serveur', 'danger');
+      });
+    });
+    
+    // Fonction pour créer un élément d'adresse
+    function creerElementAdresse(adresse) {
+      const container = document.createElement('div');
+      container.className = 'adresse-item-container';
+      
+      container.innerHTML = `
+        <label class="list-group-item d-flex gap-2" style="cursor: pointer;">
+          <input class="form-check-input flex-shrink-0" type="radio" name="adresseLivraison" value="${adresse.id}">
+          <div class="adresse-popup-content">
+            <span class="adresse-popup-nom">${adresse.prenom} ${adresse.nom}</span>
+            <span class="adresse-popup-ligne">${adresse.rue}</span>
+            ${adresse.complement ? `<span class="adresse-popup-ligne">${adresse.complement}</span>` : ''}
+            <span class="adresse-popup-ligne">${adresse.code_postal} ${adresse.ville}</span>
+            <span class="adresse-popup-ligne">${adresse.pays}</span>
+          </div>
+        </label>
+      `;
+      
+      // Ajouter l'événement pour activer le bouton Valider
+      const radio = container.querySelector('input[type="radio"]');
+      radio.addEventListener('change', () => {
+        validerAdresse.disabled = false;
+      });
+      
+      return container;
+    }
+    
+    // Fonction pour afficher une alerte
+    function afficherAlerte(message, type = 'info') {
+      const alerteDiv = document.createElement('div');
+      alerteDiv.className = `alert alert-${type} alert-dismissible fade show`;
+      alerteDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+      `;
+      
+      // Insérer l'alerte en haut de la modale
+      const modalBody = document.querySelector('.modal-body');
+      modalBody.insertBefore(alerteDiv, modalBody.firstChild);
+      
+      // Supprimer l'alerte après 5 secondes
+      setTimeout(() => {
+        alerteDiv.remove();
+      }, 5000);
+    }
 
     // Activer/désactiver le bouton Valider en fonction de la sélection
     document.querySelectorAll('input[name="adresseLivraison"]').forEach(radio => {
       radio.addEventListener('change', () => {
         validerAdresse.disabled = false;
       });
-    });
-
-    // Gestion du bouton "Ajouter une adresse"
-    btnOuvrirAjoutAdresse.addEventListener('click', (e) => {
-      e.preventDefault();
-      const modal = bootstrap.Modal.getInstance(modalAdresses);
-      if (modal) modal.hide();
-      
-      // Rediriger vers la page d'ajout d'adresse avec retour à la page actuelle
-      const returnUrl = encodeURIComponent(window.location.pathname);
-      window.location.href = `${btnOuvrirAjoutAdresse.href}?next=${returnUrl}`;
     });
 
     // Fonction pour vérifier si les adresses sont identiques

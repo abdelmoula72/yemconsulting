@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 import os
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 
 
@@ -133,11 +133,11 @@ class Produit(models.Model):
     
     @property
     def prix_ht(self):
-        return round(float(self.prix) / 1.21, 2)
+        return (Decimal(self.prix) / Decimal('1.21')).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
     @property
     def montant_tva(self):
-        return round(float(self.prix) - self.prix_ht, 2)
+        return (self.prix - self.prix_ht).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
 
 

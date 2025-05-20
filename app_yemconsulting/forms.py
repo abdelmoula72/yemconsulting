@@ -45,6 +45,49 @@ class ModifierProfilForm(forms.ModelForm):
             'nom': 'Nom',
             'email': 'Email',
         }
+        widgets = {
+            'prenom': forms.TextInput(attrs={'placeholder': 'ex: Jean', 'class': 'form-control'}),
+            'nom': forms.TextInput(attrs={'placeholder': 'ex: Dupont', 'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'ex: jean.dupont@email.com', 'class': 'form-control'}),
+        }
+
+    def clean_prenom(self):
+        prenom = self.cleaned_data['prenom']
+        if not re.match(r'^[A-Za-zÀ-ÿ\-\s]+$', prenom):
+            raise ValidationError("Le prénom ne doit contenir que des lettres.")
+        return prenom
+
+    def clean_nom(self):
+        nom = self.cleaned_data['nom']
+        if not re.match(r'^[A-Za-zÀ-ÿ\-\s]+$', nom):
+            raise ValidationError("Le nom ne doit contenir que des lettres.")
+        return nom
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        # Vérifier si l'email existe déjà, en excluant l'utilisateur courant
+        if Utilisateur.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+            raise ValidationError("Cette adresse email est déjà utilisée.")
+        return email
+
+class ModifierMotDePasseForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Ajouter des labels et placeholders en français
+        self.fields['old_password'].label = 'Mot de passe actuel'
+        self.fields['old_password'].widget.attrs.update({'placeholder': 'Votre mot de passe actuel', 'class': 'form-control'})
+        self.fields['new_password1'].label = 'Nouveau mot de passe'
+        self.fields['new_password1'].widget.attrs.update({'placeholder': 'Minimum 8 caractères, avec lettres et chiffres', 'class': 'form-control'})
+        self.fields['new_password2'].label = 'Confirmer le nouveau mot de passe'
+        self.fields['new_password2'].widget.attrs.update({'placeholder': 'Répétez votre nouveau mot de passe', 'class': 'form-control'})
+
+    def clean_new_password1(self):
+        password = self.cleaned_data.get('new_password1')
+        if len(password) < 8:
+            raise ValidationError("Le mot de passe doit contenir au moins 8 caractères.")
+        if not re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
+            raise ValidationError("Le mot de passe doit contenir au moins une lettre et un chiffre.")
+        return password
 
 class DonneesPersonnellesForm(forms.ModelForm):
     class Meta:
@@ -90,6 +133,10 @@ class AdresseForm(forms.ModelForm):
                 self.fields['is_default_billing'].widget.attrs['disabled'] = True
             # Si c'est une modification d'adresse par défaut et qu'il n'y en a qu'une
             elif self.instance.pk:
+                # S'assurer que les valeurs initiales correspondent à l'état actuel de l'instance
+                self.fields['is_default_shipping'].initial = self.instance.is_default_shipping
+                self.fields['is_default_billing'].initial = self.instance.is_default_billing
+                
                 if self.instance.is_default_shipping and self.user.adresses.filter(is_default_shipping=True).count() == 1:
                     self.fields['is_default_shipping'].widget.attrs['disabled'] = True
                 if self.instance.is_default_billing and self.user.adresses.filter(is_default_billing=True).count() == 1:
@@ -140,10 +187,15 @@ class AdresseForm(forms.ModelForm):
             instance.is_default_shipping = True
             instance.is_default_billing = True
         else:
-            # Sinon utiliser les valeurs du formulaire sauf si disabled
-            if not self.fields['is_default_shipping'].widget.attrs.get('disabled'):
+            # Pour les champs désactivés, conserver leur valeur actuelle
+            if 'is_default_shipping' in self.fields and self.fields['is_default_shipping'].widget.attrs.get('disabled'):
+                pass  # Garder la valeur actuelle de l'instance (déjà définie)
+            else:
                 instance.is_default_shipping = self.cleaned_data.get('is_default_shipping', False)
-            if not self.fields['is_default_billing'].widget.attrs.get('disabled'):
+                
+            if 'is_default_billing' in self.fields and self.fields['is_default_billing'].widget.attrs.get('disabled'):
+                pass  # Garder la valeur actuelle de l'instance (déjà définie)
+            else:
                 instance.is_default_billing = self.cleaned_data.get('is_default_billing', False)
         
         if commit:
