@@ -90,8 +90,8 @@ def confirmer_panier(request):
         return redirect("afficher_panier")
 
     # Récupérer les adresses par défaut de l'utilisateur
-    adresse_livraison_defaut = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True).first()
-    adresse_facturation_defaut = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True).first()
+    adresse_livraison_defaut = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True, is_deleted=False).first()
+    adresse_facturation_defaut = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True, is_deleted=False).first()
 
     # Lors du premier chargement de la page, toujours utiliser les adresses par défaut
     # ou si une adresse par défaut a été modifiée depuis la dernière visite
@@ -104,43 +104,36 @@ def confirmer_panier(request):
         # Sinon, utiliser l'adresse de la session
         adresse_livraison_id = request.session.get('adresse_livraison_id')
         try:
-            adresse_livraison = Adresse.objects.get(id=adresse_livraison_id, utilisateur=utilisateur)
+            adresse_livraison = Adresse.objects.get(id=adresse_livraison_id, utilisateur=utilisateur, is_deleted=False)
         except Adresse.DoesNotExist:
             # Si l'adresse n'existe plus, revenir à l'adresse par défaut
             adresse_livraison = adresse_livraison_defaut
             if adresse_livraison:
                 request.session['adresse_livraison_id'] = str(adresse_livraison.id)
 
-    # Logique modifiée pour l'adresse de facturation: ne pas réinitialiser l'adresse choisie
-    if 'adresse_facturation_id' not in request.session:
-        # Premier chargement: utiliser l'adresse de facturation par défaut ou l'adresse de livraison si elle n'existe pas
-        if adresse_facturation_defaut:
-            adresse_facturation = adresse_facturation_defaut
-        else:
-            adresse_facturation = adresse_livraison
-
+    # De même pour l'adresse de facturation
+    if 'adresse_facturation_id' not in request.session or \
+       (adresse_facturation_defaut and str(adresse_facturation_defaut.id) != request.session.get('adresse_facturation_id')) or \
+       'toggle_facturation_identique' not in request.session:
+        adresse_facturation = adresse_facturation_defaut
+        adresses_identiques = (adresse_livraison and adresse_facturation and adresse_livraison.id == adresse_facturation.id)
         if adresse_facturation:
             request.session['adresse_facturation_id'] = str(adresse_facturation.id)
+        request.session['toggle_facturation_identique'] = adresses_identiques
     else:
         # Sinon, utiliser l'adresse de la session
         adresse_facturation_id = request.session.get('adresse_facturation_id')
         try:
-            adresse_facturation = Adresse.objects.get(id=adresse_facturation_id, utilisateur=utilisateur)
+            adresse_facturation = Adresse.objects.get(id=adresse_facturation_id, utilisateur=utilisateur, is_deleted=False)
         except Adresse.DoesNotExist:
-            # Si l'adresse n'existe plus, revenir à l'adresse par défaut ou à l'adresse de livraison
-            if adresse_facturation_defaut:
-                adresse_facturation = adresse_facturation_defaut
-            else:
-                adresse_facturation = adresse_livraison
-                
+            # Si l'adresse n'existe plus, revenir à l'adresse par défaut
+            adresse_facturation = adresse_facturation_defaut
             if adresse_facturation:
                 request.session['adresse_facturation_id'] = str(adresse_facturation.id)
+        adresses_identiques = request.session.get('toggle_facturation_identique', False)
 
-    # Récupérer toutes les adresses de l'utilisateur
-    adresses = Adresse.objects.filter(utilisateur=utilisateur)
-
-    # Déterminer si les deux adresses sont identiques (même id)
-    adresses_identiques = adresse_livraison and adresse_facturation and adresse_livraison.id == adresse_facturation.id
+    # Toutes les adresses disponibles pour l'utilisateur
+    adresses = Adresse.objects.filter(utilisateur=utilisateur, is_deleted=False)
 
     # ────────── fonctions utilitaires dates ouvrables ──────────
     def business_days_after(n):
@@ -1134,12 +1127,12 @@ def mes_adresses(request):
     next_url = request.GET.get('next')
 
     # Si aucune adresse n'existe, rediriger vers ajout avec les deux cases pré-cochées
-    if user.adresses.count() == 0 and not edit_type:
+    if user.adresses.filter(is_deleted=False).count() == 0 and not edit_type:
         return editer_adresse(request, first_address=True)
 
     # Si on vient de la confirmation panier et pas de paramètre edit, rediriger vers l'adresse de livraison par défaut
     if next_url and not edit_type:
-        adresse_livraison = user.adresses.filter(is_default_shipping=True).first()
+        adresse_livraison = user.adresses.filter(is_default_shipping=True, is_deleted=False).first()
         if adresse_livraison:
             url = f"{request.path}?edit=shipping&pk={adresse_livraison.pk}"
             if next_url:
@@ -1149,8 +1142,8 @@ def mes_adresses(request):
     if edit_type in ['shipping', 'billing']:
         return editer_adresse(request, pk=pk)
 
-    # Récupère toutes les adresses
-    adresses = user.adresses.all()
+    # Récupère toutes les adresses non supprimées
+    adresses = user.adresses.filter(is_deleted=False)
     return render(request, 'utilisateur/mes_adresses_list.html', {
         'adresses': adresses,
     })
@@ -1161,7 +1154,7 @@ def editer_adresse(request, pk=None, first_address=False):
 
     # Choix de l'instance (modification vs création)
     if pk:
-        adresse = get_object_or_404(Adresse, pk=pk, utilisateur=user)
+        adresse = get_object_or_404(Adresse, pk=pk, utilisateur=user, is_deleted=False)
     else:
         adresse = Adresse(utilisateur=user)
 
@@ -1328,32 +1321,28 @@ def suggestions_produits(request):
 def supprimer_adresse(request, adresse_id):
     adresse = get_object_or_404(Adresse, id=adresse_id, utilisateur=request.user)
     
-    # Vérifier si l'adresse est utilisée dans des commandes
-    commandes_livraison = Commande.objects.filter(adresse_livraison=adresse)
-    commandes_facturation = Commande.objects.filter(adresse_facturation=adresse)
-    
-    if commandes_livraison.exists() or commandes_facturation.exists():
-        # Si l'adresse est utilisée, informer l'utilisateur et ne pas la supprimer
-        messages.error(request, "Cette adresse ne peut pas être supprimée car elle est utilisée dans une ou plusieurs commandes.")
-        return redirect('mes_adresses')
-    
     if request.method == 'POST':
         # Si l'adresse est par défaut, il faut gérer ce cas
         if adresse.is_default_shipping:
             # Chercher une autre adresse pour la définir comme adresse de livraison par défaut
-            autre_adresse = Adresse.objects.filter(utilisateur=request.user).exclude(id=adresse_id).first()
+            autre_adresse = Adresse.objects.filter(utilisateur=request.user, is_deleted=False).exclude(id=adresse_id).first()
             if autre_adresse:
                 autre_adresse.is_default_shipping = True
                 autre_adresse.save()
         
         if adresse.is_default_billing:
             # Chercher une autre adresse pour la définir comme adresse de facturation par défaut
-            autre_adresse = Adresse.objects.filter(utilisateur=request.user).exclude(id=adresse_id).first()
+            autre_adresse = Adresse.objects.filter(utilisateur=request.user, is_deleted=False).exclude(id=adresse_id).first()
             if autre_adresse:
                 autre_adresse.is_default_billing = True
                 autre_adresse.save()
         
-        adresse.delete()
+        # Soft delete: marquer comme supprimée au lieu de réellement supprimer
+        adresse.is_deleted = True
+        adresse.is_default_shipping = False
+        adresse.is_default_billing = False
+        adresse.save()
+        
         messages.success(request, "Adresse supprimée avec succès.")
     
     return redirect('mes_adresses')
@@ -1481,7 +1470,7 @@ def update_shipping_address(request, adresse_id):
 
 @login_required
 def definir_adresse_livraison(request, pk):
-    adresse = get_object_or_404(Adresse, pk=pk, utilisateur=request.user)
+    adresse = get_object_or_404(Adresse, pk=pk, utilisateur=request.user, is_deleted=False)
     
     # Désactive l'adresse de livraison par défaut actuelle
     Adresse.objects.filter(utilisateur=request.user, is_default_shipping=True).update(is_default_shipping=False)
@@ -1495,7 +1484,7 @@ def definir_adresse_livraison(request, pk):
 
 @login_required
 def definir_adresse_facturation(request, pk):
-    adresse = get_object_or_404(Adresse, pk=pk, utilisateur=request.user)
+    adresse = get_object_or_404(Adresse, pk=pk, utilisateur=request.user, is_deleted=False)
     
     # Désactive l'adresse de facturation par défaut actuelle
     Adresse.objects.filter(utilisateur=request.user, is_default_billing=True).update(is_default_billing=False)
@@ -1752,10 +1741,10 @@ def api_ajouter_adresse(request):
     
     # Gérer les adresses par défaut
     if is_default_shipping:
-        Adresse.objects.filter(utilisateur=user, is_default_shipping=True).update(is_default_shipping=False)
+        Adresse.objects.filter(utilisateur=user, is_default_shipping=True, is_deleted=False).update(is_default_shipping=False)
     
     if is_default_billing:
-        Adresse.objects.filter(utilisateur=user, is_default_billing=True).update(is_default_billing=False)
+        Adresse.objects.filter(utilisateur=user, is_default_billing=True, is_deleted=False).update(is_default_billing=False)
     
     adresse.save()
     
