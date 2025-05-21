@@ -111,26 +111,38 @@ def confirmer_panier(request):
             if adresse_livraison:
                 request.session['adresse_livraison_id'] = str(adresse_livraison.id)
 
-    # De même pour l'adresse de facturation
-    if 'adresse_facturation_id' not in request.session or \
-       (adresse_facturation_defaut and str(adresse_facturation_defaut.id) != request.session.get('adresse_facturation_id')) or \
-       'toggle_facturation_identique' not in request.session:
-        adresse_facturation = adresse_facturation_defaut
-        adresses_identiques = (adresse_livraison and adresse_facturation and adresse_livraison.id == adresse_facturation.id)
-        if adresse_facturation:
-            request.session['adresse_facturation_id'] = str(adresse_facturation.id)
-        request.session['toggle_facturation_identique'] = adresses_identiques
+    # Récupérer l'état du toggle d'adresse identique depuis la session
+    toggle_facturation_identique = request.session.get('toggle_facturation_identique', False)
+
+    # Si le toggle est activé, l'adresse de facturation est la même que l'adresse de livraison
+    if toggle_facturation_identique and adresse_livraison:
+        adresse_facturation = adresse_livraison
+        if 'adresse_facturation_id' in request.session:
+            # Synchroniser l'ID dans la session
+            request.session['adresse_facturation_id'] = request.session.get('adresse_livraison_id')
+        adresses_identiques = True
     else:
-        # Sinon, utiliser l'adresse de la session
-        adresse_facturation_id = request.session.get('adresse_facturation_id')
-        try:
-            adresse_facturation = Adresse.objects.get(id=adresse_facturation_id, utilisateur=utilisateur, is_deleted=False)
-        except Adresse.DoesNotExist:
-            # Si l'adresse n'existe plus, revenir à l'adresse par défaut
+        # De même pour l'adresse de facturation
+        if 'adresse_facturation_id' not in request.session or \
+           (adresse_facturation_defaut and str(adresse_facturation_defaut.id) != request.session.get('adresse_facturation_id')):
             adresse_facturation = adresse_facturation_defaut
             if adresse_facturation:
                 request.session['adresse_facturation_id'] = str(adresse_facturation.id)
-        adresses_identiques = request.session.get('toggle_facturation_identique', False)
+        else:
+            # Sinon, utiliser l'adresse de la session
+            adresse_facturation_id = request.session.get('adresse_facturation_id')
+            try:
+                adresse_facturation = Adresse.objects.get(id=adresse_facturation_id, utilisateur=utilisateur, is_deleted=False)
+            except Adresse.DoesNotExist:
+                # Si l'adresse n'existe plus, revenir à l'adresse par défaut
+                adresse_facturation = adresse_facturation_defaut
+                if adresse_facturation:
+                    request.session['adresse_facturation_id'] = str(adresse_facturation.id)
+
+        # Vérifier si les adresses sont identiques pour l'état du toggle
+        adresses_identiques = (adresse_livraison and adresse_facturation and adresse_livraison.id == adresse_facturation.id)
+        # Mettre à jour la session
+        request.session['toggle_facturation_identique'] = adresses_identiques
 
     # Toutes les adresses disponibles pour l'utilisateur
     adresses = Adresse.objects.filter(utilisateur=utilisateur, is_deleted=False)
@@ -184,15 +196,45 @@ def confirmer_panier(request):
 
     # ────────── POST : enregistre le choix puis redirige ──────────
     if request.method == "POST":
+        # Récupérer le choix de livraison
         choix = request.POST.get("livraison", "standard")
         if choix not in LIVRAISON_OPTIONS:
             choix = "standard"
 
-        # on mémorise le choix pour la session
+        # Mémoriser le choix dans la session
         request.session["livraison_select"] = choix
         request.session["livraison_prix"]   = str(LIVRAISON_OPTIONS[choix]["prix"])
 
-        return redirect("stripe_checkout")   # (ou la route de paiement voulue)
+        # Traiter les adresses depuis le formulaire soumis
+        adresse_livraison_id = request.POST.get('adresse_livraison_id')
+        adresse_facturation_id = request.POST.get('adresse_facturation_id')
+        
+        # Journalisation pour le débogage
+        print(f"POST /confirmation-panier/ adresses du formulaire: livraison={adresse_livraison_id}, facturation={adresse_facturation_id}")
+        
+        # Mettre à jour les adresses dans la session si elles sont fournies
+        if adresse_livraison_id:
+            try:
+                # Vérifier que l'adresse existe et appartient à l'utilisateur
+                Adresse.objects.get(id=adresse_livraison_id, utilisateur=utilisateur, is_deleted=False)
+                request.session['adresse_livraison_id'] = str(adresse_livraison_id)
+                print(f"Adresse de livraison mise à jour dans la session: {adresse_livraison_id}")
+            except (Adresse.DoesNotExist, ValueError):
+                print(f"Adresse de livraison invalide: {adresse_livraison_id}")
+        
+        if adresse_facturation_id:
+            try:
+                # Vérifier que l'adresse existe et appartient à l'utilisateur
+                Adresse.objects.get(id=adresse_facturation_id, utilisateur=utilisateur, is_deleted=False)
+                request.session['adresse_facturation_id'] = str(adresse_facturation_id)
+                print(f"Adresse de facturation mise à jour dans la session: {adresse_facturation_id}")
+            except (Adresse.DoesNotExist, ValueError):
+                print(f"Adresse de facturation invalide: {adresse_facturation_id}")
+
+        # Vérifier que les adresses sont bien enregistrées dans la session
+        print(f"Session avant redirection: livraison={request.session.get('adresse_livraison_id')}, facturation={request.session.get('adresse_facturation_id')}")
+
+        return redirect("stripe_checkout")
 
     # ────────── GET : prépare l'affichage ──────────
     livraison_select = request.session.get("livraison_select", "standard")
@@ -567,6 +609,7 @@ def passer_commande(request):
     print(f"====== CRÉATION DE COMMANDE ======")
     print(f"Session adresse_livraison_id: {request.session.get('adresse_livraison_id')}")
     print(f"Session adresse_facturation_id: {request.session.get('adresse_facturation_id')}")
+    print(f"Toggle facturation identique: {request.session.get('toggle_facturation_identique', False)}")
 
     lignes_panier = (
         LignePanier.objects
@@ -586,15 +629,15 @@ def passer_commande(request):
     # Si l'ID existe dans la session, récupérer cette adresse spécifique
     if adresse_livraison_id:
         try:
-            adresse_livraison = Adresse.objects.get(id=adresse_livraison_id, utilisateur=utilisateur)
+            adresse_livraison = Adresse.objects.get(id=adresse_livraison_id, utilisateur=utilisateur, is_deleted=False)
             print(f"Utilisation de l'adresse de livraison sélectionnée: {adresse_livraison.id} - {adresse_livraison}")
-        except Adresse.DoesNotExist:
+        except (Adresse.DoesNotExist, ValueError):
             print(f"L'adresse de livraison ID {adresse_livraison_id} n'existe pas ou n'est pas active")
             # Fallback à l'adresse par défaut
-            adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True).first()
+            adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True, is_deleted=False).first()
             if adresse_livraison:
                 adresse_livraison_id = adresse_livraison.id
-                request.session['adresse_livraison_id'] = adresse_livraison_id
+                request.session['adresse_livraison_id'] = str(adresse_livraison.id)
                 print(f"Fallback à l'adresse de livraison par défaut: {adresse_livraison.id}")
             else:
                 print("Aucune adresse de livraison trouvée")
@@ -604,10 +647,10 @@ def passer_commande(request):
                 )
     else:
         # Aucune adresse en session, utiliser l'adresse par défaut
-        adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True).first()
+        adresse_livraison = Adresse.objects.filter(utilisateur=utilisateur, is_default_shipping=True, is_deleted=False).first()
         if adresse_livraison:
             adresse_livraison_id = adresse_livraison.id
-            request.session['adresse_livraison_id'] = adresse_livraison_id
+            request.session['adresse_livraison_id'] = str(adresse_livraison.id)
             print(f"Utilisation de l'adresse de livraison par défaut: {adresse_livraison.id}")
         else:
             print("Aucune adresse de livraison par défaut trouvée")
@@ -618,32 +661,39 @@ def passer_commande(request):
 
     # Récupérer l'adresse de facturation de la session
     adresse_facturation_id = request.session.get('adresse_facturation_id')
+    toggle_facturation_identique = request.session.get('toggle_facturation_identique', False)
     print(f"Adresse de facturation ID dans session: {adresse_facturation_id}")
+    print(f"Toggle facturation identique: {toggle_facturation_identique}")
     
-    # Si l'ID existe dans la session, récupérer cette adresse spécifique
+    # CORRECTION: Ne pas utiliser le toggle pour écraser l'adresse de facturation si elle a été explicitement choisie
+    # Si une adresse de facturation est spécifiée, l'utiliser indépendamment du toggle
     if adresse_facturation_id:
         try:
-            adresse_facturation = Adresse.objects.get(id=adresse_facturation_id, utilisateur=utilisateur)
+            adresse_facturation = Adresse.objects.get(id=adresse_facturation_id, utilisateur=utilisateur, is_deleted=False)
             print(f"Utilisation de l'adresse de facturation sélectionnée: {adresse_facturation.id} - {adresse_facturation}")
-        except Adresse.DoesNotExist:
+        except (Adresse.DoesNotExist, ValueError):
             print(f"L'adresse de facturation ID {adresse_facturation_id} n'existe pas ou n'est pas active")
             # Fallback à l'adresse par défaut ou à l'adresse de livraison
-            adresse_facturation_defaut = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True).first()
+            adresse_facturation_defaut = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True, is_deleted=False).first()
             if adresse_facturation_defaut:
                 adresse_facturation = adresse_facturation_defaut
+                print(f"Fallback à l'adresse de facturation par défaut: {adresse_facturation.id}")
             else:
+                print(f"Pas d'adresse de facturation trouvée, utilisation de l'adresse de livraison: {adresse_livraison.id}")
                 adresse_facturation = adresse_livraison
-                
-            if adresse_facturation:
-                print(f"Utilisation de l'adresse de livraison comme adresse de facturation: {adresse_livraison.id}")
     else:
-        # Aucune adresse en session, utiliser l'adresse par défaut ou l'adresse de livraison
-        adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True).first()
-        if adresse_facturation:
-            print(f"Utilisation de l'adresse de facturation par défaut: {adresse_facturation.id}")
-        else:
-            print(f"Aucune adresse de facturation par défaut, utilisation de l'adresse de livraison: {adresse_livraison.id}")
+        # Si pas d'adresse de facturation en session, utiliser le comportement du toggle
+        if toggle_facturation_identique:
+            print(f"Toggle activé et pas d'adresse de facturation spécifiée: utilisation de l'adresse de livraison")
             adresse_facturation = adresse_livraison
+        else:
+            # Aucune adresse en session, utiliser l'adresse par défaut ou l'adresse de livraison
+            adresse_facturation = Adresse.objects.filter(utilisateur=utilisateur, is_default_billing=True, is_deleted=False).first()
+            if adresse_facturation:
+                print(f"Utilisation de l'adresse de facturation par défaut: {adresse_facturation.id}")
+            else:
+                print(f"Aucune adresse de facturation par défaut, utilisation de l'adresse de livraison: {adresse_livraison.id}")
+                adresse_facturation = adresse_livraison
 
     # Vérifier si le paiement a été effectué avec succès
     paiement_reussi = request.session.pop("paiement_reussi", False)
@@ -660,6 +710,8 @@ def passer_commande(request):
         adresse_facturation=adresse_facturation,
         livraison=livraison_prix
     )
+    
+    print(f"Commande créée avec adresse_livraison_id={adresse_livraison.id}, adresse_facturation_id={adresse_facturation.id}")
 
     # Créer les lignes de commande à partir des lignes de panier
     for ligne in lignes_panier:
@@ -1443,7 +1495,7 @@ def update_shipping_address(request, adresse_id):
             adresse = Adresse.objects.get(id=adresse_id, utilisateur=request.user)
             
             # Mettre à jour l'adresse de livraison pour cette commande
-            request.session['adresse_livraison_id'] = adresse_id
+            request.session['adresse_livraison_id'] = str(adresse_id)
             
             # Déboguer la valeur de l'adresse
             print(f"DEBUG - Adresse livraison ID {adresse_id}: rue='{adresse.rue}', type={type(adresse.rue)}")
@@ -1500,7 +1552,7 @@ def definir_adresse_facturation(request, pk):
 def update_billing_address(request, adresse_id):
     adresse = get_object_or_404(Adresse, pk=adresse_id, utilisateur=request.user)
     # Stocke l'id dans la session pour la commande
-    request.session['adresse_facturation_id'] = adresse_id
+    request.session['adresse_facturation_id'] = str(adresse_id)
     
     # Déboguer la valeur de l'adresse
     print(f"DEBUG - Adresse ID {adresse_id}: rue='{adresse.rue}', type={type(adresse.rue)}")
@@ -1765,6 +1817,20 @@ def api_ajouter_adresse(request):
             'is_default_billing': adresse.is_default_billing
         }
     })
+
+@require_POST
+def update_toggle_addresses(request):
+    """Met à jour l'état du toggle pour utiliser la même adresse pour la livraison et la facturation."""
+    is_same = request.POST.get('is_same', 'false').lower() == 'true'
+    request.session['toggle_facturation_identique'] = is_same
+    
+    # Ne synchroniser l'adresse de facturation avec celle de livraison que lorsque
+    # le toggle est activé ET que l'utilisateur n'a pas encore choisi une adresse différente
+    if is_same and 'adresse_livraison_id' in request.session:
+        # Synchroniser l'adresse de facturation avec celle de livraison
+        request.session['adresse_facturation_id'] = request.session['adresse_livraison_id']
+    
+    return JsonResponse({'success': True})
 
 
 
