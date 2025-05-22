@@ -3,6 +3,7 @@ from django.contrib.auth import views as auth_views
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static 
+from django.views.generic.base import RedirectView
 
 
 urlpatterns = [
@@ -28,7 +29,9 @@ urlpatterns = [
     path('supprimer_article/<int:ligne_panier_id>/', views.supprimer_article, name='supprimer_article'),
     path('vider_panier/', views.vider_panier, name='vider_panier'),
     path("confirmation-panier/", views.confirmer_panier, name="confirmer_panier"),
+    path("confirmer-panier/", views.confirmer_panier, name="confirmer_panier_alt"),  # URL alternative pour le JavaScript
     path('api-ajouter-adresse/', views.api_ajouter_adresse, name='api_ajouter_adresse'),
+    path('update-toggle-addresses/', views.update_toggle_addresses, name='update_toggle_addresses'),
 
     # Commandes
     path('commande/', views.passer_commande, name='passer_commande'),

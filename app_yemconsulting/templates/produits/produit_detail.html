@@ -22,9 +22,9 @@
             </div>
 
             <!-- Infos prix + stock -->
-            <p><strong>Prix HT :</strong> {{ produit.prix_ht }} €</p>
-            <p><strong>TVA (21%) :</strong> {{ produit.montant_tva }} €</p>
-            <p><strong>Prix TTC :</strong> {{ produit.prix }} €</p>
+            <p><strong>Prix HT :</strong> {{ produit.prix_ht|floatformat:2 }} €</p>
+            <p><strong>TVA (21%) :</strong> {{ produit.montant_tva|floatformat:2 }} €</p>
+            <p><strong>Prix TTC :</strong> {{ produit.prix|floatformat:2 }} €</p>
             <p><strong>Stock :</strong> {{ produit.stock }} articles</p>
 
             {% if produit.stock > 0 %}

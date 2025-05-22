@@ -125,7 +125,7 @@
       
       <div class="text-end">
         <p><strong>Sous-total :</strong> <span class="ms-2">{{ total_ttc|floatformat:2 }}&nbsp;€</span></p>
-        <p><strong>Livraison :</strong> <span class="ms-2">{% if commande.livraison == 0 %}Gratuite{% else %}{{ commande.livraison|floatformat:2 }}&nbsp;€{% endif %}</span></p>
+        <p><strong>Livraison :</strong> <span class="ms-2">{% if commande.prix_livraison == 0 %}Gratuite{% else %}{{ commande.prix_livraison|floatformat:2 }}&nbsp;€{% endif %}</span></p>
         <p class="fs-5 mb-5"><strong>Total TTC :</strong> <span class="ms-2">{{ total_avec_livraison|floatformat:2 }}&nbsp;€</span></p>
         {% if commande.statut != 'payee' %}
         <div class="text-end">

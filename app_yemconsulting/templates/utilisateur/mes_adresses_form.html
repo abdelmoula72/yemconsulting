@@ -114,7 +114,11 @@
                   <input type="checkbox" class="form-check-input" 
                          id="{{ form.is_default_shipping.id_for_label }}" 
                          name="{{ form.is_default_shipping.name }}"
-                         {% if form.is_default_shipping.value %}checked{% endif %}>
+                         {% if form.is_default_shipping.value %}checked{% endif %}
+                         {% if form.is_default_shipping.field.widget.attrs.disabled %}disabled{% endif %}>
+                  {% if form.is_default_shipping.field.widget.attrs.disabled and form.is_default_shipping.value %}
+                    <input type="hidden" name="{{ form.is_default_shipping.name }}" value="on">
+                  {% endif %}
                   <label class="form-check-label" for="{{ form.is_default_shipping.id_for_label }}">
                     Adresse de livraison par défaut
                   </label>
@@ -126,7 +130,11 @@
                   <input type="checkbox" class="form-check-input" 
                          id="{{ form.is_default_billing.id_for_label }}" 
                          name="{{ form.is_default_billing.name }}"
-                         {% if form.is_default_billing.value %}checked{% endif %}>
+                         {% if form.is_default_billing.value %}checked{% endif %}
+                         {% if form.is_default_billing.field.widget.attrs.disabled %}disabled{% endif %}>
+                  {% if form.is_default_billing.field.widget.attrs.disabled and form.is_default_billing.value %}
+                    <input type="hidden" name="{{ form.is_default_billing.name }}" value="on">
+                  {% endif %}
                   <label class="form-check-label" for="{{ form.is_default_billing.id_for_label }}">
                     Adresse de facturation par défaut
                   </label>

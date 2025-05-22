@@ -62,14 +62,14 @@ class CategorieAdmin(admin.ModelAdmin):
 
 class CustomUserAdmin(UserAdmin):
     list_display = ('email', 'nom', 'prenom', 'is_admin', 'is_staff')
-    list_filter = ('is_admin', 'is_superuser')
+    list_filter = ('is_admin',)
     search_fields = ('email', 'nom', 'prenom')
     ordering = ('email',)
 
     fieldsets = (
         ('Informations de connexion', {'fields': ('email', 'password')}),
         ('Informations personnelles', {'fields': ('nom', 'prenom')}),
-        ('Permissions', {'fields': ('is_admin', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Permissions', {'fields': ('is_admin', 'groups', 'user_permissions')}),
     )
 
     add_fieldsets = (
@@ -78,6 +78,18 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('email', 'nom', 'prenom', 'password1', 'password2'),
         }),
     )
+    
+    actions = ['promouvoir_admin', 'revoquer_admin']
+    
+    def promouvoir_admin(self, request, queryset):
+        queryset.update(is_admin=True)
+        self.message_user(request, f"{queryset.count()} utilisateur(s) promu(s) au statut d'administrateur.")
+    promouvoir_admin.short_description = "Promouvoir les utilisateurs sélectionnés en administrateurs"
+    
+    def revoquer_admin(self, request, queryset):
+        queryset.update(is_admin=False, is_superuser=False)
+        self.message_user(request, f"{queryset.count()} utilisateur(s) ont perdu leurs droits d'administrateur.")
+    revoquer_admin.short_description = "Révoquer les droits d'administrateur des utilisateurs sélectionnés"
 
 admin.site.register(Commande, CommandeAdmin)
 admin.site.register(Produit, ProduitAdmin)

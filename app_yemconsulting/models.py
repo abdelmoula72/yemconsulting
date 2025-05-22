@@ -23,7 +23,6 @@ class UtilisateurManager(BaseUserManager):
     def create_superuser(self, email, nom, password=None):
         utilisateur = self.create_user(email, nom, password)
         utilisateur.is_admin = True
-        utilisateur.is_superuser = True
         utilisateur.save(using=self._db)
         return utilisateur
 
@@ -48,6 +47,10 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         return self.is_admin
 
+    def save(self, *args, **kwargs):
+        if self.is_admin:
+            self.is_superuser = True
+        super().save(*args, **kwargs)
 
 
 class Adresse(models.Model):
@@ -61,6 +64,7 @@ class Adresse(models.Model):
     pays = models.CharField(max_length=100, default='Belgique')
     is_default_shipping = models.BooleanField(default=False, help_text='Adresse de livraison par défaut')
     is_default_billing = models.BooleanField(default=False, help_text='Adresse de facturation par défaut')
+    is_deleted = models.BooleanField(default=False, help_text='Adresse supprimée par l\'utilisateur')
 
     class Meta:
         verbose_name = 'Adresse'
@@ -203,7 +207,7 @@ class Commande(models.Model):
         null=True,
         blank=True
     )
-    livraison = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    prix_livraison = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -222,7 +226,7 @@ class Commande(models.Model):
         return sum(ligne.produit.prix * ligne.quantite for ligne in self.lignes_commande.all())
 
     def get_total_with_shipping(self) -> Decimal:
-        return self.get_total() + self.livraison
+        return self.get_total() + self.prix_livraison
 
     
 

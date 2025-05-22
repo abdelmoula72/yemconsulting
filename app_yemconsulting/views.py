@@ -143,7 +143,7 @@ def confirmer_panier(request):
         adresses_identiques = (adresse_livraison and adresse_facturation and adresse_livraison.id == adresse_facturation.id)
         # Mettre à jour la session
         request.session['toggle_facturation_identique'] = adresses_identiques
-
+        
     # Toutes les adresses disponibles pour l'utilisateur
     adresses = Adresse.objects.filter(utilisateur=utilisateur, is_deleted=False)
 
@@ -209,8 +209,18 @@ def confirmer_panier(request):
         adresse_livraison_id = request.POST.get('adresse_livraison_id')
         adresse_facturation_id = request.POST.get('adresse_facturation_id')
         
-        # Journalisation pour le débogage
+        # Journalisation détaillée pour le débogage
         print(f"POST /confirmation-panier/ adresses du formulaire: livraison={adresse_livraison_id}, facturation={adresse_facturation_id}")
+        print(f"Tous les champs du formulaire reçus: {dict(request.POST)}")
+        
+        # FIX: Si les adresses ne sont pas dans le formulaire, les récupérer depuis les attributs data-adresse-id
+        if not adresse_livraison_id and 'adresse_livraison_id' in request.session:
+            adresse_livraison_id = request.session['adresse_livraison_id']
+            print(f"Récupération de l'adresse de livraison depuis la session: {adresse_livraison_id}")
+            
+        if not adresse_facturation_id and 'adresse_facturation_id' in request.session:
+            adresse_facturation_id = request.session['adresse_facturation_id']
+            print(f"Récupération de l'adresse de facturation depuis la session: {adresse_facturation_id}")
         
         # Mettre à jour les adresses dans la session si elles sont fournies
         if adresse_livraison_id:
@@ -344,12 +354,12 @@ def stripe_checkout(request):
             })
         
         # Frais de livraison
-        if commande.livraison > 0:
+        if commande.prix_livraison > 0:
             line_items.append({
                 "price_data": {
                     "currency": "eur",
                     "product_data": {"name": "Frais de livraison"},
-                    "unit_amount": int(commande.livraison * 100),
+                    "unit_amount": int(commande.prix_livraison * 100),
                 },
                 "quantity": 1,
             })
@@ -708,7 +718,7 @@ def passer_commande(request):
         statut=statut_commande,
         adresse_livraison=adresse_livraison,
         adresse_facturation=adresse_facturation,
-        livraison=livraison_prix
+        prix_livraison=livraison_prix
     )
     
     print(f"Commande créée avec adresse_livraison_id={adresse_livraison.id}, adresse_facturation_id={adresse_facturation.id}")
@@ -889,7 +899,7 @@ def passer_commande(request):
     coeff_tva = Decimal("1.21")
     total_ht = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
     total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
-    livraison_prix = commande.livraison
+    livraison_prix = commande.prix_livraison
     
     # Récupérer les détails des produits
     for ligne in commande.lignes_commande.all():
@@ -1080,7 +1090,7 @@ def confirmation_commande(request, commande_id):
     total_ttc = (total_ht + total_tva).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     
     # Ajouter le prix de livraison au total TTC
-    total_avec_livraison = (total_ttc + commande.livraison).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    total_avec_livraison = (total_ttc + commande.prix_livraison).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
     return render(request, 'commande/confirmation_commande.html', {
         'commande': commande,
@@ -1492,33 +1502,87 @@ def mon_compte(request):
 def update_shipping_address(request, adresse_id):
     if request.method == 'POST':
         try:
-            adresse = Adresse.objects.get(id=adresse_id, utilisateur=request.user)
+            adresse = get_object_or_404(Adresse, id=adresse_id, utilisateur=request.user, is_deleted=False)
             
             # Mettre à jour l'adresse de livraison pour cette commande
             request.session['adresse_livraison_id'] = str(adresse_id)
             
-            # Déboguer la valeur de l'adresse
-            print(f"DEBUG - Adresse livraison ID {adresse_id}: rue='{adresse.rue}', type={type(adresse.rue)}")
+            # Sécuriser toutes les valeurs pour éviter undefined
+            prenom = adresse.prenom if adresse.prenom else ""
+            nom = adresse.nom if adresse.nom else ""
+            # Vérifier si c'est adresse ou rue
+            rue = ""
+            if hasattr(adresse, 'adresse'):
+                rue = adresse.adresse if adresse.adresse else ""
+            else:
+                rue = adresse.rue if adresse.rue else ""
+            complement = adresse.complement if adresse.complement else ""
+            code_postal = adresse.code_postal if adresse.code_postal else ""
+            ville = adresse.ville if adresse.ville else ""
+            pays = adresse.pays if adresse.pays else ""
             
-            # Si la rue est None ou vide, mettre une valeur par défaut
-            rue = adresse.rue if adresse.rue else ""
+            print(f"DEBUG - Adresse livraison ID {adresse_id} sécurisée: rue='{rue}'")
             
             return JsonResponse({
                 'success': True,
-                'prenom': adresse.prenom,
-                'nom': adresse.nom,
+                'prenom': prenom,
+                'nom': nom,
                 'rue': rue,
-                'complement': adresse.complement,
-                'code_postal': adresse.code_postal,
-                'ville': adresse.ville,
-                'pays': adresse.pays
+                'complement': complement,
+                'code_postal': code_postal,
+                'ville': ville,
+                'pays': pays
             })
-        except Adresse.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Adresse non trouvée'}, status=404)
+        except Exception as e:
+            print(f"ERREUR update_shipping_address: {str(e)}")
+            return JsonResponse({
+                'success': False, 
+                'error': 'Erreur lors de la récupération de l\'adresse',
+                'details': str(e)
+            }, status=500)
     return JsonResponse({'success': False, 'error': 'Méthode non autorisée'}, status=405)
 
-
-
+@require_POST
+def update_billing_address(request, adresse_id):
+    try:
+        adresse = get_object_or_404(Adresse, id=adresse_id, utilisateur=request.user, is_deleted=False)
+        
+        # Mettre à jour l'adresse de facturation pour cette commande
+        request.session['adresse_facturation_id'] = str(adresse_id)
+        
+        # Sécuriser toutes les valeurs pour éviter undefined
+        prenom = adresse.prenom if adresse.prenom else ""
+        nom = adresse.nom if adresse.nom else ""
+        # Vérifier si c'est adresse ou rue
+        rue = ""
+        if hasattr(adresse, 'adresse'):
+            rue = adresse.adresse if adresse.adresse else ""
+        else:
+            rue = adresse.rue if adresse.rue else ""
+        complement = adresse.complement if adresse.complement else ""
+        code_postal = adresse.code_postal if adresse.code_postal else ""
+        ville = adresse.ville if adresse.ville else ""
+        pays = adresse.pays if adresse.pays else ""
+        
+        print(f"DEBUG - Adresse facturation ID {adresse_id} sécurisée: rue='{rue}'")
+        
+        return JsonResponse({
+            'success': True,
+            'prenom': prenom,
+            'nom': nom,
+            'rue': rue,
+            'complement': complement,
+            'code_postal': code_postal,
+            'ville': ville,
+            'pays': pays
+        })
+    except Exception as e:
+        print(f"ERREUR update_billing_address: {str(e)}")
+        return JsonResponse({
+            'success': False, 
+            'error': 'Erreur lors de la récupération de l\'adresse',
+            'details': str(e)
+        }, status=500)
 
 @login_required
 def definir_adresse_livraison(request, pk):
@@ -1547,29 +1611,6 @@ def definir_adresse_facturation(request, pk):
     
     messages.success(request, "Adresse de facturation par défaut mise à jour.")
     return redirect('mes_adresses')
-
-@require_POST
-def update_billing_address(request, adresse_id):
-    adresse = get_object_or_404(Adresse, pk=adresse_id, utilisateur=request.user)
-    # Stocke l'id dans la session pour la commande
-    request.session['adresse_facturation_id'] = str(adresse_id)
-    
-    # Déboguer la valeur de l'adresse
-    print(f"DEBUG - Adresse ID {adresse_id}: rue='{adresse.rue}', type={type(adresse.rue)}")
-    
-    # Si la rue est None ou vide, mettre une valeur par défaut
-    rue = adresse.rue if adresse.rue else ""
-    
-    return JsonResponse({
-        'success': True,
-        'prenom': adresse.prenom,
-        'nom': adresse.nom,
-        'rue': rue,
-        'complement': adresse.complement,
-        'code_postal': adresse.code_postal,
-        'ville': adresse.ville,
-        'pays': adresse.pays
-    })
 
 @login_required
 def generer_facture_pdf(request, commande_id):
@@ -1662,7 +1703,7 @@ def generer_facture_pdf(request, commande_id):
     coeff_tva = Decimal("1.21")
     total_ht = (total_ttc / coeff_tva).quantize(Decimal("0.01"), ROUND_HALF_UP)
     total_tva = (total_ttc - total_ht).quantize(Decimal("0.01"), ROUND_HALF_UP)
-    livraison_prix = commande.livraison
+    livraison_prix = commande.prix_livraison
     
     # Récupérer les détails des produits
     for ligne in commande.lignes_commande.all():

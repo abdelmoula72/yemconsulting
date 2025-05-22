@@ -46,7 +46,7 @@
       <h4 class="mb-1">Adresse de livraison</h4>
       <p class="mb-3">
         {{ adresse_livraison.prenom }} {{ adresse_livraison.nom }}<br>
-        {{ adresse_livraison.adresse }}<br>
+        {{ adresse_livraison.rue }}<br>
         {% if adresse_livraison.complement %}{{ adresse_livraison.complement }}<br>{% endif %}
         {{ adresse_livraison.code_postal }} {{ adresse_livraison.ville }}<br>
         {{ adresse_livraison.pays }}
@@ -56,7 +56,7 @@
       <h4 class="mb-1">Adresse de facturation</h4>
       <p class="mb-3">
         {{ adresse_facturation.prenom }} {{ adresse_facturation.nom }}<br>
-        {{ adresse_facturation.adresse }}<br>
+        {{ adresse_facturation.rue }}<br>
         {% if adresse_facturation.complement %}{{ adresse_facturation.complement }}<br>{% endif %}
         {{ adresse_facturation.code_postal }} {{ adresse_facturation.ville }}<br>
         {{ adresse_facturation.pays }}

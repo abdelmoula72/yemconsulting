@@ -39,6 +39,8 @@ $(document).ready(function () {
         .addClass('position-absolute top-100 start-0 w-100 bg-white border rounded mt-1 shadow-sm')
         .attr('id', 'suggestion-box')
         .css('z-index', '1050')
+        .css('max-height', '300px')
+        .css('overflow-y', 'auto')
         .hide();
     
     searchBar.after(resultsContainer);
@@ -51,19 +53,20 @@ $(document).ready(function () {
                 if (data.length > 0) {
                     data.forEach(function(item) {
                         const suggestionDiv = $(`
-                            <div class="suggestion-item p-2 d-flex justify-content-between align-items-center">
+                            <div class="suggestion-item p-2 d-flex justify-content-between align-items-center border-bottom">
                                 <div>
-                                    <div class="fw-bold">${item.nom}</div>
-                                    ${item.categorie ? `<small class="text-muted">${item.categorie}</small>` : ''}
+                                    <span class="text-secondary">${item.nom}</span>
+                                    ${item.categorie ? `<small class="text-muted d-block">${item.categorie}</small>` : ''}
                                 </div>
-                                <div class="text-end">
-                                    <span class="badge bg-primary">${item.prix} €</span>
+                                <div class="text-end ms-2">
+                                    ${item.prix ? `<small class="badge bg-light text-dark">${item.prix} €</small>` : ''}
                                 </div>
                             </div>
                         `).data('product-id', item.id);
 
                         suggestionDiv
                             .css('cursor', 'pointer')
+                            .css('font-size', '0.9rem')
                             .hover(
                                 function() { $(this).addClass('bg-light'); },
                                 function() { $(this).removeClass('bg-light'); }

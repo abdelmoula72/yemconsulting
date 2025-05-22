@@ -33,9 +33,9 @@
 
                     <!-- Prix -->
                     <div class="text-end mb-2" style="min-width: 180px;">
-                        <p class="mb-1">Prix HT : {{ produit.prix_ht }} €</p>
-                        <p class="mb-1">TVA (21%) : {{ produit.montant_tva }} €</p>
-                        <p class="mb-1 fw-bold">Prix TTC : {{ produit.prix }} €</p>
+                        <p class="mb-1">Prix HT : {{ produit.prix_ht|floatformat:2 }} €</p>
+                        <p class="mb-1">TVA (21%) : {{ produit.montant_tva|floatformat:2 }} €</p>
+                        <p class="mb-1 fw-bold">Prix TTC : {{ produit.prix|floatformat:2 }} €</p>
                     </div>
 
                     <!-- Bouton -->
