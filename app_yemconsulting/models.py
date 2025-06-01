@@ -227,10 +227,26 @@ class Commande(models.Model):
 
     def get_total_with_shipping(self) -> Decimal:
         return self.get_total() + self.prix_livraison
-
     
+    def clean(self):
+        # Validation pour s'assurer qu'une commande a au moins une ligne
+        # Cette validation est appelée par les formulaires et peut être appelée manuellement
+        from django.core.exceptions import ValidationError
+        # Ne valider que si la commande a déjà été sauvegardée et qu'elle n'est pas en cours de création
+        # Si self.pk existe, ça signifie que la commande a déjà été sauvegardée au moins une fois
+        if hasattr(self, 'pk') and self.pk and not self.lignes_commande.exists():
+            raise ValidationError("Une commande doit contenir au moins un produit.")
+            
+    def save(self, *args, **kwargs):
+        # Validation supplémentaire lors de la sauvegarde
+        if hasattr(self, 'pk') and self.pk and self.statut != 'en_attente':
+            # Si la commande existe déjà et n'est plus en attente, 
+            # vérifions qu'elle a au moins une ligne
+            from django.core.exceptions import ValidationError
+            if not self.lignes_commande.exists():
+                raise ValidationError("Une commande confirmée doit contenir au moins un produit.")
+        super().save(*args, **kwargs)
 
-    
 
 class LigneCommande(models.Model):
     commande = models.ForeignKey(
