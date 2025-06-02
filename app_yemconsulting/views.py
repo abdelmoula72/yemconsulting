@@ -988,7 +988,59 @@ def passer_commande(request):
         except FileNotFoundError:
             pass
 
-    mail.send(fail_silently=False)
+    # Rétablir l'envoi normal des emails
+    # mail.send(fail_silently=False)
+    
+    # Solution définitive pour éviter l'erreur IDNA en contournant Django email
+    try:
+        import smtplib
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        from email.mime.application import MIMEApplication
+        
+        print("Tentative d'envoi d'email avec SMTP direct...")
+        
+        # Créer l'email à partir de zéro
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = "Confirmation de votre commande"
+        msg['From'] = settings.DEFAULT_FROM_EMAIL
+        msg['To'] = utilisateur.email
+        msg['Message-ID'] = f"<commande-{commande.id}@yemconsulting.com>"
+        
+        # Ajouter les parties texte et HTML
+        text_part = MIMEText(text_body, 'plain')
+        html_part = MIMEText(html_body, 'html')
+        msg.attach(text_part)
+        msg.attach(html_part)
+        
+        # Ajouter la facture PDF
+        pdf_part = MIMEApplication(pdf_buffer.getvalue())
+        pdf_part.add_header('Content-Disposition', 'attachment', filename=f"facture_{commande.id}.pdf")
+        msg.attach(pdf_part)
+        
+        # Ajouter les images
+        for cid, path in images_a_attacher:
+            try:
+                with open(path, "rb") as fp:
+                    main, sub = mimetypes.guess_type(path)[0].split("/")
+                    img = MIMEImage(fp.read(), _subtype=sub)
+                    img.add_header("Content-ID", cid)
+                    img.add_header("Content-Disposition", "inline", filename=os.path.basename(path))
+                    msg.attach(img)
+            except FileNotFoundError:
+                pass
+        
+        # Connexion SMTP et envoi
+        smtp = smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT)
+        smtp.starttls()
+        smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+        smtp.send_message(msg)
+        smtp.quit()
+        
+        print("Email de confirmation envoyé avec succès via SMTP direct!")
+    except Exception as e:
+        print(f"Erreur lors de l'envoi de l'email: {e}")
+        # Continuer l'exécution même si l'email échoue
 
     # ────────── alerte stock bas (inchangée) ──────────
     if produits_alerte_stock:
@@ -1005,8 +1057,40 @@ def passer_commande(request):
         alert_mail.attach_alternative(
             f"<strong>Attention&nbsp;!</strong><br>{corps_html}", "text/html"
         )
-        alert_mail.send()
-
+        
+        # Envoyer l'email d'alerte stock avec SMTP direct
+        try:
+            import smtplib
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
+            
+            print("Tentative d'envoi d'email d'alerte stock avec SMTP direct...")
+            
+            # Créer l'email à partir de zéro
+            msg = MIMEMultipart('alternative')
+            msg['Subject'] = "⚠️ Alerte Stock Bas"
+            msg['From'] = settings.DEFAULT_FROM_EMAIL
+            msg['To'] = settings.DEFAULT_ADMIN_EMAIL
+            msg['Message-ID'] = f"<alerte-stock-{commande.id}@yemconsulting.com>"
+            
+            # Ajouter les parties texte et HTML
+            text_part = MIMEText(f"Attention !\n\n{alertes_txt}", 'plain')
+            html_part = MIMEText(f"<strong>Attention&nbsp;!</strong><br>{corps_html}", 'html')
+            msg.attach(text_part)
+            msg.attach(html_part)
+            
+            # Connexion SMTP et envoi
+            smtp = smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT)
+            smtp.starttls()
+            smtp.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+            smtp.send_message(msg)
+            smtp.quit()
+            
+            print("Email d'alerte stock envoyé avec succès via SMTP direct!")
+        except Exception as e:
+            print(f"Erreur lors de l'envoi de l'alerte stock: {e}")
+            # Continuer l'exécution même si l'email échoue
+    
     # ────────── on vide le panier ──────────
     lignes_panier.delete()
     

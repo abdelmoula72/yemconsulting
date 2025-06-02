@@ -178,12 +178,19 @@ LOGIN_REDIRECT_URL = '/'  # Redirige vers la page d'accueil
 DEFAULT_ADMIN_EMAIL = "abdelmoula.elamri@gmail.com"  # Remplace par l'email de l'admin
 DEFAULT_FROM_EMAIL = "abdelmoula.elamri@gmail.com"  # L'email qui enverra les notifications
 
+# Rétablir le backend SMTP
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = 'smtp.gmail.com'  # Remplace par ton serveur SMTP
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST = 'smtp.gmail.com'  # Serveur SMTP de Gmail
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'abdelmoula.elamri@gmail.com'  # Remplace par ton email
-EMAIL_HOST_PASSWORD = "ygyh rqta cswx mkef"
+EMAIL_HOST_USER = 'abdelmoula.elamri@gmail.com'  # Adresse email Gmail
+EMAIL_HOST_PASSWORD = "ygyh rqta cswx mkef"  # Mot de passe d'application Gmail
+EMAIL_HOST_NAME = "yemconsulting.com"  # Nom d'hôte pour éviter l'erreur IDNA
+EMAIL_USE_LOCALTIME = True
+EMAIL_MESSAGE_ID_FQDN = "yemconsulting.com"  # Nom de domaine pour les ID de message
+# Désactiver la validation DNS pour éviter l'erreur IDNA
+EMAIL_DNS_NAME = "yemconsulting.com"
 
 
 # Stripe
