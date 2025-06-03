@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -36,6 +35,9 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('Adresse email', unique=True)
     is_admin = models.BooleanField(default=False)
 
+    class Meta:
+        db_table = 'utilisateur'
+
     objects = UtilisateurManager()
 
     USERNAME_FIELD = 'email'
@@ -68,6 +70,7 @@ class Adresse(models.Model):
     is_deleted = models.BooleanField(default=False, help_text='Adresse supprimée par l\'utilisateur')
 
     class Meta:
+        db_table = 'adresse'
         verbose_name = 'Adresse'
         verbose_name_plural = 'Adresses'
         constraints = [
@@ -98,6 +101,9 @@ class Categorie(models.Model):
         null=True, blank=True,
         related_name='subcategories'
     )
+
+    class Meta:
+        db_table = 'categorie'
 
     def __str__(self):
         return self.nom
@@ -130,6 +136,9 @@ class Produit(models.Model):
         related_name="produits"
     )
 
+    class Meta:
+        db_table = 'produit'
+
     def __str__(self):
         return self.nom
 
@@ -157,6 +166,9 @@ class Panier(models.Model):
     produits = models.ManyToManyField(Produit, through='LignePanier', related_name="paniers")
     date_creation = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = 'panier'
+
     def __str__(self):
         return f"Panier de {self.utilisateur.nom}"
 
@@ -173,6 +185,9 @@ class LignePanier(models.Model):
     panier = models.ForeignKey(Panier, on_delete=models.CASCADE, related_name="lignes")
     produit = models.ForeignKey(Produit, on_delete=models.CASCADE)
     quantite = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        db_table = 'ligne_panier'
 
     def __str__(self):
         return f"{self.quantite} x {self.produit.nom} dans le panier de {self.panier.utilisateur.nom}"
@@ -216,6 +231,9 @@ class Commande(models.Model):
         help_text='Montant total de la commande, incluant la livraison'
     )
     
+
+    class Meta:
+        db_table = 'commande'
 
     def __str__(self):
         return f"Commande {self.id} de {self.utilisateur.nom}"
@@ -267,6 +285,9 @@ class LigneCommande(models.Model):
         default=Decimal('0.00'),
         help_text='Prix unitaire du produit au moment de la commande'
     )
+
+    class Meta:
+        db_table = 'ligne_commande'
 
     def __str__(self):
         return f"{self.quantite} x {self.produit.nom} dans la commande {self.commande.id}"

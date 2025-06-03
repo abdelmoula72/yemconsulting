@@ -411,6 +411,8 @@ def stripe_checkout(request):
             reverse("confirmation_commande", args=[commande_id]) if commande_id 
             else reverse("afficher_panier")
         ),
+        # Forcer l'utilisation de l'euro comme devise
+        currency="eur"
     )
 
     return redirect(session.url, code=303)
@@ -801,9 +803,15 @@ def passer_commande(request):
         "livraison_fin"  : livraison_fin.strftime("%a %d %b %Y"),
         "livraison_express": f"{express.strftime('%a')}, {express.day} {express.strftime('%b %Y')}",
         "livraison_prix"  : livraison_prix,
-        "adresse_livraison": adresse_livraison,
-        "adresse_facturation": adresse_facturation,
+        "adresse_livraison": commande.adresse_livraison,
+        "adresse_facturation": commande.adresse_facturation,
     }
+    
+    # Débug pour vérifier si les adresses sont différentes
+    print(f"VERIFICATION ADRESSES AVANT EMAIL:")
+    print(f"Adresse livraison ID: {commande.adresse_livraison.id}, Adresse: {commande.adresse_livraison.rue}, {commande.adresse_livraison.code_postal} {commande.adresse_livraison.ville}")
+    print(f"Adresse facturation ID: {commande.adresse_facturation.id}, Adresse: {commande.adresse_facturation.rue}, {commande.adresse_facturation.code_postal} {commande.adresse_facturation.ville}")
+    print(f"Les adresses sont-elles identiques? {commande.adresse_livraison.id == commande.adresse_facturation.id}")
 
     html_body = render_to_string("emails/confirmation_commande.html", ctx)
     text_body = render_to_string("emails/confirmation_commande.txt", ctx)
