@@ -925,7 +925,7 @@ def passer_commande(request):
         ])
     
     # Créer la table
-    table = Table(data, colWidths=[8*cm, 2*cm, 3*cm, 3*cm])
+    table = Table(data, colWidths=[7*cm, 2*cm, 4*cm, 3*cm])
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -937,6 +937,7 @@ def passer_commande(request):
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
         ('ALIGN', (2, 1), (3, -1), 'RIGHT'),
+        ('WORDWRAP', (0, 0), (-1, -1), True),
     ]))
     
     elements.append(table)
@@ -1813,7 +1814,7 @@ def generer_facture_pdf(request, commande_id):
         ])
     
     # Créer la table
-    table = Table(data, colWidths=[8*cm, 2*cm, 3*cm, 3*cm])
+    table = Table(data, colWidths=[7*cm, 2*cm, 4*cm, 3*cm])
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -1825,6 +1826,7 @@ def generer_facture_pdf(request, commande_id):
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
         ('ALIGN', (2, 1), (3, -1), 'RIGHT'),
+        ('WORDWRAP', (0, 0), (-1, -1), True),
     ]))
     
     elements.append(table)
