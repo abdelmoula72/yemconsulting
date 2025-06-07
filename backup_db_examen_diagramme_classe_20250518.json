@@ -1,0 +1,1984 @@
+[
+{
+  "model": "sessions.session",
+  "pk": "ekn3riwrwt9dkewo3pm8m88b55zercvp",
+  "fields": {
+    "session_data": ".eJxVjkEOwiAURO_C2pBfSktx6d4zkA8fLNrQBKgb491tTY26nTfzMg9mcKmjWYrPJhI7MsEOv5lFd_NpA3TFdJm5m1PN0fKtwnda-HkmP5327p9gxDKuayUAB4JWIXW9dtIHEEHbroGgB-GcbS2glqQAUCohHaDVhD44gShkv0qRsi_FmyneM8Yyp_fh5gsCurpkrPGDni9IEEtW:1uGeJc:Kg0Lu1Lx93hqXW3uQRLCIKe_mtArY1nsRm0s7e0bxKM",
+    "expire_date": "2025-06-01T13:44:32.871Z"
+  }
+},
+{
+  "model": "app_yemconsulting.utilisateur",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$0dDD527lb05AgIhbYMFbLx$FEqUqnYFQppHN98nhPAX9+YDKCUVF2Vn8QNJyWENk8A=",
+    "last_login": "2025-05-18T12:34:20.059Z",
+    "is_superuser": false,
+    "prenom": "jean",
+    "nom": "luc",
+    "email": "laurentmanier5453@gmail.com",
+    "is_admin": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "app_yemconsulting.utilisateur",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$D3elkdPPIlKNEbWTOA9koG$3EUBNypjq4T9fMoDyIODjfs3ZmuxZ0DY10mobmahLFI=",
+    "last_login": "2025-05-18T12:44:49.653Z",
+    "is_superuser": true,
+    "prenom": "",
+    "nom": "abdel",
+    "email": "abdelmoula.elamri@gmail.com",
+    "is_admin": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 1,
+  "fields": {
+    "utilisateur": 2,
+    "prenom": "Abdelmoula",
+    "nom": "El amri",
+    "rue": "des chatons 23",
+    "complement": "bte 8",
+    "code_postal": "1030",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": true
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 2,
+  "fields": {
+    "utilisateur": 2,
+    "prenom": "louis",
+    "nom": "durant",
+    "rue": "rue des lutins 56",
+    "complement": "bte 1",
+    "code_postal": "1020",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": true,
+    "is_default_billing": false
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 40,
+  "fields": {
+    "nom": "Ordinateurs et écrans",
+    "parent": null
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 41,
+  "fields": {
+    "nom": "PC Portables",
+    "parent": 40
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 42,
+  "fields": {
+    "nom": "Ordinateurs de bureau",
+    "parent": 40
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 43,
+  "fields": {
+    "nom": "Ecrans PC",
+    "parent": 40
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 44,
+  "fields": {
+    "nom": "Composants",
+    "parent": null
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 45,
+  "fields": {
+    "nom": "Processeurs",
+    "parent": 44
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 46,
+  "fields": {
+    "nom": "Cartes graphiques",
+    "parent": 44
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 47,
+  "fields": {
+    "nom": "Cartes Mères",
+    "parent": 44
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 48,
+  "fields": {
+    "nom": "RAM",
+    "parent": 44
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 49,
+  "fields": {
+    "nom": "Disques durs",
+    "parent": 44
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 50,
+  "fields": {
+    "nom": "Périphériques & Accessoires",
+    "parent": null
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 51,
+  "fields": {
+    "nom": "Claviers",
+    "parent": 50
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 52,
+  "fields": {
+    "nom": "Casques audio",
+    "parent": 50
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 53,
+  "fields": {
+    "nom": "Webcams",
+    "parent": 50
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 54,
+  "fields": {
+    "nom": "Souris",
+    "parent": 50
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 55,
+  "fields": {
+    "nom": "Matériel Réseau",
+    "parent": null
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 56,
+  "fields": {
+    "nom": "Routeurs",
+    "parent": 55
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 57,
+  "fields": {
+    "nom": "Switchs",
+    "parent": 55
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 58,
+  "fields": {
+    "nom": "Imprimantes & Scanners",
+    "parent": null
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 59,
+  "fields": {
+    "nom": "Scanners",
+    "parent": 58
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 60,
+  "fields": {
+    "nom": "Imprimantes Lasers",
+    "parent": 58
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 61,
+  "fields": {
+    "nom": "Imprimantes Jets d'Encre",
+    "parent": 58
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2303,
+  "fields": {
+    "nom": "Acer Nitro 15 ANV15-51-94X1",
+    "description": "Un concentré de puissance pour le gaming et la performance !\nProfitez des processeurs Intel Core i9-13900H et de la carte graphique NVIDIA RTX 4060 8 Go pour une expérience fluide en gaming et multitâche. L’écran 15.6\" Full HD 144 Hz offre des couleurs éclatantes et une fluidité optimale.\n\nGrâce à 32 Go de RAM DDR5 et un SSD M.2 PCIe de 1 To, la rapidité est au rendez-vous. Le système de refroidissement à double ventilateur assure des performances optimales, tandis que DTS:X Ultra garantit un son immersif.\n\n📌 Caractéristiques clés :\n✔ Écran 15.6\" Full HD 144 Hz (IPS) – Images fluides et précises\n✔ Intel Core i9-13900H – Puissance et rapidité\n✔ NVIDIA RTX 4060 (8 Go dédiés) – Graphismes ultra-performants\n✔ 32 Go RAM DDR5 + SSD 1 To – Vitesse et stockage optimal\n✔ Wi-Fi 6 + Bluetooth 5.1 – Connexion rapide et stable\n✔ Clavier rétroéclairé + Webcam HD – Confort et praticité\n\n💻 Système : Windows 11 Famille\n🔹 Design fin (23.5 mm d’épaisseur) avec refroidissement avancé.\n\n✅ Idéal pour les gamers et les créateurs exigeants ! 🚀",
+    "prix": "1250.00",
+    "stock": 9,
+    "image": "produits/ordinateurs_et_écrans/LD0006098694_0006195986_RDXeXmU.jpg",
+    "categorie": 41
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2304,
+  "fields": {
+    "nom": "ASUS Vivobook S15 S1504FA-NJ179W",
+    "description": "Élégance et performance au quotidien\nFin et sophistiqué, le PC portable ASUS Vivobook S15 S1504FA combine puissance et mobilité. Son écran 15.6\" Full HD aux bords fins (rapport écran/surface de 84%) offre une immersion optimale, tandis que son clavier chiclet garantit un excellent confort de frappe.\n\nGrâce à son processeur AMD Ryzen 5 7520U, ses 8 Go de RAM DDR5 et son SSD M.2 PCIe 512 Go, il assure fluidité et rapidité pour le travail comme pour le divertissement.\n\nCaractéristiques clés :\n✔ Processeur AMD Ryzen 5 7520U – Puissance et efficacité\n✔ 8 Go de RAM DDR5 – Multitâche fluide\n✔ Écran 15.6\" Full HD anti-reflets – Confort visuel optimal\n✔ SSD M.2 PCIe 512 Go – Stockage rapide et performant\n✔ Wi-Fi 5 + Bluetooth 5.1 – Connexion fiable\n✔ Webcam HD 720p intégrée – Idéal pour les visioconférences\n✔ Clavier chiclet ergonomique – Confort de frappe amélioré\n\n💻 Système : Windows 11 Famille\n🔹 Un PC léger et performant pour un usage polyvalent ! 🚀",
+    "prix": "529.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006071180_RzxrlGu.jpg",
+    "categorie": 41
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2305,
+  "fields": {
+    "nom": "Acer Aspire 3 A315-44P-R7WS",
+    "description": "Performance et mobilité au meilleur prix\nAlliant design élégant et efficacité, le PC portable Acer Aspire 3 A315-44P offre une expérience fluide pour la bureautique, la navigation web et le multimédia. Compact et léger (1.78 kg), il est conçu pour une mobilité optimale.\n\nSon écran 15.6\" Full HD mat réduit les reflets et intègre la technologie BlueLightShield, qui atténue la lumière bleue pour un meilleur confort visuel lors d'une utilisation prolongée.\n\nCaractéristiques clés :\n✔ Processeur AMD Ryzen 7 5700U (Octo-Core, 16 Threads) – Puissance et réactivité\n✔ 16 Go de RAM DDR4 – Multitâche fluide et rapide\n✔ Écran 15.6\" Full HD antireflet – Confort visuel amélioré\n✔ SSD M.2 PCIe NVMe 1 To – Stockage rapide et spacieux\n✔ Wi-Fi 6 + Bluetooth 5.1 – Connexion rapide et stable\n✔ Webcam HD 720p intégrée – Idéal pour les appels vidéo\n✔ Technologie Acer BlueLightShield – Protection des yeux contre la fatigue\n\n💻 Système : Windows 11 Famille\n🔹 Un excellent rapport qualité-prix pour un usage quotidien ! 🚀",
+    "prix": "639.00",
+    "stock": 9,
+    "image": "produits/ordinateurs_et_écrans/LD0006095287_fhbvxr8.jpg",
+    "categorie": 41
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2306,
+  "fields": {
+    "nom": "Lenovo IdeaPad Slim 3 15IRH8 (83EM00CTFR)",
+    "description": "Mobilité et performance pour le quotidien\nFin, léger et performant, le Lenovo IdeaPad Slim 3 Gen 8 est conçu pour allier confort et efficacité. Son écran 15.6\" Full HD anti-reflet, occupant jusqu’à 88 % de la surface d'affichage, garantit une immersion optimale pour le travail et le divertissement.\n\nAvec son processeur Intel Core i5-13420H, ses 16 Go de RAM DDR5 et son SSD PCIe de 512 Go, il assure une fluidité parfaite pour la bureautique, le multimédia et le multitâche. La connectivité avancée Wi-Fi 6 + Bluetooth 5.2 offre des connexions rapides et stables.\n\nCaractéristiques clés :\n✔ Intel Core i5-13420H (12 Threads, Turbo 4.6 GHz) – Performance et réactivité\n✔ 16 Go de RAM DDR5 – Multitâche fluide et rapide\n✔ Écran 15.6\" Full HD anti-reflet (88% d'occupation d'écran) – Expérience visuelle optimisée\n✔ SSD M.2 PCIe 512 Go – Stockage rapide et réactif\n✔ Wi-Fi 6 + Bluetooth 5.2 – Connexion rapide et fiable\n✔ Haut-parleurs stéréo Dolby Audio – Son immersif\n✔ Webcam HD 720p avec obturateur – Sécurité et confidentialité renforcées\n✔ Sortie HDMI – Connexion facile à un écran externe\n\n💻 Système : Windows 11 Famille\n🔹 Un PC portable fiable et polyvalent pour une productivité sans compromis ! 🚀",
+    "prix": "619.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006033477_0006153132_GnSqtGw.jpg",
+    "categorie": 41
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2307,
+  "fields": {
+    "nom": "Lenovo IdeaPad 1 15IAU7 (82QD00HAFR)",
+    "description": "Mobilité et performance au quotidien\nCompact et performant, le Lenovo IdeaPad 1 15IAU7 est un excellent compagnon mobile. Son écran 15.6\" Full HD à cadre fin offre un confort visuel optimal, tandis que Dolby Audio assure une expérience sonore immersive pour la musique, les vidéos et les visioconférences.\n\nAvec son processeur Intel Core i3-1215U, ses 8 Go de RAM DDR4 et son SSD M.2 de 512 Go, il garantit fluidité et rapidité pour toutes vos tâches du quotidien.\n\nCaractéristiques clés :\n✔ Intel Core i3-1215U – Puissance et efficacité énergétique\n✔ 8 Go de RAM DDR4 – Multitâche fluide\n✔ Écran 15.6\" Full HD anti-reflet – Confort visuel amélioré\n✔ SSD M.2 PCIe 512 Go – Stockage rapide et spacieux\n✔ Wi-Fi 6 + Bluetooth 5.2 – Connexion rapide et stable\n✔ Dolby Audio – Son immersif pour le multimédia\n✔ Port HDMI – Connexion facile à un écran externe\n✔ Module TPM 2.0 – Sécurité renforcée\n\n💻 Système : Windows 11 Famille\n🔹 Un PC léger et polyvalent, idéal pour le travail et le divertissement ! 🚀",
+    "prix": "450.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006000533_0006024856_0006084548_0006130897_0006153527_zGpManl.jpg",
+    "categorie": 41
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2308,
+  "fields": {
+    "nom": "ASUS Zenbook 15 OLED UM3504DA (90NB1161-M00NW0)",
+    "description": "Élégance, puissance et mobilité\nLe ASUS Zenbook 15 OLED UM3504 allie design raffiné, performances élevées et écran exceptionnel. Son écran OLED 15.6\" 2.8K 120 Hz certifié Pantone offre des couleurs précises et un contraste profond, idéal pour le travail créatif et le divertissement.\n\nGrâce à son processeur AMD Ryzen 7 7735U, ses 16 Go de RAM LPDDR5 et son SSD PCIe 4.0 de 1 To, il garantit vitesse et réactivité pour toutes vos tâches. La connectivité avancée Wi-Fi 6E + Bluetooth 5.3 assure une connexion ultra-rapide et stable.\n\nCaractéristiques clés :\n✔ AMD Ryzen 7 7735U (Octo-Core, 16 Threads) – Puissance et efficacité\n✔ 16 Go de RAM LPDDR5 – Multitâche fluide et rapide\n✔ Écran OLED 15.6\" 2.8K 120 Hz (Pantone, HDR True Black 500) – Images ultra-détaillées\n✔ SSD M.2 PCIe 4.0 de 1 To – Stockage rapide et spacieux\n✔ Wi-Fi 6E + Bluetooth 5.3 – Connexion ultra-rapide\n✔ Clavier rétroéclairé – Confort de frappe optimal\n✔ Audio Dolby Atmos certifié Harman Kardon – Expérience sonore immersive\n✔ Webcam HD IR 1080p – Compatible Windows Hello\n\n💻 Système : Windows 11 Famille\n🔹 Un PC portable haut de gamme, idéal pour les professionnels et les créatifs ! 🚀",
+    "prix": "989.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006034510_0006154246_pqiE5pH.jpg",
+    "categorie": 41
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2309,
+  "fields": {
+    "nom": "ASUS Vivobook 16 S1605VA-MB574W",
+    "description": "Puissance et confort dans un format mobile\nLe PC portable ASUS Vivobook 16 S1605 allie performance, confort et mobilité. Son grand écran 16\" Full HD+ (1920 x 1200) au format 16/10 offre un excellent confort visuel, idéal pour le travail et le divertissement. Grâce à sa certification TÜV Rheinland, il réduit la fatigue oculaire avec un affichage sans scintillements et une lumière bleue atténuée.\n\nDoté d’un processeur Intel Core i9-13900H, de 24 Go de RAM DDR4 et d’un SSD PCIe 4.0 de 1 To, il assure une fluidité optimale et une réactivité sans faille. Son système de refroidissement ASUS IceCool garantit des performances stables même après plusieurs heures d’utilisation.\n\nCaractéristiques clés :\n✔ Intel Core i9-13900H (20 Threads, Turbo 5.4 GHz) – Puissance et rapidité\n✔ 24 Go de RAM DDR4 – Multitâche fluide et performant\n✔ Écran 16\" Full HD+ (16/10, IPS) – Grand espace de travail, couleurs éclatantes\n✔ SSD M.2 PCIe 4.0 de 1 To – Stockage rapide et spacieux\n✔ Wi-Fi AC + Bluetooth 5.1 – Connexion stable et rapide\n✔ Clavier rétroéclairé ErgoSense – Confort et précision de frappe\n✔ Webcam HD avec cache intégré – Sécurité et confidentialité renforcées\n✔ Technologie AI Noise-Canceling – Réduction des bruits indésirables pour une meilleure communication\n\n💻 Système : Windows 11 Famille\n🔹 Un PC puissant et ergonomique pour une productivité sans compromis ! 🚀",
+    "prix": "1119.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006095594_0006103039_zoC8EmP.jpg",
+    "categorie": 41
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2310,
+  "fields": {
+    "nom": "AORUS 16X ASG-63FRC65SH",
+    "description": "Puissance ultime pour le gaming et la création\nLe PC portable Gamer AORUS 16X repousse les limites de la performance avec son processeur Intel Core i9-14900HX et sa carte graphique NVIDIA GeForce RTX 4070. Conçu pour les joueurs exigeants et les créateurs de contenu, il exploite l’intelligence artificielle (AI Nexus) pour optimiser la gestion de l’alimentation, les performances et les logiciels d’IA générative.\n\nSon écran 16\" QHD+ 165 Hz offre une immersion totale avec des images ultra-fluides et un cadre mince de 3 mm. Le système de refroidissement WINDFORCE Infinity assure des performances stables, même sous forte charge.\n\nCaractéristiques clés :\n✔ Intel Core i9-14900HX (32 Threads, Turbo 5.8 GHz) – Puissance extrême\n✔ 32 Go de RAM DDR5 5600 MHz (extensible à 64 Go) – Fluidité et rapidité\n✔ Écran 16\" QHD+ (165 Hz, 16/10, cadre 3 mm) – Images ultra-précises et immersives\n✔ NVIDIA GeForce RTX 4070 (8 Go GDDR6, 140W) – Ray tracing et DLSS 3 optimisés par IA\n✔ SSD M.2 PCIe 2 To (2x 1 To) – Stockage massif et ultra-rapide\n✔ Wi-Fi 7 + Bluetooth 5.4 – Connectivité nouvelle génération\n✔ Clavier gamer RGB 3 zones – Expérience personnalisable\n✔ Refroidissement avancé WINDFORCE Infinity – Dissipation thermique optimale\n\n💻 Système : Windows 11 Famille\n🔹 Un monstre de puissance pour dominer le jeu et la création ! 🎮🚀",
+    "prix": "1249.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006105014_fy2MUh4.jpg",
+    "categorie": 41
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2311,
+  "fields": {
+    "nom": "MSI Cyborg 15 A13VFK-1476FR",
+    "description": "Design futuriste et performances gaming extrêmes\nPlongez dans l’univers Cyberpunk avec le MSI Cyborg 15 A13VFK, un PC portable gamer à la fois audacieux et ultra-performant. Doté d’un écran IPS 144 Hz aux bords fins, il offre une fluidité exceptionnelle et une immersion totale dans vos jeux préférés. Son clavier gamer rétroéclairé au design futuriste met en avant les touches ZQSD translucides pour une meilleure visibilité.\n\nSous le capot, le processeur Intel Core i7-13620H et la carte graphique NVIDIA GeForce RTX 4060 assurent une puissance optimale pour le gaming et la création. Son système de refroidissement Cooler Boost maintient des performances élevées même sous forte charge.\n\nCaractéristiques clés :\n✔ Intel Core i7-13620H (16 Threads, Turbo 4.9 GHz) – Puissance et réactivité\n✔ 16 Go de RAM DDR5 (extensible à 64 Go) – Multitâche fluide\n✔ Écran 15.6\" Full HD 144 Hz (bord fin, IPS) – Expérience visuelle immersive\n✔ NVIDIA GeForce RTX 4060 (8 Go GDDR6) – Graphismes réalistes et DLSS 3 optimisé\n✔ SSD M.2 PCIe 4.0 de 512 Go – Stockage rapide et performant\n✔ Wi-Fi 6E + Bluetooth 5.3 – Connectivité ultra-rapide\n✔ Clavier RGB 4 zones Cyberpunk – Style unique et confort de frappe\n✔ Cooler Boost – Dissipation thermique avancée pour performances stables\n\n💻 Système : Windows 11 Famille\n🔹 Un PC puissant et stylé, prêt pour dominer le gaming et la création ! 🎮🚀",
+    "prix": "1049.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006168234_KcbnXD9.jpg",
+    "categorie": 41
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2312,
+  "fields": {
+    "nom": "Gigabyte G6 KF-H3FR854KH",
+    "description": "Puissance et fluidité pour le gaming\nLe Gigabyte G6 KF-H3FR854KH est conçu pour offrir une expérience de jeu immersive et fluide. Son écran 16\" Full HD+ 165 Hz garantit des graphismes ultra-précis, tandis que son processeur Intel Core i7-13620H et sa carte graphique NVIDIA GeForce RTX 4060 assurent des performances optimales en gaming et en multitâche.\n\nGrâce à son système de refroidissement Windforce, avec 2 ventilateurs et 4 caloducs, il maintient des performances stables, même lors de longues sessions de jeu. Son clavier rétroéclairé RGB et sa technologie audio DTS:X Ultra apportent un confort supplémentaire pour une immersion totale.\n\nCaractéristiques clés :\n✔ Intel Core i7-13620H (16 Threads, Turbo 4.9 GHz) – Puissance et rapidité\n✔ 16 Go de RAM DDR5 – Multitâche fluide et performant\n✔ Écran 16\" Full HD+ (16/10, 165 Hz) – Fluidité et précision visuelle\n✔ NVIDIA GeForce RTX 4060 (8 Go GDDR6) – Ray tracing et IA DLSS 3\n✔ SSD M.2 PCIe de 1 To (+ slot M.2 libre) – Stockage rapide et évolutif\n✔ Wi-Fi 6E + Bluetooth 5.2 – Connectivité ultra-performante\n✔ Clavier RGB 15 couleurs – Expérience gaming personnalisée\n✔ Système de refroidissement Windforce – Dissipation thermique efficace\n✔ Technologie audio DTS:X Ultra – Son immersif de qualité\n\n💻 Système : Windows 11 Famille\n🔹 Un PC portable gamer performant pour dominer vos parties et vos créations ! 🎮🚀",
+    "prix": "1149.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006091436_0006122424_lwzwRQv.jpg",
+    "categorie": 41
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2313,
+  "fields": {
+    "nom": "Lenovo ThinkCentre M90a Gen 5",
+    "description": "Puissance, sécurité et élégance pour les professionnels exigeants\nLe Lenovo ThinkCentre M90a Gen 5 (12SH000QFR) est un PC tout-en-un haut de gamme conçu pour les environnements professionnels modernes. Compact et raffiné, il combine performance, sécurité avancée et expérience collaborative de qualité, le tout dans un format élégant et épuré.\n\nDoté de processeurs Intel Core de 14e génération, il assure une réactivité exemplaire, tandis que son système de refroidissement intelligent ICE 4.0 ajuste les performances et le bruit selon vos besoins. Grâce à ses micros à 360°, sa technologie de réduction de bruit par IA et son audio Dolby Atmos, vos réunions gagnent en clarté et en fluidité.\n\nFonctionnalités professionnelles clés :\n✔ PC All-in-One compact et élégant – Gain d’espace et design moderne\n✔ Jusqu'à Intel Core de 14e génération – Puissance de traitement avancée\n✔ Technologie ICE 4.0 – Optimisation intelligente des performances et du refroidissement\n✔ Sécurité ThinkShield + Smart USB + cache webcam – Protection complète des données\n✔ Audio Dolby Atmos + 4 haut-parleurs Harman – Son immersif et professionnel\n✔ Réduction de bruit par IA + micros à 360° – Visioconférences claires et naturelles\n✔ Caméra inclinable et détection de présence humaine – Interactions et sécurité améliorées\n✔ Connectivité USB-C ultra-rapide – Transferts efficaces et modernes\n\n🔹 Un outil tout-en-un sécurisé, intelligent et puissant, idéal pour les espaces de travail dynamiques. 🖥️🔐🚀",
+    "prix": "1199.00",
+    "stock": 9,
+    "image": "produits/ordinateurs_et_écrans/LD0006138891_cPBa1xE.jpg",
+    "categorie": 42
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2314,
+  "fields": {
+    "nom": "ASUS A3202WVAK-WPB003X",
+    "description": "Élégance et performance dans un format tout-en-un\nLe PC tout-en-un ASUS A3202 se distingue par son design ultra-fin et épuré, idéal pour un bureau moderne. Conçu pour le travail quotidien et le divertissement, il combine un écran NanoEdge Full HD 21.45\" aux bords fins et une expérience audio immersive grâce à ses haut-parleurs bass-reflex et la technologie ASUS SonicMaster.\n\nSon processeur Intel Core i5-1335U, ses 8 Go de RAM DDR4 et son SSD de 512 Go garantissent un fonctionnement fluide pour toutes vos tâches. L’écran Wide View 178° assure un excellent confort visuel, et sa connectivité complète (Gigabit Ethernet, Wi-Fi AC, Bluetooth 5.1) s’adapte parfaitement aux environnements modernes.\n\nCaractéristiques clés :\n✔ Intel Core i5-1335U – Performant et économe en énergie\n✔ Écran 21.45\" Full HD NanoEdge (178° Wide View) – Qualité d’image exceptionnelle\n✔ 8 Go de RAM DDR4 – Multitâche fluide\n✔ SSD M.2 PCIe 512 Go – Stockage rapide\n✔ ASUS SonicMaster + bass-reflex – Audio riche et immersif\n✔ Wi-Fi AC + Bluetooth 5.1 + Ethernet – Connectivité complète\n✔ Webcam HD intégrée + clavier/souris inclus – Prêt à l’emploi\n\n💻 Système : Windows 11 Professionnel\n🔹 Un PC tout-en-un élégant et efficace, parfait pour la maison ou le bureau. 🖥️✨",
+    "prix": "849.00",
+    "stock": 0,
+    "image": "produits/ordinateurs_et_écrans/LD0006034646_0006156513_0006200631_1RgROL3.jpg",
+    "categorie": 42
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2315,
+  "fields": {
+    "nom": "MSI Modern AM242TP 12M-482EU",
+    "description": "Tout-en-un tactile performant et pensé pour le confort professionnel\nLe MSI Modern AM242TP 12M est un PC tout-en-un tactile conçu pour offrir productivité, confort visuel et design ergonomique. Grâce à son écran IPS tactile Full HD de 23.8\", il assure une expérience fluide et intuitive, idéale pour les tâches professionnelles comme pour le divertissement.\n\nPropulsé par un processeur Intel Core i5-1235U, 16 Go de RAM et un SSD M.2 PCIe de 512 Go, il garantit des performances rapides et fiables au quotidien. Sa connectique complète, avec sortie HDMI et baie de stockage évolutive, renforce sa polyvalence. Le tout est accompagné d’un clavier et d’une souris sans fil pour une prise en main immédiate.\n\nCaractéristiques clés :\n✔ Écran tactile IPS 23.8\" Full HD – Couleurs fidèles et confort d’utilisation\n✔ Processeur Intel Core i5-1235U – Performance et réactivité\n✔ 16 Go de RAM DDR4 SO-DIMM – Multitâche fluide\n✔ SSD PCIe de 512 Go – Stockage rapide et fiable\n✔ Technologie anti-scintillement – Moins de fatigue oculaire\n✔ Pied réglable en hauteur et inclinaison – Ergonomie optimale\n✔ Baie de stockage 2,5” évolutive – Mise à niveau simplifiée\n✔ Sortie HDMI – Possibilité d’ajouter un écran externe\n✔ Webcam HD intégrée – Prêt pour les visioconférences\n✔ Clavier + souris sans fil fournis\n\n💼 Système : Windows 11 Professionnel\n🔹 Un outil complet, tactile et évolutif pour travailler efficacement au bureau ou à distance. 🖥️💡",
+    "prix": "1149.00",
+    "stock": 9,
+    "image": "produits/ordinateurs_et_écrans/LD0006139923_0006151638_0006186692_bHIXEpq.jpg",
+    "categorie": 42
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2316,
+  "fields": {
+    "nom": "ASUS ExpertCenter D7 SFF D700SE-513500145X",
+    "description": "Un PC compact, performant et pensé pour les pros\nLe ASUS ExpertCenter D7 SFF D700SE est un PC de bureau professionnel fiable, sécurisé et évolutif, conçu pour répondre aux besoins quotidiens des entreprises. Son format compact et sa construction robuste conforme à la norme militaire MIL-STD-810G en font un allié idéal pour un environnement professionnel exigeant.\n\nÉquipé d’un processeur Intel Core i5-13500 de 13e génération, de 8 Go de RAM DDR4 (extensible jusqu’à 128 Go) et d’un SSD PCIe de 512 Go, il garantit un fonctionnement fluide et rapide, même lors de tâches multitâches. Son châssis accessible permet une mise à niveau simple et rapide selon les évolutions de vos besoins.\n\nCaractéristiques clés :\n✔ Intel Core i5-13500 (13e gen) – Puissance et réactivité au quotidien\n✔ 8 Go de RAM DDR4 (extensible à 128 Go) – Évolutivité assurée\n✔ SSD M.2 PCIe 512 Go – Démarrage et chargement des fichiers ultra-rapides\n✔ Wi-Fi 6 + Bluetooth 5.2 + Ethernet Gigabit – Connectivité complète et fiable\n✔ Format SFF compact – Gain d’espace sur le poste de travail\n✔ Certification MIL-STD-810G – Durabilité et fiabilité renforcées\n✔ Clavier et souris USB fournis – Prêt à l'emploi dès la sortie du carton\n\n💼 Système : Windows 11 Professionnel\n🔹 Une solution professionnelle solide, discrète et performante pour les environnements d’entreprise. 🖥️🔐",
+    "prix": "849.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006175141_0006225994_TVTQYvV.jpg",
+    "categorie": 42
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2317,
+  "fields": {
+    "nom": "HP All-in-One 24-cb0011nf",
+    "description": "Tout-en-un HP : confort visuel et performances au quotidien\nConçu pour vous offrir efficacité, fluidité et un espace de travail dégagé, le PC tout-en-un HP 23.8\" allie design moderne, qualité d’affichage et performances solides. Grâce à son écran IPS Full HD antireflet, profitez d’un affichage net et lumineux avec de larges angles de vision (178°), idéal pour le travail et les loisirs numériques.\n\nSous le capot, il embarque un processeur AMD Ryzen 7 5700U, 16 Go de RAM DDR4 et un SSD PCIe NVMe de 512 Go, garantissant rapidité et fluidité au quotidien. Pensé pour la durabilité, ce PC est fabriqué à partir de matériaux recyclés et dispose d’un agencement malin des ports pour limiter l’encombrement.\n\nCaractéristiques clés :\n✔ Écran 23.8\" Full HD IPS antireflet – Affichage lumineux et confortable\n✔ AMD Ryzen 7 5700U – Puissance et polyvalence\n✔ 16 Go de RAM DDR4 (2x 8 Go) – Multitâche fluide\n✔ SSD M.2 PCIe NVMe de 512 Go – Démarrages et chargements ultra-rapides\n✔ Wi-Fi AC + Ethernet + Bluetooth 4.2 – Connexions efficaces\n✔ Webcam HD 720p avec cache intégré – Sécurité et confidentialité\n✔ Haut-parleurs stéréo intégrés – Expérience multimédia agréable\n✔ Clavier et souris USB fournis – Utilisation immédiate\n\n💻 Système : Windows 11 Famille\n🔹 Un tout-en-un fiable, esthétique et efficace pour toutes vos activités du quotidien ! 🖥️✨",
+    "prix": "799.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006212601_83NbRqK.jpg",
+    "categorie": 42
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2318,
+  "fields": {
+    "nom": "Acer 23.8\" LED - Nitro XV242Fbmiiprx",
+    "description": "Moniteur gaming ultra-rapide pour des performances de haut niveau\nRepoussez les limites de la fluidité avec le moniteur Acer Nitro XV242Fbmiiprx ! Conçu pour les joueurs exigeants, il offre une fréquence exceptionnelle de 540 Hz et un temps de réponse de 1 ms, pour des actions ultra-réactives et une maîtrise totale du jeu.\n\nAvec sa dalle TN Full HD de 23.8\", son design ZeroFrame sans bordures et ses technologies Flickerless et Bluelight Shield, ce moniteur allie vitesse extrême, qualité visuelle et confort oculaire, même lors de longues sessions.\n\nCaractéristiques clés :\n✔ Écran 23.8\" Full HD (1920 x 1080) – Image nette et précise\n✔ Fréquence de rafraîchissement 540 Hz – Fluidité extrême pour les gamers compétitifs\n✔ Temps de réponse 1 ms – Réactivité maximale sans flou de mouvement\n✔ Contraste dynamique 100 000 000:1 – Profondeur et nuances de couleurs\n✔ Technologies Flickerless & Bluelight Shield – Moins de fatigue visuelle\n✔ Design ZeroFrame – Immersion totale dans l’action\n✔ Connectique : 2 HDMI 2.0 + 1 DisplayPort 1.4 – Compatible PC et consoles\n✔ Pied ergonomique réglable – Inclinaison, hauteur (120 mm), rotation et pivot\n\n🎮 Un moniteur taillé pour la victoire, prêt à suivre votre rythme effréné ! ⚡🖥️",
+    "prix": "499.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0005804768_1_0006126614_12CtreQ.jpg",
+    "categorie": 43
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2319,
+  "fields": {
+    "nom": "Samsung 27\" LED - Odyssey G5 S27CG552EU",
+    "description": "Immersion totale avec l'écran incurvé Samsung Odyssey G5\nPlongez au cœur de l’action avec le Samsung Odyssey G5 S27CG552EU, un moniteur incurvé 27 pouces conçu pour offrir une expérience gaming immersive et fluide. Sa dalle VA incurvée 1000R, associée à une résolution QHD (2560 x 1440), vous enveloppe dans chaque scène pour une immersion visuelle maximale.\n\nAvec son taux de rafraîchissement de 165 Hz et son temps de réponse de 1 ms (MPRT), il garantit des images ultra-nettes sans flou de mouvement, même dans les jeux les plus rapides. La technologie AMD FreeSync assure une synchronisation parfaite entre la carte graphique et le moniteur pour des sessions sans déchirement ni saccade.\n\nCaractéristiques clés :\n✔ Écran incurvé 27\" QHD (2560 x 1440) – Immersion et confort visuel optimaux\n✔ Courbure 1000R – Vision périphérique renforcée, plus grande concentration\n✔ Dalle VA – Contraste élevé et angles de vision larges\n✔ 165 Hz + 1 ms (MPRT) – Fluidité et réactivité maximales en jeu\n✔ Technologie AMD FreeSync – Synchronisation fluide avec la carte graphique\n✔ Design moderne et immersif – Parfait pour les setups gaming\n\n🎮 Un moniteur taillé pour le jeu immersif, la vitesse et la précision visuelle. 🌀🖥️",
+    "prix": "199.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006125782_elJK3yu.jpg",
+    "categorie": 43
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2320,
+  "fields": {
+    "nom": "MSI 23.8\" LED - PRO MP242AP",
+    "description": "Productivité et confort visuel au quotidien\nLe MSI PRO MP242AP est un moniteur professionnel de 23.8\" conçu pour optimiser votre espace de travail tout en assurant un excellent confort visuel. Doté d’une dalle IPS Full HD, d’un rafraîchissement à 100 Hz et d’un temps de réponse de 1 ms (MPRT), il allie fluidité, netteté et polyvalence pour toutes vos activités : bureautique, développement, web design ou multimédia.\n\nPensé pour l’ergonomie, son pied réglable en hauteur, inclinaison, rotation et pivot (90°) vous permet d’adapter parfaitement votre poste. Il intègre également les technologies Flicker-Free et Low Blue Light, certifiées TÜV Rheinland, pour réduire la fatigue oculaire lors de longues sessions.\n\nCaractéristiques clés :\n✔ Écran 23.8\" Full HD (1920 x 1080, dalle IPS) – Qualité d’image et larges angles de vision\n✔ 100 Hz + 1 ms (MPRT) – Fluidité et réactivité accrues\n✔ Réglage ergonomique complet (hauteur, inclinaison, pivot, rotation) – Poste de travail personnalisé\n✔ Technologies Low Blue Light + Flicker-Free – Protection oculaire renforcée\n✔ Ports HDMI, DisplayPort, VGA – Compatibilité étendue\n✔ Logiciel MSI Display Kit – Réglages faciles et adaptés selon vos tâches\n✔ Montage mural possible (VESA 100x100) – Gain de place pratique\n\n🖥️ Un moniteur fiable, ergonomique et fluide, taillé pour les pros ! 💼👓",
+    "prix": "119.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006058595_RZfFB4R.jpg",
+    "categorie": 43
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2321,
+  "fields": {
+    "nom": "AORUS 27\" OLED - FO27Q2",
+    "description": "Performance visuelle exceptionnelle au service du jeu\n\nL'écran gaming AORUS FO27Q2 offre une expérience visuelle haut de gamme pour les joueurs exigeants. Avec sa dalle QD-OLED de 27 pouces en résolution 2.5K (2560 x 1440 pixels), il associe couleurs intenses, contraste infini et grande précision d'affichage. Sa fréquence ultra-rapide de 240 Hz combinée à un temps de réponse record de 0,03 ms assure une fluidité optimale et une réactivité hors du commun, même lors des actions les plus rapides.\n\nProfitez de la certification VESA DisplayHDR 400 True Black pour des noirs profonds et des couleurs éclatantes. Les fonctions avancées telles que FreeSync Premium Pro, ClearMR 13000, Black Stabilizer et Game Assist optimisent votre expérience gaming en toutes circonstances. De plus, grâce à la fonction KVM intégrée et au pied ergonomique ajustable (hauteur 130 mm, pivot à 90°), il s’adapte parfaitement à votre espace et vos préférences.\n\nCaractéristiques principales :\n\n✔ Dalle QD-OLED 27\" 2.5K (2560 x 1440 px) – Couleurs vibrantes et contraste exceptionnel\n✔ Taux de rafraîchissement 240 Hz + 0,03 ms (GTG) – Fluidité et réactivité maximales\n✔ Certification VESA DisplayHDR 400 True Black – Noirs parfaits et immersion accrue\n✔ Technologies FreeSync Premium Pro et ClearMR 13000 – Image nette en jeu rapide\n✔ Réglage ergonomique complet (hauteur, pivot 90°) – Confort visuel optimal\n✔ Fonction KVM intégrée – Contrôle facile de plusieurs périphériques\n✔ Connectique polyvalente : HDMI 2.1 (x2), DisplayPort 1.4, USB-C Alt Mode\n✔ Puce audio ESS SABRE et haut-parleurs intégrés – Son haute fidélité\n✔ Fonctions tactiques avancées (Black Stabilizer, Game Assist, Vision nocturne)\n\n🎮 Un moniteur gaming réactif, performant et immersif conçu pour les joueurs passionnés ! 🖥️✨",
+    "prix": "599.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006154524_ajtJeHi.jpg",
+    "categorie": 43
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2322,
+  "fields": {
+    "nom": "AOC 23.8\" LED - 24B3HA2",
+    "description": "Confort visuel au quotidien avec une dalle IPS 24 pouces\nLe moniteur AOC 24B3HA2 offre une expérience visuelle idéale pour toutes vos tâches quotidiennes, que ce soit pour la bureautique, la navigation ou le multimédia. Grâce à sa dalle IPS Full HD de 23,8 pouces, profitez d'une qualité d'image lumineuse, de couleurs fidèles et d'un design moderne aux bords ultra-fins pour une intégration élégante dans votre espace.\n\nSon design sans contour permet d’installer facilement plusieurs écrans côte à côte, tout en assurant une image fluide et continue. Avec sa luminosité élevée de 250 cd/m², il garantit une bonne visibilité même en environnement lumineux.\n\nCaractéristiques clés :\n\n✔ Écran 23,8\" Full HD (1920 x 1080, dalle IPS) – Image nette et couleurs naturelles\n✔ Temps de réponse rapide 1 ms (MPRT) – Fluidité assurée\n✔ Design sans contour – Idéal pour configurations multi-écrans\n✔ Luminosité de 250 cd/m² – Bonne visibilité même en forte lumière ambiante\n✔ Technologie Adaptive Sync – Élimination des saccades à l'écran\n✔ Flicker-Free et mode anti-lumière bleue – Réduction de la fatigue visuelle\n✔ Connectique HDMI et VGA – Compatibilité universelle\n✔ Haut-parleurs intégrés – Son clair et pratique\n\n🖥️ Un moniteur pratique, élégant et confortable pour tous vos usages quotidiens ! 💻✨",
+    "prix": "109.00",
+    "stock": 10,
+    "image": "produits/ordinateurs_et_écrans/LD0006118209_nx8K16L.jpg",
+    "categorie": 43
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2323,
+  "fields": {
+    "nom": "AMD Ryzen 5 7600 Wraith Stealth (3.8 GHz / 5.1 GHz)",
+    "description": "Puissance gaming optimale avec AMD Ryzen 5 7600\nLe processeur AMD Ryzen 5 7600 est pensé pour offrir aux joueurs des performances exceptionnelles en toutes circonstances. Doté de 6 cœurs natifs (12 threads), de fréquences ultra-élevées atteignant 5,1 GHz en mode turbo, et d’un généreux cache L3 de 32 Mo, il garantit une fluidité remarquable, même sur les jeux les plus exigeants.\n\nAvec un TDP réduit de seulement 65W, il combine puissance et efficacité énergétique tout en minimisant la chaleur dégagée. Ce processeur vous permet également de réaliser confortablement des tâches exigeantes telles que l’édition vidéo, la création graphique et le multitâche intensif, avec des résultats rapides et précis.\n\nCaractéristiques clés :\n\n✔ Processeur 6 cœurs / 12 threads – Multitâche fluide\n✔ Fréquence native 3,8 GHz (Turbo jusqu'à 5,1 GHz) – Performances optimales en gaming\n✔ Cache L3 de 32 Mo – Traitement rapide et latences réduites\n✔ TDP de 65W – Consommation énergétique réduite\n✔ Plateforme AMD AM5 compatible PCIe 5.0 – Vitesse et stockage nouvelle génération\n✔ Idéal pour jeux, modélisation 3D, montage vidéo et tâches créatives intensives\n\n🔥 Le processeur idéal pour un PC gaming rapide, puissant et efficace ! 🎮🚀",
+    "prix": "199.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006002701_fqkLTB8.jpg",
+    "categorie": 45
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2324,
+  "fields": {
+    "nom": "Intel Core i5-14600KF (3.5 GHz / 5.3 GHz)",
+    "description": "Performances extrêmes avec Intel Core i5-14600KF\nLe processeur Intel Core i5-14600KF de 14ᵉ génération vous apporte une puissance supérieure grâce à ses 14 cœurs (6 Performance-cores + 8 Efficient-cores) et ses 20 threads. Doté d’une fréquence pouvant atteindre jusqu’à 5,3 GHz en Turbo, il garantit une expérience gaming ultra-fluide et une gestion optimale des tâches exigeantes.\n\nSon architecture hybride innovante combine des cœurs performants pour les jeux intensifs et des cœurs efficients pour le multitâche, vous permettant de jouer, streamer, et créer simultanément sans ralentissements. Compatible DDR4/DDR5 et PCI-E 5.0, ce CPU est conçu pour tirer parti des technologies les plus récentes.\n\nCaractéristiques clés :\n\n✔ 14 cœurs (6 P-Cores + 8 E-Cores) et 20 threads – Multitâche avancé\n✔ Fréquence jusqu’à 5,3 GHz (P-Core Turbo) – Fluidité maximale en gaming\n✔ Cache L3 24 Mo et Cache L2 20 Mo – Réactivité et performance optimisées\n✔ Coefficient débloqué pour overclocking – Potentiel maximal exploitable\n✔ Compatibilité mémoire DDR4 et DDR5, PCI-E 5.0 – Technologie avancée et évolutive\n✔ Architecture hybride avec Intel Thread Director – Répartition intelligente des ressources CPU\n✔ TDP 125 W (Turbo jusqu’à 181 W) – Puissance soutenue en toutes conditions\n\n🚀 Libérez tout votre potentiel gaming et créatif avec Intel Core 14ᵉ génération ! 🎮⚡",
+    "prix": "299.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006074917_WeRc5Ez.jpg",
+    "categorie": 45
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2325,
+  "fields": {
+    "nom": "AMD Ryzen 7 7800X3D (4.2 GHz / 5.0 GHz)",
+    "description": "Performances ultimes pour les joueurs avec l'AMD Ryzen 7 7800X3D\nLe processeur AMD Ryzen 7 7800X3D est taillé pour offrir aux gamers des performances inégalées. Doté de 8 cœurs physiques et 16 threads, avec des fréquences allant jusqu’à 5,0 GHz en mode Turbo, il délivre toute la puissance nécessaire aux jeux vidéo exigeants, au streaming simultané et aux tâches multitâches intensives.\n\nGrâce à la technologie AMD 3D V-Cache et son cache ultra-large de 104 Mo, profitez d’un gain de performances exceptionnel et d’une réactivité sans égale. L’architecture AMD Zen 4 optimise l’efficacité énergétique tout en délivrant des résultats extrêmes, aussi bien en jeu qu’en création vidéo, modélisation 3D ou multitâche avancé.\n\nCaractéristiques clés :\n\n✔ 8 cœurs physiques / 16 threads – Traitement fluide et multitâche avancé\n✔ Fréquence jusqu’à 5,0 GHz en Turbo – Fluidité maximale dans les jeux\n✔ AMD 3D V-Cache 104 Mo – Performances boostées et faible latence\n✔ Multiplicateur débloqué (overclocking possible) – Personnalisez les performances selon vos besoins\n✔ Logiciel AMD Ryzen Master – Contrôle facile et efficace des réglages CPU (fréquences, tensions, températures)\n✔ Idéal pour gaming, streaming, création de contenu et applications professionnelles intensives\n\n🎯 Le processeur idéal pour dépasser vos limites gaming et créatives ! 🎮🔥",
+    "prix": "539.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006021478_rFsczLl.jpg",
+    "categorie": 45
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2326,
+  "fields": {
+    "nom": "Intel Core i7-14700KF (3.4 GHz / 5.6 GHz)",
+    "description": "Performances extrêmes avec Intel Core i7-14700KF\nLe processeur Intel Core i7-14700KF de 14ème génération vous offre une puissance sans compromis avec ses 20 cœurs (8 Performance-Cores + 12 Efficient-Cores) et ses 28 threads. Avec une fréquence turbo jusqu’à 5,6 GHz et un cache étendu (L3 : 33 Mo, L2 : 28 Mo), ce CPU garantit une réactivité optimale et des performances exceptionnelles en gaming, multitâche intensif et création de contenu avancée.\n\nProfitez d’une architecture hybride optimisée combinant des cœurs performants pour les jeux exigeants et des cœurs efficients pour toutes vos tâches d’arrière-plan. Grâce à l'Intel Thread Director, votre système gère intelligemment les ressources, vous assurant une expérience fluide sans interruptions.\n\nCaractéristiques clés :\n\n✔ Processeur 20 cœurs / 28 threads (8 P-Cores + 12 E-Cores) – Performances multitâches extrêmes\n✔ Fréquence Turbo jusqu'à 5,6 GHz – Fluidité maximale dans les jeux\n✔ Cache total étendu : 33 Mo (L3) + 28 Mo (L2) – Réactivité et rapidité accrues\n✔ Coefficient multiplicateur débloqué (overclocking possible) – Personnalisez vos performances\n✔ Compatible DDR4 / DDR5 et PCI-E 5.0 – Technologies avancées pour une évolutivité optimale\n✔ Architecture hybride avec Intel Thread Director – Répartition intelligente des ressources CPU\n✔ TDP : 125W (max turbo 253W) – Puissance constante sous charge intense\n\n⚡ Dépassez toutes les limites avec les processeurs Intel Core 14ᵉ génération ! 🎮🚀",
+    "prix": "419.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006074904_v3LJWGH.jpg",
+    "categorie": 45
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2327,
+  "fields": {
+    "nom": "AMD Ryzen 9 5900XT (3.3 GHz / 4.8 GHz)",
+    "description": "AMD Ryzen 9 5900XT : Puissance ultime pour gaming et streaming\nLe processeur AMD Ryzen 9 5900XT offre des performances exceptionnelles pour les joueurs et streamers exigeants. Avec ses 16 cœurs physiques (32 threads) et son cache total de 72 Mo (L2+L3), il assure une fluidité parfaite et des fréquences boost impressionnantes pour dominer vos jeux favoris, streamer sans latences, et accomplir toutes vos tâches créatives sans compromis.\n\nGrâce à sa microarchitecture Zen 3 de nouvelle génération et à la technologie Precision Boost 2, il s’adapte intelligemment à vos besoins, vous garantissant rapidité et puissance optimale en toute circonstance.\n\nCaractéristiques clés :\n\n✔ 16 cœurs physiques / 32 threads – Multitâche fluide et puissant\n✔ Fréquences élevées avec technologie Precision Boost 2 – Performances optimales en jeu\n✔ Cache ultra-large 72 Mo (L2+L3) – Traitement rapide et latences réduites\n✔ Architecture Zen 3 avancée – Gaming et création sans limites\n✔ Coefficient multiplicateur débloqué (overclocking possible) – Personnalisez vos performances\n✔ Logiciel AMD Ryzen Master inclus – Gestion simple et précise des performances (overclocking, températures, tensions)\n\n🔥 Jouez, streamez et créez sans limites avec l’AMD Ryzen 9 5900XT ! 🎮🚀",
+    "prix": "399.00",
+    "stock": 10,
+    "image": "produits/composants/LD0005746003_1_0006144461_KyCziLB.jpg",
+    "categorie": 45
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2328,
+  "fields": {
+    "nom": "PowerColor Reaper AMD Radeon RX 9070 XT 16GB",
+    "description": "Performances gaming ultimes avec la PowerColor Reaper AMD Radeon RX 9070 XT 16GB\n\nPrenez l'avantage décisif avec la carte graphique PowerColor Reaper AMD Radeon RX 9070 XT. Équipée de 16 Go de mémoire vidéo et basée sur la nouvelle architecture AMD RDNA 4 intégrant l’IA, elle offre vitesse, fluidité et graphismes exceptionnels pour des sessions de jeu ultra-immersives en haute résolution.\n\nGrâce au ray tracing de 3ᵉ génération et à la technologie AMD FidelityFX Super Resolution 4, bénéficiez d'images réalistes et d'un upscaling IA performant. Son refroidissement par trois ventilateurs silencieux (arrêt sous 50 °C) et sa backplate métallique assurent stabilité et durabilité.\n\nCaractéristiques clés :\n\n✔ Architecture AMD RDNA 4 – Ray tracing avancé et accélération IA\n✔ 16 Go de mémoire vidéo – Jeux fluides en haute résolution\n✔ AMD Radeon Anti-Lag 2 – Réduction efficace de la latence\n✔ AMD HYPR-RX – Optimisations instantanées des performances\n✔ Refroidissement à 3 ventilateurs Ring-Fan 90 mm silencieux\n✔ Backplate métal renforcée – Robustesse et stabilité\n✔ AMD FidelityFX Super Resolution 4 – Upscaling avancé par IA\n✔ Compatibilité PCI Express Gen 5 et DisplayPort 2.1 – Technologie évolutive\n✔ Technologie AMD Smart Access Memory avec Ryzen 9000 – Performances maximisées\n\n🔥 Jouez sans compromis, avec rapidité et immersion extrêmes ! 🎮✨",
+    "prix": "849.00",
+    "stock": 0,
+    "image": "produits/composants/LD0006219713_numGGAP.jpg",
+    "categorie": 46
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2329,
+  "fields": {
+    "nom": "ASRock AMD Radeon RX 9070 XT Steel Legend 16GB",
+    "description": "Performances gaming extrêmes avec ASRock Radeon RX 9070 XT Steel Legend 16GB\n\nBoostez votre expérience gaming avec la carte graphique ASRock AMD Radeon RX 9070 XT Steel Legend. Équipée de 16 Go de mémoire vidéo, elle exploite la puissance de la nouvelle architecture AMD RDNA 4 dotée du ray tracing de 3ème génération et d’accélérations IA avancées, pour des jeux ultra-fluides aux graphismes incroyablement réalistes.\n\nSon système de refroidissement performant à triple ventilateur Striped Ring Fan, son dissipateur en aluminium avec base en cuivre et sa fonction d'arrêt des ventilateurs à basse température garantissent silence et fiabilité. Personnalisez votre PC avec le rétroéclairage ARGB Polychrome Sync et sa backplate métallique robuste.\n\nCaractéristiques clés :\n\n✔ Architecture AMD RDNA 4 – Ray tracing avancé et accélération IA nouvelle génération\n✔ 16 Go de mémoire vidéo – Fluidité maximale en haute résolution\n✔ Technologie AMD Radeon Anti-Lag 2 – Réduction optimale de la latence\n✔ AMD HYPR-RX et FidelityFX Super Resolution 4 – Optimisation instantanée et upscaling IA supérieur\n✔ Refroidissement efficace par triple ventilateur Striped Ring Fan – Silencieux et performant\n✔ LED ARGB Polychrome Sync (ON/OFF) – Éclairage personnalisable\n✔ Backplate en métal renforcé – Robustesse et prévention des torsions\n✔ Compatibilité PCI Express Gen 5, DisplayPort 2.1 et AMD Smart Access Memory – Technologie évolutive et pérenne\n\n🔥 Vitesse, performances et immersion ultime avec la Radeon RX 9070 XT Steel Legend ! 🎮✨",
+    "prix": "889.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006219802_RXaBi0e.jpg",
+    "categorie": 46
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2330,
+  "fields": {
+    "nom": "Gigabyte Radeon RX 7800 XT GAMING OC 16G",
+    "description": "Gigabyte Radeon RX 7800 XT GAMING OC 16G : Jouez et streamez en 1440p et plus\n\nPlongez dans une expérience gaming exceptionnelle grâce à la carte graphique Gigabyte Radeon RX 7800 XT GAMING OC. Basée sur la puissante architecture AMD RDNA 3, elle vous permet de jouer en haute résolution (1440p et au-delà) tout en assurant un streaming fluide et sans compromis.\n\nAvec un système de refroidissement WINDFORCE performant (3 ventilateurs alternés de 90 mm, 7 heatpipes en cuivre, radiateur aluminium), elle garantit stabilité et silence optimal même sous forte charge. Profitez aussi d’un design robuste avec une plaque arrière en métal, un double BIOS et un éclairage RGB Fusion personnalisable.\n\nCaractéristiques clés :\n\n✔ Architecture AMD RDNA 3 – Performances gaming et efficacité nouvelle génération\n✔ 16 Go de mémoire vidéo – Fluidité parfaite pour jouer et streamer simultanément\n✔ Ray tracing avancé et accélération IA – Graphismes ultra-réalistes et immersifs\n✔ Système de refroidissement WINDFORCE – Refroidissement performant et silencieux\n✔ RGB Fusion, double BIOS et plaque arrière en métal – Robustesse et esthétique personnalisable\n✔ AMD FidelityFX Super Resolution (FSR) – Boost des fréquences d’images\n✔ AMD Smart Access Memory – Communication optimale entre CPU et GPU\n✔ AMD FreeSync et Radeon Anti-Lag – Jeu fluide et réactivité maximale\n✔ Logiciel AMD Radeon Software Adrenalin – Contrôle rapide et intuitif via ALT+R\n\n🔥 Performances supérieures, immersion intense, streaming sans compromis ! 🎮✨",
+    "prix": "649.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006061333_xJZxgD7.jpg",
+    "categorie": 46
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2331,
+  "fields": {
+    "nom": "MSI GeForce RTX 5070 12G VENTUS 2X OC",
+    "description": "Performances gaming avancées avec la MSI GeForce RTX 5070 VENTUS 2X OC\n\nDécouvrez une expérience gaming incomparable grâce à la carte graphique MSI GeForce RTX 5070 12G VENTUS 2X OC, basée sur la toute nouvelle architecture NVIDIA Blackwell. Avec 12 Go de mémoire GDDR7, le DLSS 4, le ray tracing intégral et l’accélération par IA, elle garantit fluidité extrême et graphismes ultra-réalistes pour une immersion totale.\n\nSon refroidissement ultra-silencieux Torx 5.0 avec technologie Zero Frozr coupe automatiquement les ventilateurs à basse température, tandis que la backplate métallique assure robustesse et stabilité.\n\nCaractéristiques clés :\n\n✔ GPU GeForce RTX 5070 – Performances gaming et création boostées\n✔ 12 Go VRAM GDDR7 (interface 192 bits) – Fluidité optimale en haute résolution\n✔ NVIDIA DLSS 4 avec génération multi-images – Accélération des graphismes par IA\n✔ Ray tracing intégral – Graphismes réalistes et immersifs\n✔ NVIDIA Reflex 2 avec Frame Warp – Latence ultra-réduite en jeux compétitifs\n✔ Refroidissement Torx Fan 5.0 et Zero Frozr – Silence et performances thermiques optimisées\n✔ Backplate métal robuste – Renforcement et protection de la carte\n✔ Logiciel MSI Center – Réglages faciles et performances personnalisées\n✔ NVIDIA Studio & Broadcast – Outils avancés pour création et streaming optimisés par IA\n✔ Compatibilité NVIDIA G-SYNC – Jeu sans déchirures ni ralentissements\n\n🔥 Boostez votre expérience gaming avec la MSI RTX 5070 VENTUS 2X OC ! 🎮🚀",
+    "prix": "799.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006214845_zfOnQHt.jpg",
+    "categorie": 46
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2332,
+  "fields": {
+    "nom": "MSI B650 GAMING PLUS WIFI",
+    "description": "MSI B650 GAMING PLUS WIFI : Performance ultime pour votre processeur AMD Ryzen\n\nLa carte mère MSI B650 GAMING PLUS WIFI est la solution idéale pour construire un PC gaming puissant avec les processeurs AMD Ryzen série 7000, 8000 et 9000 sur socket AM5. Compatible DDR5 jusqu’à 7200 MHz, PCI-Express 4.0 et M.2 NVMe ultra-rapides, elle répond aux besoins des gamers exigeants et des créateurs professionnels à la recherche d’une fiabilité maximale.\n\nAvec une conception renforcée pour une gestion optimale de l’alimentation (Core Boost), une solution thermique avancée (M.2 Shield Frozr, pads thermiques haut de gamme), et une connectivité de pointe incluant LAN 2.5 GbE et Wi-Fi 6E, elle offre tout ce dont vous avez besoin pour exploiter pleinement votre matériel.\n\nCaractéristiques clés :\n\n✔ Support des processeurs AMD Ryzen 7000/8000/9000 (socket AM5) – Performances évolutives\n✔ Mémoire DDR5 jusqu’à 7200 MHz – Vitesse et stabilité maximales\n✔ Core Boost & Memory Boost – Alimentation optimale et performances mémoire améliorées\n✔ Refroidissement premium (M.2 Shield Frozr, pads thermiques 7 W/mK) – Gestion thermique efficace\n✔ PCIe 4.0 & M.2 Lightning PCIe 4.0 x4 – Transferts ultra-rapides\n✔ Réseau ultra-performant : LAN 2.5 GbE & Wi-Fi 6E – Connexion stable et rapide\n✔ Mystic Light RGB personnalisable – Esthétique gaming dynamique\n✔ Audio Boost – Son immersif pour une expérience gaming supérieure\n\n🎯 Profitez d'un système rapide, stable et prêt à surpasser toutes les attentes grâce à MSI B650 GAMING PLUS WIFI ! 🎮⚡",
+    "prix": "209.00",
+    "stock": 8,
+    "image": "produits/composants/LD0006037607_j3mf9zq.jpg",
+    "categorie": 47
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2333,
+  "fields": {
+    "nom": "ASUS TUF GAMING B650-PLUS",
+    "description": "ASUS TUF GAMING B650-PLUS : La carte mère ultime pour AMD Ryzen 7000\n\nL’ASUS TUF GAMING B650-PLUS est la carte mère idéale pour construire un PC gaming performant autour des processeurs AMD Ryzen 7000 sur socket AM5. Grâce à sa prise en charge de la mémoire DDR5 (jusqu’à 7600 MHz en overclocking), des SSD M.2 PCIe 5.0 & 4.0, ainsi que des cartes graphiques PCIe 4.0, elle offre des performances et une évolutivité exceptionnelles.\n\nElle intègre également un réseau rapide Realtek LAN 2.5 GbE, un son Realtek 7.1 surround immersif et une connectique complète (USB 3.1 & 3.2) pour une expérience optimale, que ce soit en jeu ou en création de contenu intensif.\n\nCaractéristiques clés :\n\n✔ Compatible AMD Ryzen 7000 (socket AM5) – Performances gaming et créatives\n✔ Mémoire DDR5 jusqu’à 7600 MHz (O.C.) – Rapidité et stabilité maximales\n✔ 1 port M.2 PCIe 5.0 x4 + 2 ports M.2 PCIe 4.0 x4 – Stockage ultrarapide\n✔ Slot PCI-Express 4.0 16x – Compatibilité GPU avancée\n✔ Audio Realtek 7.1 Surround – Son immersif et précis\n✔ Connectivité LAN 2.5 GbE Realtek – Connexion rapide et stable\n✔ Connecteurs USB 3.1 & USB 3.2 – Transferts rapides et polyvalence maximale\n\n🎯 Prenez l’avantage en gaming et repoussez les limites avec l’ASUS TUF GAMING B650-PLUS ! 🎮🔥",
+    "prix": "179.00",
+    "stock": 12,
+    "image": "produits/composants/LD0005986038_xvrDZ3r.jpg",
+    "categorie": 47
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2334,
+  "fields": {
+    "nom": "Gigabyte B650 GAMING X AX V2",
+    "description": "Gigabyte B650 GAMING X AX V2 : Carte mère performante pour AMD Ryzen 7000/8000\n\nLa carte mère Gigabyte B650 GAMING X AX V2 est parfaite pour créer une configuration gaming avancée autour des processeurs AMD Ryzen série 7000 et 8000 sur socket AM5. Compatible avec la mémoire DDR5 (jusqu’à 8000 MHz en OC avec support EXPO/XMP), elle offre des performances exceptionnelles en jeu et en création intensive.\n\nAvec ses trois ports M.2 PCIe 4.0 pour un stockage ultrarapide, une connectivité complète incluant LAN 2.5 GbE, Wi-Fi 6E et Bluetooth 5.2, ainsi que la technologie Smart Fan 6 pour un refroidissement optimal, elle garantit une stabilité maximale et une réactivité impressionnante.\n\nCaractéristiques clés :\n\n✔ Compatible processeurs AMD Ryzen série 7000/8000 (socket AM5) – Performances gaming et créatives\n✔ Mémoire DDR5 jusqu’à 8000 MHz (OC) avec support EXPO et XMP – Vitesse optimale\n✔ 3 x M.2 PCIe 4.0 – Stockage haute performance et rapide\n✔ Connectivité complète : LAN 2.5 GbE, Wi-Fi 6E et Bluetooth 5.2 – Réseau stable et rapide\n✔ 8+2+2 phases VRM – Alimentation robuste pour processeurs haute performance\n✔ Technologie Q-Flash Plus – Mise à jour simplifiée du BIOS sans composants installés\n✔ Smart Fan 6 avec FAN STOP – Refroidissement intelligent et silencieux\n✔ USB 3.1 & 3.2 – Transferts rapides et polyvalence maximale\n\n🎯 Visez les sommets du gaming et de la création avec la Gigabyte B650 GAMING X AX V2 ! 🎮🚀",
+    "prix": "189.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006129080_uZ6wQ1f.jpg",
+    "categorie": 47
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2335,
+  "fields": {
+    "nom": "MSI PRO B760-P WIFI DDR4",
+    "description": "MSI PRO B760-P WIFI DDR4 : Libérez tout le potentiel de votre processeur Intel Core\n\nLa carte mère MSI PRO B760-P WIFI DDR4 est idéale pour assembler un PC puissant, performant et abordable, basé sur les processeurs Intel Core hybrides de 12ème, 13ème et 14ème génération (socket LGA 1700). Elle prend en charge la mémoire DDR4 jusqu’à 5333 MHz (OC), les cartes graphiques PCIe 4.0 et les SSD M.2 PCIe 4.0 ultrarapides.\n\nSon alimentation renforcée (12+1 phases avec Core Boost), son refroidissement complet (dissipateurs élargis, M.2 Shield Frozr, pads thermiques) et sa connectivité moderne avec LAN 2.5 GbE, Wi-Fi 6E et Bluetooth 5.3 en font un choix idéal pour les joueurs exigeants et les créateurs polyvalents.\n\nCaractéristiques clés :\n\n✔ Compatible Intel Core 12ème, 13ème et 14ème génération (socket LGA 1700) – Polyvalence et évolutivité\n✔ Mémoire DDR4 jusqu’à 5333 MHz (OC) – Performances optimales\n✔ 2 emplacements M.2 PCIe 4.0 (x4) et 4 ports SATA 6 Gbps – Stockage rapide et flexible\n✔ Slot PCI-Express 4.0 16x – Compatibilité avec GPU de dernière génération\n✔ VRM 12+1 phases (P-PAK, Core Boost et Memory Boost) – Stabilité et puissance renforcées\n✔ Refroidissement optimal : dissipateurs étendus, pads thermiques hautes performances, M.2 Shield Frozr – Gestion thermique efficace\n✔ LAN 2.5 GbE + Wi-Fi 6E et Bluetooth 5.3 – Connectivité rapide et fiable\n✔ Ports USB 3.1 – Transferts rapides et polyvalence\n\n🔥 Dominez chaque jeu et créez sans limites avec la MSI PRO B760-P WIFI DDR4 ! 🎮🚀",
+    "prix": "169.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006012994_76ctLvL.jpg",
+    "categorie": 47
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2336,
+  "fields": {
+    "nom": "ASUS PRIME B650-PLUS",
+    "description": "ASUS PRIME B650-PLUS : Exploitez pleinement votre processeur AMD Ryzen 7000\n\nLa carte mère ASUS PRIME B650-PLUS est idéale pour concevoir un PC performant et évolutif autour des processeurs AMD Ryzen série 7000 (socket AM5). Avec une prise en charge de la mémoire DDR5 jusqu’à 7600 MHz (OC), des SSD ultra-rapides en PCIe 5.0 et 4.0, et des cartes graphiques PCIe 4.0, elle vous offre toutes les performances nécessaires pour jouer ou créer sans compromis.\n\nLes cartes mères ASUS PRIME sont conçues avec des matériaux robustes, des fonctionnalités professionnelles et des outils exclusifs ASUS pour assurer fiabilité et stabilité à long terme.\n\nCaractéristiques clés :\n\n✔ Compatible AMD Ryzen 7000 sur socket AM5 – Performances gaming et création\n✔ 4 emplacements DDR5 Dual-Channel jusqu’à 7600 MHz (OC) – Mémoire ultrarapide\n✔ 1 x M.2 PCIe 5.0 x4 + 1 x M.2 PCIe 4.0 x4 + 4 ports SATA 6Gbps – Stockage rapide et flexible\n✔ Slot PCI-Express 4.0 16x – Support GPU dernière génération\n✔ Audio Realtek Surround 7.1 – Son immersif de qualité\n✔ Réseau LAN Realtek 2.5 GbE – Connectivité rapide et fiable\n✔ Conception robuste avec technologies ASUS exclusives – Fiabilité maximale et performances constantes\n\n🔥 Jouez, créez et travaillez dans les meilleures conditions avec l’ASUS PRIME B650-PLUS ! 🎮🚀",
+    "prix": "189.00",
+    "stock": 9,
+    "image": "produits/composants/LD0005986083_o324r8z.jpg",
+    "categorie": 47
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2337,
+  "fields": {
+    "nom": "Corsair Vengeance DDR5 32 Go (2 x 16 Go) 6000 MHz CL36",
+    "description": "Corsair Vengeance DDR5 : Mémoire RAM haute performance\n\nLa mémoire Corsair Vengeance DDR5 offre des performances exceptionnelles grâce à des fréquences élevées, spécialement optimisées pour les cartes mères Intel de dernière génération. Dotée de puces rigoureusement sélectionnées et d’une régulation intégrée de la tension, elle permet un overclocking précis, facile et parfaitement maîtrisé.\n\nAvec son dissipateur thermique en aluminium low-profile, elle assure un refroidissement efficace tout en étant compatible avec un large éventail de systèmes et de refroidisseurs CPU. Le logiciel Corsair iCUE permet la surveillance et l’ajustement en temps réel des fréquences et tensions, ainsi que la gestion personnalisée des profils Intel XMP 3.0.\n\nCaractéristiques clés :\n\n✔ Mémoire DDR5 haute fréquence – Performances supérieures par rapport à la DDR4\n✔ Profils Intel XMP 3.0 personnalisables via iCUE – Optimisation précise selon vos applications\n✔ Puces mémoire sélectionnées et testées – Stabilité et fiabilité maximales\n✔ Régulateur de tension intégré – Overclocking précis et sécurisé\n✔ Dissipateur thermique en aluminium – Refroidissement efficace et compatibilité étendue\n✔ Circuit imprimé hautes performances – Qualité de signal optimale pour l’overclocking\n✔ Conçu spécialement pour les cartes mères DDR5 Intel – Compatibilité maximale avec les nouveaux systèmes\n\n🚀 Repoussez les limites de votre configuration grâce à la Corsair Vengeance DDR5 ! ⚡🎮",
+    "prix": "135.00",
+    "stock": 10,
+    "image": "produits/composants/LD0005900503_1_0005912824_0006027335_0006027345_0006117807_CjTuzMx.jpg",
+    "categorie": 48
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2338,
+  "fields": {
+    "nom": "Kingston 16 Go DDR4 2666 MHz CL19 2Rx8",
+    "description": "La mémoire Server de Kingston est spécialement conçue pour les systèmes de serveurs critiques, qui exigent une stabilité et une disponibilité maximales. Ces modèles ont été mis au point pour répondre aux besoins particuliers des clients des Data centre et Cloud, ainsi que des intégrateurs de système et des PME.",
+    "prix": "49.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006210440_iFfzdv6.jpg",
+    "categorie": 48
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2339,
+  "fields": {
+    "nom": "Kingston FURY Beast 16 Go DDR5 6400 MHz CL32 - Blanc",
+    "description": "Kingston FURY Beast DDR5 : Performances ultimes pour vos jeux et applications\n\nLa mémoire Kingston FURY Beast DDR5 propulse votre système gaming vers de nouveaux sommets grâce à des performances exceptionnelles, une fiabilité maximale et une efficacité accrue. Elle intègre les dernières avancées technologiques, telles que l’ECC intégré (ODECC) pour une meilleure stabilité à haute vitesse, deux sous-canaux indépendants de 32 bits, et une gestion d’énergie optimisée par un circuit intégré (PMIC).\n\nQue ce soit pour des sessions de jeu extrêmes, du streaming haute résolution (4K+), ou des rendus 3D complexes, la Kingston FURY Beast DDR5 répond parfaitement à vos besoins en combinant style audacieux et performances exceptionnelles. De plus, profitez des profils Intel XMP 3.0 personnalisables pour simplifier et maximiser l'overclocking.\n\nCaractéristiques clés :\n\n✔ Mémoire DDR5 haute performance – Pour des jeux et applications exigeants\n✔ ECC sur puce (ODECC) – Stabilité et fiabilité accrues à haute vitesse\n✔ Deux sous-canaux 32 bits indépendants – Traitement des données optimisé\n✔ Gestion d’énergie intégrée (PMIC) – Alimentation précise et efficace\n✔ Compatible Intel XMP 3.0 (certifiée) – Overclocking simple et performant\n✔ Dissipateur thermique au design audacieux – Refroidissement efficace et esthétique remarquable\n✔ Testée et approuvée – Fiabilité maximale avec toutes les cartes mères DDR5 actuelles\n\n🚀 Passez au niveau supérieur avec la mémoire Kingston FURY Beast DDR5 ! 🎮✨",
+    "prix": "99.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006188463_0006188643_StuDKoX.jpg",
+    "categorie": 48
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2340,
+  "fields": {
+    "nom": "G.Skill Flare X5 Series Low Profile 32 Go (2x 16 Go) DDR5 6000 MHz CL30",
+    "description": "G.Skill Flare X5 Series DDR5 : Performances ultimes sur plateformes AMD\n\nSpécialement conçue pour les processeurs AMD Ryzen sur socket AM5, la mémoire RAM G.Skill Flare X5 Series DDR5 marque le retour attendu de la célèbre gamme Flare, reconnue pour ses performances exceptionnelles. Profitez pleinement des capacités de votre processeur AMD dernière génération grâce à des fréquences élevées et une compatibilité totale avec les technologies d’overclocking AMD EXPO.\n\nSon design sobre, compact et discret (« Low-Profile » avec seulement 33 mm de hauteur) permet une intégration facile même dans les configurations équipées de refroidisseurs CPU imposants. Son dissipateur thermique noir mat garantit à la fois efficacité de refroidissement et esthétique sobre adaptée à tout type de PC.\n\nCaractéristiques clés :\n\n✔ Conçue spécifiquement pour les plateformes AMD Ryzen AM5 – Performances optimisées\n✔ Compatible AMD EXPO – Overclocking facile et rapide depuis le BIOS\n✔ Design compact Low-Profile (33 mm de hauteur) – Idéal pour toutes les configurations\n✔ Dissipateur thermique discret en noir mat – Refroidissement efficace et esthétique sobre\n✔ Performances élevées et stabilité exemplaire – Fiabilité reconnue G.Skill\n\n🚀 Boostez votre PC AMD Ryzen avec la puissance de la G.Skill Flare X5 DDR5 ! 🎮🔥",
+    "prix": "119.00",
+    "stock": 10,
+    "image": "produits/composants/LD0005980835_0005980915_0005980924_0006027434_NkLtssT.jpg",
+    "categorie": 48
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2341,
+  "fields": {
+    "nom": "G.Skill Trident Z5 Royal Neo 32 Go (2 x 16 Go) DDR5 6000 MHz CL28",
+    "description": "G.Skill Trident Z5 Royal Neo DDR5 : Luxe et performances extrêmes pour AMD\n\nLa mémoire RAM DDR5 G.Skill Trident Z5 Royal Neo allie performances exceptionnelles et design luxueux pour les plateformes AMD. Avec ses fréquences élevées et la prise en charge des profils AMD EXPO, elle offre un overclocking simplifié et puissant.\n\nChaque module arbore une barre lumineuse cristalline unique, diffusant des effets RGB magnifiques et personnalisables. Les dissipateurs thermiques en aluminium galvanisé avec finition miroir dorée ou argentée offrent à votre configuration un style haut de gamme incomparable.\n\nCaractéristiques clés :\n\n✔ Performances DDR5 extrêmes – Fréquences élevées et overclocking facilité\n✔ Profils AMD EXPO – Optimisation rapide des performances sur plateformes AMD\n✔ Barre lumineuse cristalline RGB – Effets lumineux spectaculaires\n✔ Dissipateur aluminium galvanisé finition miroir (argent ou or) – Luxe et refroidissement optimal\n✔ Circuits intégrés sélectionnés à la main – Fiabilité et performances maximales\n✔ Compatible Asus Aura, Gigabyte RGB Fusion, MSI Mystic Light, ASRock Polychrome Sync – Éclairage synchronisé à votre système\n\n🚀 Sublimez votre PC gaming avec G.Skill Trident Z5 Royal Neo DDR5 : luxe et puissance à l’état pur ! 🎮✨",
+    "prix": "199.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006159991_34tLAQv.jpg",
+    "categorie": 48
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2342,
+  "fields": {
+    "nom": "Samsung SSD 990 EVO Plus M.2 PCIe NVMe 2 To",
+    "description": "Samsung SSD 990 EVO Plus 2 To : Des performances ultra-rapides au quotidien\n\nLe SSD Samsung 990 EVO Plus de 2 To améliore significativement la réactivité de votre PC, réduisant les temps de chargement et accélérant les transferts de fichiers volumineux grâce à des vitesses pouvant atteindre jusqu'à 7250 Mo/s. Doté de la technologie Intelligent TurboWrite 2.0, ce SSD au format M.2 2280 s’adapte parfaitement aux cartes mères récentes en exploitant pleinement les interfaces PCIe 4.0 x4 et PCIe 5.0 x2.\n\nAvec une efficacité énergétique accrue et le logiciel Samsung Magician pour optimiser et surveiller votre disque, le 990 EVO Plus constitue un excellent choix pour booster votre expérience en gaming, création multimédia ou multitâche intensif.\n\nCaractéristiques clés :\n\n✔ Vitesses de lecture séquentielle jusqu'à 7250 Mo/s – 45 % plus rapide que la génération précédente\n✔ Technologie Intelligent TurboWrite 2.0 – Gestion rapide des données volumineuses\n✔ Compatible PCIe 4.0 x4 et PCIe 5.0 x2 – Adaptabilité maximale aux dernières plateformes\n✔ Efficacité énergétique améliorée (jusqu’à 73 % supérieure) – Performances optimisées avec contrôle thermique efficace\n✔ Logiciel Samsung Magician inclus – Surveillance, optimisation et mise à jour simplifiées du SSD\n✔ Format compact M.2 2280 – Intégration facile dans toutes les configurations modernes\n\n⚡ Boostez les performances de votre PC avec le Samsung 990 EVO Plus 2 To ! 🚀✨",
+    "prix": "119.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006209368_Rp2Xvgt.jpg",
+    "categorie": 49
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2343,
+  "fields": {
+    "nom": "KIOXIA EXCERIA PLUS G3 2 To",
+    "description": "SSD KIOXIA EXCERIA PLUS G3 : Boostez votre configuration !\n\nAvec le SSD KIOXIA EXCERIA PLUS G3, améliorez instantanément les performances de votre ordinateur grâce à des vitesses de lecture séquentielle atteignant jusqu’à 5 000 Mo/s via l’interface PCIe 4.0 x4. Que vous soyez gamer ou créateur vidéo, bénéficiez de performances fluides et réactives adaptées à vos besoins.\n\nUtilisant la mémoire TLC 3D BiCS FLASH de dernière génération, ce SSD est proposé dans des capacités allant jusqu’à 2 To et un format M.2 2280, garantissant une parfaite compatibilité avec la plupart des PC fixes et portables modernes.\n\nCaractéristiques clés :\n\n✔ Vitesse de lecture jusqu’à 5 000 Mo/s – Fluidité et réactivité exceptionnelles\n✔ Format compact M.2 2280 – Compatibilité maximale PC fixe et portable\n✔ Interface PCIe 4.0 x4 avec NVMe 1.4 – Réduction optimale des temps de latence\n✔ Mémoire flash TLC 3D BiCS FLASH – Fiabilité et performances élevées\n✔ Logiciel SSD Utility – Gestion simple et efficace de votre SSD (maintenance, surveillance)\n\n⚡ Passez au niveau supérieur avec le SSD KIOXIA EXCERIA PLUS G3 ! 🚀✨",
+    "prix": "179.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006114829_0006114847_AZhARsu.jpg",
+    "categorie": 49
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2344,
+  "fields": {
+    "nom": "KIOXIA EXCERIA PLUS G4 2 To",
+    "description": "KIOXIA EXCERIA PLUS G4 : Passez au SSD PCIe 5.0 ultra-rapide !\n\nLe SSD KIOXIA EXCERIA PLUS G4 fait franchir un cap à votre configuration en offrant des performances extrêmes grâce à sa vitesse de lecture séquentielle allant jusqu'à 10 000 Mo/s via l’interface PCIe 5.0 x4. Que ce soit pour le gaming intensif ou le montage vidéo professionnel, bénéficiez d’une rapidité et d'une fluidité incomparables.\n\nDoté de la mémoire flash TLC 3D BiCS FLASH, disponible jusqu’à 2 To, ce SSD au format M.2 2280 garantit une compatibilité parfaite avec la majorité des cartes mères et ordinateurs portables actuels.\n\nCaractéristiques clés :\n\n✔ Interface PCIe 5.0 x4 – Vitesses de lecture jusqu’à 10 000 Mo/s\n✔ Format M.2 2280 – Compatibilité universelle PC fixe et portable\n✔ Mémoire TLC 3D BiCS FLASH – Performance, stabilité et fiabilité\n✔ Technologie NVMe 2.0c – Latence réduite et réactivité optimale\n✔ Logiciel SSD Utility inclus – Optimisation, gestion facile et mise à jour du firmware\n\n🚀 Faites décoller les performances de votre système avec le SSD KIOXIA EXCERIA PLUS G4 ! ⚡✨",
+    "prix": "209.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006206681_0006206685_lGglynG.jpg",
+    "categorie": 49
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2345,
+  "fields": {
+    "nom": "Samsung SSD 990 EVO Plus M.2 PCIe NVMe 4 To",
+    "description": "Samsung SSD 990 EVO Plus 4 To : Boostez vos performances au quotidien\n\nLe SSD Samsung 990 EVO Plus 4 To vous permet de passer à un niveau supérieur grâce à des vitesses de lecture séquentielle pouvant atteindre 7 250 Mo/s. Propulsé par l’interface PCIe 4.0 x4 ou PCIe 5.0 x2, il assure des temps de chargement réduits et des transferts ultrarapides pour toutes vos activités : gaming, création de contenu, montage vidéo et plus encore.\n\nAvec sa technologie Intelligent TurboWrite 2.0 améliorée et son efficacité énergétique accrue (+73 % par watt par rapport au modèle précédent), ce SSD est l’allié idéal pour maximiser les performances tout en maîtrisant la consommation d’énergie et la gestion thermique.\n\nCaractéristiques clés :\n\n✔ Vitesses de lecture séquentielle jusqu'à 7 250 Mo/s – Performances supérieures (+45 % par rapport à la génération précédente)\n✔ Interface PCIe 4.0 x4 et PCIe 5.0 x2 – Adaptabilité optimale avec les cartes mères modernes\n✔ Intelligent TurboWrite 2.0 – Traitement rapide des fichiers volumineux\n✔ Efficacité énergétique améliorée de 73 % – Performances durables et températures maîtrisées\n✔ Logiciel Samsung Magician inclus – Gestion facile, optimisation, mise à jour et surveillance de votre SSD\n✔ Format M.2 2280 – Intégration parfaite pour PC fixes et portables\n\n⚡ Profitez d'une expérience plus fluide et rapide avec le Samsung 990 EVO Plus 4 To ! 🚀✨",
+    "prix": "319.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006186979_0006187002_0006187011_ovqCQvC.jpg",
+    "categorie": 49
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2346,
+  "fields": {
+    "nom": "Fox Spirit PM70 PRO M.2 NVMe 1920 Go PCIe 4.0",
+    "description": "Fox Spirit PM70 PRO : SSD NVMe PCIe 4.0 ultra-rapide\n\nLe SSD Fox Spirit PM70 PRO, au format M.2 NVMe PCIe 4.0 x4, accélère les performances de votre système grâce à des vitesses de transfert exceptionnelles atteignant jusqu’à 7000 Mo/s en lecture et 6000 Mo/s en écriture. Doté d'une mémoire NAND 3D TLC performante et durable, il réduit considérablement les temps de chargement tout en offrant une grande capacité de stockage (1920 Go) pour accueillir tous vos jeux et applications exigeantes.\n\nGrâce à la technologie NVMe, profitez d’une latence minimale et d’une optimisation maximale de la bande passante PCIe pour des performances constantes et rapides au quotidien.\n\nCaractéristiques clés :\n\n✔ Interface PCIe 4.0 x4 NVMe – Transferts ultra-rapides (7000 Mo/s lecture, 6000 Mo/s écriture)\n✔ Mémoire NAND 3D TLC – Fiabilité et performances élevées à coût maîtrisé\n✔ Capacité généreuse de 1920 Go – Parfaite pour les jeux volumineux et applications professionnelles\n✔ Format M.2 2280 – Compatibilité étendue avec cartes mères récentes\n✔ Réduction drastique des temps de chargement – Expérience de jeu fluide et réactive\n\n⚡ Passez à la vitesse supérieure avec le Fox Spirit PM70 PRO ! 🚀✨",
+    "prix": "189.00",
+    "stock": 10,
+    "image": "produits/composants/LD0006091387_0006091427_2v2wr2j.jpg",
+    "categorie": 49
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2347,
+  "fields": {
+    "nom": "Logitech G G213 Prodigy Gaming Keyboard",
+    "description": "Logitech G213 Prodigy : Performances gaming rapides et confortables\n\nLe clavier gaming Logitech G213 Prodigy vous offre des performances supérieures avec des touches ultra-réactives jusqu’à 4 fois plus rapides que celles d'un clavier classique. Grâce à la technologie anti-ghosting intégrée, chaque pression simultanée est reconnue instantanément, vous assurant un contrôle précis lors de vos parties intenses.\n\nPersonnalisez votre expérience grâce au rétroéclairage RGB intelligent proposant 16,8 millions de couleurs. Le design résistant aux éclaboussures et aux saletés facilite le nettoyage, tandis que les repose-poignets intégrés et l'inclinaison réglable garantissent confort et endurance, session après session.\n\nCaractéristiques clés :\n\n✔ Touches ultra-réactives jusqu’à 4 fois plus rapides – Réactivité optimale en jeu\n✔ Anti-ghosting – Reconnaissance précise des commandes simultanées\n✔ Rétroéclairage RGB personnalisable (16,8 millions de couleurs) – Esthétique unique et pratique\n✔ Commandes multimédia dédiées – Contrôle rapide et facile de l’audio\n✔ Résistant aux éclaboussures et facile à nettoyer – Durabilité renforcée\n✔ Repose-poignets intégré et inclinaison ajustable – Confort optimal pour de longues sessions\n✔ Dimensions : 452 x 218 x 33 mm / Poids : 1000 g\n\n🎮 Jouez confortablement et dominez la partie avec le Logitech G213 Prodigy ! 🚀✨",
+    "prix": "59.00",
+    "stock": 7,
+    "image": "produits/périphériques_&_accessoires/LD0005893040_1_KE3GaG9.jpg",
+    "categorie": 51
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2348,
+  "fields": {
+    "nom": "Logitech Corded Keyboard K280e",
+    "description": "Logitech K280e : Un clavier robuste, silencieux et confortable\n\nIdéal pour une utilisation intensive au bureau, le clavier Logitech K280e allie durabilité, confort et discrétion. Grâce à son châssis renforcé, ses touches ultra-plates silencieuses (conçues pour supporter plus de 10 millions de frappes), et sa résistance aux éclaboussures, il offre une expérience de frappe fiable et agréable au quotidien.\n\nSon repose-poignets intégré assure un confort maximal, tandis que ses pieds d'inclinaison robustes permettent un ajustement parfait à votre espace de travail. Plug & Play grâce à sa connexion USB, il s’installe en quelques secondes pour une utilisation immédiate.\n\nCaractéristiques clés :\n\n✔ Châssis renforcé – Durabilité exceptionnelle\n✔ Résistance aux éclaboussures – Protection contre les accidents du quotidien\n✔ Touches ultra-plates quasi-silencieuses – Confort et discrétion au bureau\n✔ Conçu pour plus de 10 millions de frappes – Fiabilité à long terme\n✔ Repose-poignets confortable intégré – Réduit la fatigue pendant la frappe\n✔ Plug & Play via USB – Installation immédiate sans logiciel\n✔ Compatible Windows XP, 7, 8 et 10 – Large compatibilité système\n\n✨ Travaillez confortablement, silencieusement et durablement avec le Logitech K280e ! 💼🔇",
+    "prix": "34.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/LD0004739987_2_uNjzjrG.jpg",
+    "categorie": 51
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2349,
+  "fields": {
+    "nom": "ASUS ROG Strix Scope II",
+    "description": "ASUS ROG Strix Scope II : Un clavier mécanique ultra-complet pour le gaming\n\nLe clavier gamer ASUS ROG Strix Scope II est conçu pour offrir un maximum de performance et de confort. Doté d’interrupteurs mécaniques linéaires ROG NX Snow pré-lubrifiés, il garantit une frappe fluide, rapide et précise, avec une stabilité améliorée et un son parfaitement maîtrisé.\n\nGrâce à ses capuchons de touches ABS Doubleshot revêtus d'un traitement UV, ce clavier offre une excellente résistance à l’usure tout en assurant une sensation agréable sous les doigts. Contrôlez facilement votre musique, votre volume ou l'éclairage RGB via le bouton multifonction et la molette intuitive. Enfin, son repose-poignet amovible et sa mousse insonorisante intégrée garantissent un confort maximal lors des longues sessions de jeu.\n\nCaractéristiques clés :\n\n✔ Interrupteurs mécaniques linéaires ROG NX Snow pré-lubrifiés – Frappe fluide et stable\n✔ Capuchons de touches ABS Doubleshot avec revêtement UV – Résistance et confort améliorés\n✔ Contrôles multimédias multifonctions (bouton + molette) – Ajustements rapides et intuitifs\n✔ Mousse insonorisante intégrée – Réduction efficace du bruit\n✔ Repose-poignet ergonomique amovible – Confort optimal pour sessions prolongées\n✔ Dimensions : 436 x 129 x 37 mm / Poids : 839 g – Taille compacte et solide\n\n🎯 Dominez vos parties avec style et précision grâce au clavier ASUS ROG Strix Scope II ! 🎮✨",
+    "prix": "109.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/LD0006080733_mAPQXBO.jpg",
+    "categorie": 51
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2350,
+  "fields": {
+    "nom": "Corsair Gaming K70 Core",
+    "description": "Corsair Gaming K70 Core : Performance mécanique et style RGB ultime\n\nPrenez l'avantage sur vos adversaires grâce au clavier mécanique Corsair Gaming K70 Core, équipé des switches mécaniques Corsair Red pour une frappe linéaire, réactive et silencieuse. Doté de deux couches de mousse insonorisante, ce clavier offre un confort de frappe exceptionnel, idéal pour les sessions gaming intensives.\n\nPersonnalisez entièrement votre expérience grâce au rétro-éclairage LED RGB, proposant plus de 16 millions de combinaisons de couleurs. Sa molette rotative multifonction et son bouton média programmable offrent un contrôle intuitif et rapide en jeu. Avec un châssis robuste en aluminium, le K70 Core est à la fois élégant et durable.\n\nCaractéristiques clés :\n\n✔ Switches mécaniques Corsair Red (linéaires) – Frappe fluide et précise\n✔ Touches à double injection ABS – Résistance accrue à l’usure\n✔ Deux couches de mousse insonorisante – Réduction des nuisances sonores\n✔ Éclairage RGB personnalisable – Plus de 16 millions de couleurs\n✔ Molette rotative multifonction et bouton média programmable – Contrôles rapides et intuitifs\n✔ Châssis robuste en aluminium – Élégance et durabilité\n✔ Logiciel Corsair iCUE compatible – Personnalisation avancée\n✔ Connectique USB, câble de 1,8 m – Installation facile et rapide\n✔ Dimensions : 448 x 153 x 35,4 mm / Poids : 934 g\n\n🎯 Remportez toutes vos batailles avec style grâce au Corsair K70 Core ! 🎮✨",
+    "prix": "99.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/LD0006073633_LT6KdB5.jpg",
+    "categorie": 51
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2351,
+  "fields": {
+    "nom": "Avizar Clavier Bluetooth sans fil AZERTY",
+    "description": "Clavier Bluetooth AZERTY Ultra-fin : Précision et confort au quotidien\n\nAméliorez votre productivité grâce à ce clavier Bluetooth sans fil AZERTY. Doté d'un mécanisme à ciseaux pour une frappe précise et réactive (temps de réponse de seulement 0,2 s), il convient parfaitement aux tablettes, iPad, smartphones et ordinateurs portables.\n\nAvec seulement 6,7 mm d'épaisseur, ce clavier compact de 78 touches (dont 7 touches multimédias spécialement pensées pour iPad) se glisse facilement dans votre sac et vous accompagne partout. Connectez-le facilement via Bluetooth à tous vos appareils, pour un confort de travail optimal.\n\nCaractéristiques principales :\n\n✔ Clavier AZERTY Bluetooth – Écrivez et travaillez plus efficacement sur tous vos appareils\n✔ 78 touches, dont 7 boutons multimédias pour iPad – Contrôle simplifié et intuitif\n✔ Mécanisme à ciseaux précis – Temps de réponse rapide (0,2 s)\n✔ Design ultra-fin (6,7 mm) – Facile à transporter\n✔ Connexion Bluetooth universelle (portée jusqu'à 10 m) – Compatible smartphone, tablette, laptop\n✔ Alimentation : 2 piles AAA (non incluses) – Facilité d’utilisation au quotidien\n\n✨ Compact, précis et mobile : votre compagnon idéal pour travailler partout ! 🚀📱",
+    "prix": "34.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/cb2ec2d086af41a5a766e6eee46abe57_0CWA8rM.webp",
+    "categorie": 51
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2352,
+  "fields": {
+    "nom": "AKG K240 MKII",
+    "description": "AKG K240 MKII : Votre casque de monitoring professionnel\n\nLe casque semi-ouvert AKG K240 MKII est le partenaire idéal des créatifs et professionnels du son à la recherche d’une restitution sonore précise et équilibrée. Doté de transducteurs de 30 mm intégrant la technologie Varimotion, il délivre des basses puissantes et des aigus nets et détaillés, parfait pour le monitoring et l’écoute Hi-Fi.\n\nGrâce à son bandeau auto-ajustable et ses coussinets interchangeables, le confort d’écoute reste optimal, même durant les sessions prolongées. Ses câbles détachables (un droit de 3 m et un spiralé jusqu’à 5 m) offrent toute la liberté nécessaire à vos mouvements.\n\nCaractéristiques clés :\n\n✔ Casque circum-aural semi-ouvert – Restitution sonore claire et équilibrée\n✔ Transducteurs 30 mm avec diaphragme Varimotion – Basses solides, aigus précis\n✔ Bande passante étendue (15 à 25 000 Hz) – Haute fidélité sonore\n✔ Bandeau auto-ajustable et coussinets interchangeables – Confort longue durée\n✔ Câbles détachables : droit (3 m) et spirale (jusqu’à 5 m) – Flexibilité maximale\n✔ Connecteur Jack 3.5 mm + adaptateur Jack 6.35 mm inclus – Compatibilité étendue\n✔ Poids léger (240 g) – Confort maximal au quotidien\n\n🎧 Exprimez pleinement votre créativité avec le casque AKG K240 MKII ! 🎶✨",
+    "prix": "84.00",
+    "stock": 9,
+    "image": "produits/périphériques_&_accessoires/LD0004860670_2_cTFLZzR.jpg",
+    "categorie": 52
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2353,
+  "fields": {
+    "nom": "Audio-Technica ATH-M20x",
+    "description": "Audio-Technica ATH-M20x : Casque de monitoring professionnel\n\nLe casque Audio-Technica ATH-M20x est conçu spécialement pour le monitoring professionnel. Doté de transducteurs de 40 mm avec aimants en néodyme et bobines en aluminium recouvertes de cuivre, il délivre un son précis, détaillé, et offre d'excellentes basses.\n\nRobuste et confortable, sa conception fermée circum-aurale assure une isolation sonore optimale tout en restant léger (190 grammes). Grâce à son câble de 3 mètres et ses oreillettes pivotantes (15°), il vous offre une flexibilité parfaite pour vos longues sessions de travail ou d’écoute.\n\nCaractéristiques clés :\n\n✔ Casque fermé circum-aural – Isolation sonore performante\n✔ Transducteurs 40 mm (aimants néodyme, bobines alu/cuivre) – Son précis et basses puissantes\n✔ Puissance d'entrée maximale : 700 mW à 1 kHz – Performance audio fiable\n✔ Oreillettes pivotantes à 15° – Flexibilité et confort prolongé\n✔ Conception robuste – Longue durée de vie même en usage intensif\n✔ Câble Jack 3.5 mm de 3 mètres – Liberté de mouvement optimale\n✔ Adaptateur Jack 3.5 vers 6.35 mm inclus – Compatibilité universelle\n✔ Poids plume : seulement 190 g – Confort garanti même après plusieurs heures\n\n🎧 Travaillez confortablement et précisément avec le casque Audio-Technica ATH-M20x ! 🎶✨",
+    "prix": "69.00",
+    "stock": 9,
+    "image": "produits/périphériques_&_accessoires/LD0005903455_1_HWazaRb.jpg",
+    "categorie": 52
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2354,
+  "fields": {
+    "nom": "Beyerdynamic DT 770 PRO (80 Ohms)",
+    "description": "Beyerdynamic DT 770 PRO : Casque professionnel pour studio\n\nLe casque de studio Beyerdynamic DT 770 PRO (80 Ohms) est le partenaire idéal pour vos productions audio professionnelles. Avec sa conception fermée circum-aurale, il garantit une isolation sonore efficace (18 dBA) tout en offrant une restitution audio neutre, précise et détaillée.\n\nDoté de transducteurs dynamiques et du système Bass Reflex avec égalisation de champ diffus, le DT 770 PRO couvre une large gamme de fréquences (5 - 35 000 Hz), vous permettant de travailler avec précision sur chaque détail sonore.\n\nSon confort est assuré par un bandeau rembourré en acier trempé et des coussinets interchangeables en velours, parfaits pour de longues sessions d'écoute. Sa construction robuste garantit une utilisation durable même dans les environnements exigeants.\n\nCaractéristiques principales :\n\n✔ Casque professionnel circum-aural fermé – Isolation sonore efficace (18 dBA)\n✔ Transducteurs dynamiques – Restitution fidèle et neutre\n✔ Système Bass Reflex avec égalisation de champ diffus – Son équilibré et précis\n✔ Large bande passante (5 - 35 000 Hz) – Détails sonores précis et complets\n✔ Impédance : 80 Ohms – Idéal pour une utilisation studio polyvalente\n✔ Serre-tête rembourré en acier trempé – Robustesse et confort\n✔ Coussinets interchangeables en velours – Confort optimal longue durée\n✔ Câble droit de 3 m (Jack 3.5 mm) et adaptateur Jack 6.35 mm inclus – Compatibilité universelle\n✔ Housse de transport fournie – Mobilité facilitée",
+    "prix": "149.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/LD0005814604_1_lrMV0Dk.jpg",
+    "categorie": 52
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2355,
+  "fields": {
+    "nom": "JBL Tune 670NC Noir",
+    "description": "JBL Tune 670NC : Casque sans fil avec réduction de bruit active\n\nLe casque sans fil JBL Tune 670NC vous offre une expérience musicale exceptionnelle grâce à la technologie de réduction de bruit adaptative combinée au célèbre son JBL Pure Bass. Profitez de basses puissantes et profondes tout en vous isolant efficacement des bruits ambiants lors de vos déplacements.\n\nAvec les fonctions Ambient Aware et TalkThru, écoutez votre environnement ou conversez sans retirer votre casque. Sa connectivité Bluetooth 5.3 vous garantit une liberté totale, tandis que son autonomie remarquable allant jusqu’à 44 heures (Bluetooth + ANC) et 70 heures (Bluetooth seul) vous accompagne partout. En cas de batterie faible, la fonction charge rapide offre 2 heures d’écoute supplémentaires en seulement 5 minutes.\n\nConfortable avec son design circum-aural pliable, le JBL Tune 670NC dispose de commandes intégrées pratiques et d’un accès rapide à l’assistant vocal de votre smartphone.\n\nCaractéristiques clés :\n\n✔ Casque circum-aural sans fil Bluetooth 5.3\n✔ Réduction de bruit adaptative (ANC) – immersion sonore totale\n✔ Son JBL Pure Bass avec transducteurs dynamiques 32 mm – basses puissantes\n✔ Fonctions Ambient Aware & TalkThru – écoute intuitive de l’environnement\n✔ Commandes intuitives sur l’oreillette (musique, appels, assistant vocal)\n✔ Microphone intégré pour appels clairs\n✔ Autonomie exceptionnelle : jusqu’à 44 h (ANC activé), 70 h (sans ANC)\n✔ Charge rapide : 2 h d’écoute en 5 min\n✔ Design pliable – facile à transporter\n✔ Câble audio amovible inclus – utilisation filaire possible\n\n🎧 Profitez d'une écoute sans compromis avec le JBL Tune 670NC ! 🎶✨",
+    "prix": "69.00",
+    "stock": 9,
+    "image": "produits/périphériques_&_accessoires/LD0006043596_h4qq5dN.jpg",
+    "categorie": 52
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2356,
+  "fields": {
+    "nom": "Sony WH-1000XM4 Noir",
+    "description": "Sony WH-1000XM4 : Vivez une écoute immersive et personnalisée\n\nLe casque sans fil Sony WH-1000XM4 vous plonge dans une expérience sonore exceptionnelle grâce à une réduction de bruit active ultra-performante, une qualité audio Hi-Res, et un confort incomparable. Grâce au Bluetooth 5.0 avec codec LDAC et aux transducteurs 40 mm équipés d'aimants en néodyme, profitez d'un son riche, précis et immersif.\n\nAvec ses fonctions intelligentes telles que Adaptive Sound Control, Quick Attention ou Speak-to-Chat, le WH-1000XM4 facilite votre quotidien en adaptant l’écoute à votre environnement. Les commandes tactiles intuitives, la connectivité multipoint et l'intégration des assistants vocaux (Google Assistant, Amazon Alexa, Siri) offrent une expérience d'écoute pratique et sur-mesure.\n\nCaractéristiques clés :\n\n✔ Réduction de bruit active ultra-efficace (processeur HD QN1)\n✔ Adaptation intelligente au bruit ambiant et à la pression atmosphérique\n✔ Bluetooth 5.0 avec LDAC et NFC – son haute qualité sans fil\n✔ Transducteurs 40 mm Hi-Res Audio (4 à 40 000 Hz)\n✔ Fonctions Quick Attention et Speak-to-Chat – contrôle intuitif\n✔ Lecture/pause automatique via capteur de proximité\n✔ Microphones multiples avec Precise Voice Pickup – appels clairs et nets\n✔ Connexion multipoint – associez deux appareils simultanément\n✔ Autonomie exceptionnelle : 30h (avec ANC), charge rapide (5h en 10 min)\n✔ Conception pliable avec oreillettes en mousse à mémoire de forme – confort optimal\n✔ Application Headphones Connect – personnalisation avancée du son\n\n🎧 Profitez du meilleur son en toute tranquillité avec le Sony WH-1000XM4 ! 🎶✨",
+    "prix": "199.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/LD0005738406_1_1GF8RKI.jpg",
+    "categorie": 52
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2357,
+  "fields": {
+    "nom": "Logitech BRIO 100 (Graphite)",
+    "description": "Logitech Brio 100 : Webcam Full HD pour des appels vidéo impeccables\n\nProfitez d’une qualité vidéo exceptionnelle lors de vos réunions et streams grâce à la webcam Logitech Brio 100. Dotée d’une résolution Full HD 1080p à 30 fps, elle garantit une image nette, fluide et réaliste. La technologie RightLight 2 assure automatiquement un éclairage optimal pour vous montrer sous votre meilleur jour en toutes circonstances.\n\nSon microphone omnidirectionnel intégré offre une qualité sonore limpide, tandis que le volet de confidentialité intégré permet une protection simple et rapide de votre vie privée lorsqu’elle n’est pas utilisée.\n\nEngagée pour l'environnement, la Brio 100 est composée à partir de plastique recyclé certifié (jusqu’à 77 % pour le modèle Graphite) et dispose d’un emballage issu de forêts certifiées FSC™, avec une neutralité carbone totale certifiée par Logitech.\n\nCaractéristiques principales :\n\n✔ Webcam Full HD 1080p (30 fps) – image claire et fluide\n✔ Correction automatique d’éclairage (RightLight 2) – qualité optimale en toute situation\n✔ Microphone omnidirectionnel intégré – son clair et naturel\n✔ Volet de confidentialité intégré – protection efficace de votre vie privée\n✔ Champ de vision de 58° – cadrage idéal pour les appels et streams\n✔ Mise au point fixe – simplicité et fiabilité\n✔ Connectivité USB-A – compatibilité étendue\n✔ Certification Microsoft Teams, Zoom, Google Meet, Chromebook\n✔ Compatible Windows 10+, macOS 10.15+, ChromeOS\n✔ Conception durable avec plastique recyclé – engagement environnemental\n\n🎥 Améliorez instantanément vos appels vidéo avec la Logitech Brio 100 ! 🌿✨",
+    "prix": "49.00",
+    "stock": 2,
+    "image": "produits/périphériques_&_accessoires/LD0006067512_dsnKeCE.jpg",
+    "categorie": 53
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2358,
+  "fields": {
+    "nom": "Logitech HD Pro Webcam C920 Refresh",
+    "description": "Logitech HD Pro C920 Refresh : Webcam Full HD pour appels vidéo ultra-fluides\n\nLa webcam Logitech HD Pro C920 Refresh vous permet de réaliser des appels vidéo exceptionnels en résolution Full HD 1080p avec une fluidité et une clarté remarquables. Grâce à la technologie Logitech Fluid Crystal, profitez d'une qualité d'image riche, nette et lumineuse, même en faible éclairage.\n\nAvec sa mise au point automatique rapide et précise, vos vidéos restent toujours parfaitement nettes, même à courte distance (à partir de 10 cm). Son double microphone stéréo intégré capture votre voix avec une grande clarté et réduit efficacement les bruits ambiants.\n\nLa webcam C920 utilise la compression vidéo H.264 pour garantir une qualité optimale tout en réduisant la bande passante nécessaire, idéale pour les appels vidéo HD fluides sur toutes les plateformes populaires comme Skype, Zoom, ou Teams.\n\nCaractéristiques principales :\n\n✔ Appels vidéo Full HD 1080p – Images nettes et fluides\n✔ Technologie Logitech Fluid Crystal – Couleurs riches et image nette\n✔ Compression vidéo AVC H.264 – Vidéos HD optimisées en temps réel\n✔ Mise au point automatique rapide – Netteté parfaite à courte distance\n✔ Deux microphones stéréo intégrés – Son clair avec réduction automatique du bruit\n✔ Correction automatique en faible éclairage – Image optimale quelles que soient les conditions\n✔ Clip de fixation universel (adaptable sur écrans et trépieds) – Installation facile et flexible\n\n🎥 Profitez d'appels vidéo haute qualité avec la Logitech HD Pro C920 Refresh ! 🚀✨",
+    "prix": "109.00",
+    "stock": 8,
+    "image": "produits/périphériques_&_accessoires/LD0005903026_1_373V6fD.jpg",
+    "categorie": 53
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2359,
+  "fields": {
+    "nom": "Elgato Facecam Neo",
+    "description": "Elgato Facecam Neo : Webcam Full HD idéale pour réunions et streaming\n\nDécouvrez la webcam Elgato Facecam Neo, une solution compacte et performante qui élève instantanément la qualité de vos réunions et diffusions en direct au niveau supérieur. Profitez d'une vidéo True HD en 1080p à 60 fps, offrant une netteté et une fluidité remarquables, bien au-delà des performances des caméras intégrées.\n\nGrâce à la technologie HDR et à son objectif autofocus (ouverture f/2), la Facecam Neo garantit des couleurs vives, un rendu précis même en conditions lumineuses difficiles, ainsi qu’une réduction efficace du flou de mouvement. Personnalisez facilement les réglages de votre image grâce au logiciel intuitif Camera Hub, pour une qualité vidéo digne d'un appareil photo professionnel.\n\nAvec un champ de vision idéal de 77°, choisissez d'inclure votre environnement ou d'offrir une vue plus intime. Compacte, élégante et équipée d'un capuchon de confidentialité pratique, elle s’installe aisément sur tous les écrans d’ordinateur.\n\nCaractéristiques principales :\n\n✔ Vidéo True HD 1080p à 60 fps – Fluidité et netteté professionnelles\n✔ Technologie HDR intégrée – Couleurs vives et excellente gestion de la lumière\n✔ Objectif Elgato autofocus (focale 26 mm, ouverture f/2) – Image toujours nette\n✔ Champ de vision à 77° – Cadrage idéal pour toutes vos utilisations\n✔ Compatible avec Camera Hub – Réglages avancés simples et précis\n✔ Bouchon de confidentialité intégré – Sécurité et tranquillité\n✔ Connexion USB-C, fixation universelle – Installation rapide et facile\n✔ Fabrication et emballage écoresponsables – Engagement environnemental\n✔ Dimensions : 88 x 32 x 40 mm / Poids : 80 g (sans fixation)\n\n🎥 Passez à un niveau supérieur avec l’Elgato Facecam Neo : performances pro accessibles à tous ! 🚀✨",
+    "prix": "99.00",
+    "stock": 9,
+    "image": "produits/périphériques_&_accessoires/LD0006123614_ih2nqEM.jpg",
+    "categorie": 53
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2360,
+  "fields": {
+    "nom": "Logitech BRIO 100 (Blanc)",
+    "description": "Logitech Brio 100 : Webcam Full HD, simple et performante\n\nLa webcam Logitech Brio 100 vous offre une qualité vidéo remarquable pour réussir tous vos appels et visioconférences. Avec une résolution Full HD 1080p à 30 fps, profitez d’images claires, lumineuses et détaillées grâce à la technologie d’équilibrage automatique de l’éclairage RightLight 2.\n\nSon microphone omnidirectionnel intégré garantit un son net pour que vos échanges soient parfaitement audibles. Pour préserver votre vie privée, la Brio 100 est équipée d’un volet de confidentialité pratique permettant de bloquer l’objectif lorsqu'elle n’est pas utilisée.\n\nUn choix responsable : Conçue à partir de plastique recyclé (jusqu’à 77 % selon les modèles) et certifiée neutre en carbone, la webcam Brio 100 soutient également la gestion durable des forêts grâce à son emballage certifié FSC™.\n\nCaractéristiques principales :\n\n✔ Résolution vidéo Full HD 1080p à 30 fps (720p à 60 fps possible) – Image fluide et nette\n✔ Technologie RightLight 2 – Correction automatique de l’éclairage pour une meilleure visibilité\n✔ Microphone omnidirectionnel intégré – Son clair et précis\n✔ Volet de confidentialité intégré – Sécurité et discrétion assurées\n✔ Champ de vision de 58° et mise au point fixe – Cadrage simple et efficace\n✔ Connectique USB-A – Installation rapide et facile\n✔ Certifiée pour Microsoft Teams, Zoom, Google Meet, Chromebook\n✔ Compatible Windows 10+, macOS 10.15+, ChromeOS\n✔ Conception écoresponsable à base de plastique recyclé – Engagement environnemental fort\n\n🎥 Améliorez vos appels vidéo avec la simplicité et la qualité de la Logitech Brio 100 ! 🌿✨",
+    "prix": "69.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/LD0006067507_lDh5aNT.jpg",
+    "categorie": 53
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2361,
+  "fields": {
+    "nom": "AVerMedia Live Streamer CAM 513",
+    "description": "AVerMedia Live Streamer CAM 513 : Webcam 4K ultra-détaillée\n\nOffrez à vos streams une qualité vidéo époustouflante grâce à la webcam AVerMedia Live Streamer CAM 513, capable de diffuser en résolution 4K à 30 fps. Dotée d'un capteur Sony Exmor R 4K CMOS, elle capture des images réalistes, avec des couleurs riches et naturelles.\n\nSon design rotatif à 360 degrés permet une flexibilité totale pour filmer sous tous les angles. Grâce à ses deux microphones intégrés, vous communiquez clairement avec votre audience. Le logiciel CamEngine inclus vous aide à ajuster facilement vos paramètres vidéo, appliquer des filtres et ajouter divers effets pour personnaliser vos contenus.\n\nPour garantir votre vie privée, la webcam intègre également un volet coulissant pratique.\n\nCaractéristiques principales :\n\n✔ Capture vidéo en résolution 4K (3840 x 2160) à 30 fps\n✔ Capteur Sony Exmor R 4K CMOS – Qualité d'image exceptionnelle\n✔ Résolution d’image : 8 mégapixels – Détails nets et précis\n✔ Objectif lumineux (F:2.8) avec focus fixe – image toujours claire\n✔ Champ de vision diagonal de 94° – large cadrage\n✔ Deux microphones intégrés – Son clair et naturel\n✔ Compatible UVC (Plug & Play) – utilisation simple et immédiate\n✔ Volet coulissant pour confidentialité intégrée\n✔ Logiciel CamEngine inclus – Personnalisation avancée des vidéos\n✔ Dimensions compactes : 130 x 52,6 x 29 mm\n\n🎥 Diffusez des vidéos d’une qualité remarquable avec l’AVerMedia CAM 513 ! 🚀✨",
+    "prix": "159.00",
+    "stock": 9,
+    "image": "produits/périphériques_&_accessoires/LD0005932085_1_2rZikWw.jpg",
+    "categorie": 53
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2362,
+  "fields": {
+    "nom": "Logitech Lift (Graphite)",
+    "description": "Logitech Lift : Souris verticale ergonomique pour un confort maximal\n\nDites adieu aux douleurs au poignet grâce à la Logitech Lift, une souris ergonomique verticale conçue spécialement pour les petites et moyennes mains. Avec son angle optimal de 57°, elle place naturellement votre main dans une position confortable pour réduire la pression sur votre poignet tout au long de la journée.\n\nDotée d'un capteur optique précis de 4000 dpi, de 6 boutons faciles d’accès (dont 4 personnalisables) et de la technologie SilentTouch pour des clics silencieux, la Lift garantit confort et efficacité. Son repose-pouce doux et son revêtement texturé en caoutchouc offrent une excellente prise en main. De plus, sa roulette SmartWheel passe aisément du défilement précis au défilement rapide selon vos besoins.\n\nSans fil via Bluetooth, elle vous offre jusqu’à 24 mois d’autonomie et peut se connecter à trois appareils simultanément. Engagée pour l’environnement, elle intègre 70 % de plastique recyclé et un emballage certifié FSC.\n\nCaractéristiques principales :\n\n✔ Souris verticale ergonomique – angle optimal de 57°\n✔ Capteur optique 4000 dpi – précision maximale\n✔ 6 boutons (4 personnalisables) – accès rapide aux fonctions essentielles\n✔ Technologie SilentTouch – clics silencieux\n✔ Roulette SmartWheel – défilement adaptable précis ou rapide\n✔ Connectivité Bluetooth avec portée jusqu’à 10 m\n✔ Repose-pouce confortable et revêtement doux en caoutchouc\n✔ Autonomie exceptionnelle de 24 mois\n✔ Compatible avec Windows, macOS, Chrome OS, Linux, Android\n✔ Fabriquée à partir de plastique recyclé (70 %) et emballage responsable (FSC)\n✔ Dimensions : 108 x 70 x 71 mm / Poids : 125 g\n\n✨ Améliorez votre confort et productivité avec la Logitech Lift ! 🚀🌿",
+    "prix": "69.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/LD0006207338_ai2jYCH.jpg",
+    "categorie": 54
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2363,
+  "fields": {
+    "nom": "Logitech G Wireless Gaming Pro X Superlight",
+    "description": "Logitech Wireless Gaming Pro X Superlight : la souris ultra légère des champions\n\nPréparez-vous à dominer chaque partie avec la souris Logitech Pro X Superlight, conçue pour les joueurs exigeants et les athlètes d'eSports professionnels. Pesant moins de 63 grammes, elle offre une glisse parfaitement fluide et sans friction grâce à ses grands patins PTFE, pour une maîtrise absolue dans toutes vos actions.\n\nÉquipée du capteur optique HERO 25K à 25 000 dpi, cette souris retransmet chaque mouvement avec une précision extrême, sans lissage ni accélération. Sa technologie sans fil Lightspeed garantit une réactivité instantanée, avec une latence d’à peine 1 ms. De plus, grâce à son autonomie exceptionnelle de 70 heures, vous restez concentré uniquement sur votre jeu.\n\nCompatible avec le système de charge sans fil Powerplay, la Pro X Superlight peut être rechargée même pendant vos sessions de jeu.\n\nCaractéristiques principales :\n\n✔ Capteur optique HERO 25K (jusqu’à 25 000 dpi) – précision extrême\n✔ Technologie sans fil Lightspeed – zéro latence pour une performance maximale\n✔ Poids ultra léger (moins de 63 g) – rapidité et confort incomparables\n✔ 5 boutons programmables – personnalisation complète des actions en jeu\n✔ Accélération max. 40G / vitesse max. 400 ips – réactivité exceptionnelle\n✔ Patins en PTFE sans additif – glisse fluide et précise\n✔ Mémoire intégrée – sauvegarde des réglages préférés\n✔ Autonomie de 70 heures – jouez sans interruption\n✔ Compatible système de charge sans fil Powerplay\n✔ Dimensions : 125 x 63,5 x 40 mm\n✔ Compatible Windows et Mac – universelle et facile à installer\n✔ Conception écologique : sans carbone, sans PVC et en matériaux recyclés (PCR)\n\n🎯 Surpassez vos limites avec la Logitech Pro X Superlight : légère, rapide, imbattable ! 🚀✨",
+    "prix": "119.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/LD0005861927_1_zJP0qrp.jpg",
+    "categorie": 54
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2364,
+  "fields": {
+    "nom": "ASUS ROG Chakram X Origin",
+    "description": "ASUS ROG Chakram X Origin : Vitesse, précision et personnalisation extrême\n\nAvec la souris gaming ASUS ROG Chakram X Origin, atteignez des performances exceptionnelles grâce à son capteur optique ultra-précis de 36 000 dpi. Profitez d’une vitesse de suivi jusqu’à 650 IPS, d’une accélération de 50 G et d’un taux d’interrogation pouvant atteindre 8 000 Hz en mode filaire, pour une réactivité inégalée dans toutes vos batailles.\n\nChoisissez parmi trois connexions pratiques : filaire USB, sans fil RF 2.4 GHz ou Bluetooth (LE). Son joystick détachable et programmable (modes analogique et numérique) offre un avantage stratégique supplémentaire pour contrôler véhicules ou personnages avec une grande précision. Personnalisez également boutons et switches grâce à sa conception magnétique unique.\n\nSon autonomie impressionnante (jusqu’à 114 heures en RF et 150 heures en Bluetooth) et sa fonction charge rapide (25 heures de jeu après seulement 15 minutes de charge) vous permettent de jouer sans interruption.\n\nCaractéristiques principales :\n\n✔ Capteur optique 36 000 dpi – précision ultime\n✔ Vitesse de suivi 650 IPS / accélération 50 G – performances extrêmes\n✔ Connexions multiples : RF 2.4 GHz, Bluetooth (LE), USB filaire\n✔ Taux d’interrogation jusqu’à 8 000 Hz en filaire (1000 Hz RF / 250 Hz Bluetooth)\n✔ Joystick programmable et détachable – contrôle ultra-précis (analogique/numérique)\n✔ 11 boutons programmables (7 boutons + 4 fonctions joystick numérique)\n✔ Boutons principaux isolés, aimantés et remplaçables – rapidité et personnalisation poussée\n✔ Éclairage RGB Aura Sync sur 9 zones\n✔ Autonomie exceptionnelle : jusqu’à 114 h (RF), 150 h (Bluetooth)\n✔ Charge ultra rapide : 25 heures d’autonomie en 15 min\n✔ Conception robuste et personnalisable – structure magnétique innovante\n✔ Dimensions : 132.7 x 76.6 x 42.8 mm / Poids : 123 g\n\n🎯 Surpassez tous vos adversaires avec l’ASUS ROG Chakram X Origin : performances sans limite ! 🚀✨",
+    "prix": "139.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/LD0006013385_jO3OccM.jpg",
+    "categorie": 54
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2365,
+  "fields": {
+    "nom": "Bluestork Lot de 3x Wireless Ergonomic Mouse",
+    "description": "Bluestork Wireless Ergonomic Mouse : confort et bien-être au quotidien\n\nAdoptez une posture naturelle et dites adieu aux tensions du poignet avec la Bluestork Wireless Ergonomic Mouse. Sa forme verticale favorise une position optimale de la main, réduisant les douleurs liées à une utilisation prolongée.\n\nDotée de 6 boutons, d’un capteur optique réglable de 400 à 1200 dpi et d’une texture soft touch agréable au toucher, elle allie confort et efficacité. Rechargeable via Micro USB et compatible PC & Mac, elle s’intègre parfaitement dans votre routine de travail.\n\nCaractéristiques principales :\n\n✔ Souris ergonomique sans fil – posture naturelle et confort prolongé\n✔ Capteur optique réglable 400 / 800 / 1200 dpi\n✔ 6 boutons avec repose-doigt intégré\n✔ Surface soft touch – toucher doux et agréable\n✔ Rechargeable via Micro USB\n✔ Compatible Windows & macOS\n\n🖱️ La souris idéale pour travailler longtemps, sans douleur.",
+    "prix": "59.00",
+    "stock": 10,
+    "image": "produits/périphériques_&_accessoires/LD0006116583_GnyudwC.jpg",
+    "categorie": 54
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2366,
+  "fields": {
+    "nom": "Cherry MW 2310 2.0",
+    "description": "Cherry MW 2310 2.0 : Une souris sans fil simple, performante et durable\n\nPensée pour les droitiers, la Cherry MW 2310 2.0 allie confort, efficacité et grande autonomie. Facile à utiliser, il suffit de brancher le nano récepteur USB et la souris est prête. Son capteur optique réglable jusqu’à 2400 dpi, ses 6 boutons et sa forme ergonomique garantissent une utilisation fluide et agréable, que ce soit à la maison, au bureau ou en déplacement.\n\nSon design avec zones latérales en caoutchouc assure une prise en main confortable et sécurisée. Et avec sa faible consommation d’énergie, profitez d’une autonomie pouvant atteindre 3 ans (avec 2 piles AA). Un interrupteur ON/OFF permet également d’optimiser encore plus l’économie d’énergie.\n\nCaractéristiques principales :\n\n✔ Souris sans fil ergonomique pour droitiers\n✔ Capteur optique haute précision réglable : 1000 / 1600 / 2400 dpi\n✔ 6 boutons + molette de défilement antidérapante\n✔ Technologie sans fil 2.4 GHz (récepteur USB nano inclus)\n✔ Revêtement latéral en caoutchouc – prise en main confortable\n✔ Autonomie jusqu’à 3 ans avec 2 piles AA (fournies)\n✔ Interrupteur ON/OFF pour économiser l’énergie\n\n🖱️ Une souris fiable, confortable et accessible pour tous les usages.",
+    "prix": "39.00",
+    "stock": 5,
+    "image": "produits/périphériques_&_accessoires/LD0005464848_2_VAcv7w1.jpg",
+    "categorie": 54
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2367,
+  "fields": {
+    "nom": "Acer Predator Connect W6",
+    "description": "Acer Predator Connect W6 : Routeur Wi-Fi 6E ultra-rapide pour les gamers\n\nConçu pour les joueurs exigeants, le Predator Connect W6 d’Acer offre des vitesses Wi-Fi jusqu’à 7,8 Gbps et une latence ultra-faible (<2 ms) grâce à la technologie Wi-Fi 6E tri-bande. Doté du moteur Intel Killer Prioritization, il détecte et accélère automatiquement le trafic réseau pour offrir une expérience gaming fluide et réactive.\n\nAjoutez à cela 1 Go de RAM DDR4, 4 Go de mémoire flash, un processeur quad-core 2 GHz, une sécurité Trend Micro intégrée à vie, et vous obtenez un routeur puissant, rapide et sécurisé, prêt à encaisser toutes les sessions de jeu intensives.\n\nCaractéristiques principales :\n\n✔ Routeur Wi-Fi 6E Tri-Band (2.4 GHz / 5 GHz / 6 GHz)\n✔ Débit total jusqu’à 7,8 Gbps – ultra rapide\n✔ Latence inférieure à 2 ms – idéal pour le gaming\n✔ Moteur Intel Killer Prioritization – priorise le trafic important\n✔ Technologie MU-MIMO 2x4x2 – plusieurs connexions simultanées sans ralentissement\n✔ Couverture Wi-Fi optimisable avec antennes réglables\n✔ Sécurité Trend Micro intégrée (à vie) – protection IoT + contrôle parental\n✔ Processeur ARM Cortex quad-core 2 GHz\n✔ Mémoire : 1 Go DDR4 + 4 Go Flash\n✔ LED de signal intelligent (Bleu/Fort, Jaune/Moyen, Rouge/Faible)\n\n🛡️ Puissant, sécurisé et pensé pour les gamers : le routeur Acer Predator Connect W6 vous propulse à pleine vitesse ! 🚀🎮",
+    "prix": "299.00",
+    "stock": 9,
+    "image": "produits/matériel_réseau/LD0006048080_urkL4dH.jpg",
+    "categorie": 56
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2368,
+  "fields": {
+    "nom": "ASUS ExpertWiFi EBM68 x1",
+    "description": "ASUS ExpertWiFi EBM68 : Réseau Wi-Fi 6 tri-bande professionnel, rapide et évolutif\n\nPensé pour les entreprises de taille moyenne, le système maillé ASUS ExpertWiFi EBM68 offre un réseau sans fil rapide, stable et sécurisé. Compatible Wi-Fi 6 AX7800 tri-bande, il permet d’atteindre des débits jusqu’à 7800 Mbps et de connecter jusqu’à 100 appareils par nœud, tout en bénéficiant d’une gestion VLAN, d’une redondance WAN et d’un portail invité personnalisable.\n\nModulable et extensible, il prend en charge jusqu’à 12 nœuds Mesh via AiMesh, pour une couverture réseau évolutive. Son application mobile dédiée permet une configuration et une gestion simplifiée.\n\nCaractéristiques clés :\n\n✔ Wi-Fi 6 tri-bande jusqu’à 7800 Mbps – performances de pointe, canaux 160 MHz\n✔ Jusqu’à 5 SSID distincts – pour séparer et prioriser les usages (clients, staff, IoT…)\n✔ Gestion VLAN intuitive – segmentations sécurisées filaire et Wi-Fi\n✔ Mesh extensible jusqu’à 12 nœuds – via technologie AiMesh\n✔ Sécurité professionnelle – avec ASUS AiProtection Pro inclus\n✔ Portail invité personnalisable – branding visuel, accès sécurisé\n✔ Double basculement WAN – connexion de secours en cas de panne\n✔ Accès Internet 4G via smartphone – port USB pour modem mobile\n✔ Jusqu’à 100 appareils actifs par nœud – stabilité assurée\n✔ Installation facile – fixation murale intégrée et support range-câble\n\n📶 Une solution réseau complète et évolutive pour les pros.\n🛡️ Performance, sécurité, flexibilité – tout ce qu’il faut pour rester connecté en toute confiance.",
+    "prix": "199.00",
+    "stock": 10,
+    "image": "produits/matériel_réseau/LD0006172197_FBVxNfD.jpg",
+    "categorie": 56
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2369,
+  "fields": {
+    "nom": "ASUS RT-AX57",
+    "description": "ASUS RT-AX57 : Un Wi-Fi 6 rapide, stable et sécurisé\n\nLe routeur ASUS RT-AX57 vous offre une connexion ultra-rapide et hautement stable, idéale pour le télétravail, le streaming ou le gaming. Grâce à la technologie Wi-Fi 6 (AX3000), il prend en charge la modulation 1024-QAM, les technologies OFDMA et MU-MIMO, et atteint des vitesses jusqu’à 3000 Mbps, soit 1,5 fois plus rapides que les routeurs Wi-Fi 5.\n\nDoté de 4 antennes puissantes et d’un processeur quad-core, il garantit une couverture étendue et des performances solides, même avec plusieurs appareils connectés. Il intègre également les technologies AiMesh, WPA3 et AiProtection Classic pour une sécurité et une flexibilité optimales.\n\nCaractéristiques clés :\n\n✔ Wi-Fi 6 AX3000 (2402 Mbps en 5 GHz + 574 Mbps en 2.4 GHz)\n✔ Processeur quad-core 1.7 GHz – fluide même avec de nombreuses connexions\n✔ 4 antennes externes – couverture étendue\n✔ AiMesh – compatible avec le maillage ASUS pour élargir votre réseau\n✔ 4 ports LAN Gigabit + 1 port WAN Gigabit\n✔ Technologies OFDMA, Beamforming, 1024 QAM – vitesse et efficacité\n✔ Sécurité avancée avec AiProtection Classic + compatibilité WPA3\n✔ Contrôle parental intégré – filtres, plages horaires, gestion facile\n✔ Compatible IPv6\n\n📶 Un routeur Wi-Fi 6 puissant et fiable, prêt à booster votre connexion à la maison comme au bureau.",
+    "prix": "79.00",
+    "stock": 10,
+    "image": "produits/matériel_réseau/LD0006023233_ISrKcR1.jpg",
+    "categorie": 56
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2370,
+  "fields": {
+    "nom": "ASUS TUF Gaming AX3000 V2",
+    "description": "Caractéristiques clés :\n\n✔ Wi-Fi 6 AX3000 (2402 Mbps en 5 GHz + 574 Mbps en 2.4 GHz)\n✔ Technologie Dual-Band + MU-MIMO 2x2 – Pour une meilleure gestion des connexions simultanées\n✔ ASUS AiMesh – Réseau maillé stable avec une seule connexion dans toute la maison\n✔ Processeur Quad-Core 1.7 GHz – Réactivité maximale\n✔ 4 ports LAN Gigabit + 1 port WAN 2.5 GbE – Connexion filaire ultra-performante\n✔ Sécurité renforcée avec AiProtection Pro (mise à jour à vie) – Contre les menaces et pour un contrôle parental avancé\n✔ Compatibilité WPA3 – Pour un chiffrement renforcé\n✔ Application mobile ASUS Router – Contrôle facile de votre réseau\n✔ Technologies avancées : Beamforming, OFDMA, 1024-QAM, canaux jusqu’à 160 MHz\n✔ Pare-feu intégré + bouton WPS\n\n🎮 Un routeur robuste et puissant, taillé pour le jeu, le streaming et le multitâche, dans une enveloppe fiable au style TUF.",
+    "prix": "149.00",
+    "stock": 10,
+    "image": "produits/matériel_réseau/LD0005972717_W0DBuBl.jpg",
+    "categorie": 56
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2371,
+  "fields": {
+    "nom": "D-Link EAGLE PRO AI G403",
+    "description": "D-Link EAGLE PRO AI G403 : Connecté partout, simplement\nLe D-Link G403 EAGLE PRO AI est un routeur 4G LTE idéal pour rester connecté, même sans accès Internet fixe. Insérez une carte SIM 4G et profitez d’une connexion rapide et stable grâce à ses antennes externes haute performance. Que ce soit pour naviguer, travailler, regarder des vidéos ou jouer en ligne, ce routeur assure une expérience fluide pour tous vos appareils.\n\nPrincipaux avantages :\n✔ Connexion 4G LTE Cat 4 – Jusqu’à 150 Mbps en téléchargement\n✔ Réseau Wi-Fi N 300 Mbps – Parfait pour la navigation, le streaming et les tâches quotidiennes\n✔ 3 ports LAN Fast Ethernet – Pour connecter des appareils en filaire (PC, console, TV, etc.)\n✔ Deux antennes externes puissantes – Pour une meilleure couverture et une connexion 4G plus stable\n✔ Contrôle parental intelligent – Filtrage des sites, horaires de connexion, Wi-Fi invité\n✔ Sécurité avancée WPA3 – Pour une protection renforcée contre les accès non autorisés\n✔ Gestion intelligente via l’application EAGLE PRO AI – Optimisation automatique + compatibilité Google Assistant et Amazon Alexa\n✔ Basculement automatique 4G de secours – Restez connecté même en cas de coupure du réseau principal\n\n📱 Un routeur 4G simple, intelligent et fiable, idéal à la maison, en télétravail ou en déplacement.",
+    "prix": "89.00",
+    "stock": 9,
+    "image": "produits/matériel_réseau/LD0006078177_tp7954s.jpg",
+    "categorie": 56
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2372,
+  "fields": {
+    "nom": "TEXTORM Switch 1G/2.5G 8 ports avec SFP+ 10G",
+    "description": "Textorm SW2G8 SFP+ – Switch Multi-Gigabit 2.5G et SFP+ 10G\nLe Textorm SW2G8 SFP+ est un switch non manageable performant, idéal pour les environnements professionnels ou domestiques à haut débit. Avec ses 8 ports Ethernet multi-Gigabit (10/100/1000/2500 Mbps), il permet de connecter vos périphériques avec une vitesse optimale, tout en conservant le câblage RJ45 existant. Son port SFP+ 10 Gb/s vous offre une liaison montante ultra-rapide pour les transferts critiques ou les connexions vers un NAS ou un backbone réseau.\n\nCaractéristiques principales :\n✅ 8 ports RJ45 Multi-Gigabit : 10/100/1000/2500 Mbps pour des connexions ultra-rapides\n✅ 1 port SFP+ 10 Gbps : pour une liaison haut débit vers des équipements réseau avancés\n✅ Fonctionnement silencieux : conception sans ventilateur, parfaite pour les bureaux ou les environnements sensibles au bruit\n✅ Plug & Play : aucune configuration requise, mise en service immédiate\n✅ Haute capacité de commutation : 60 Gbps\n✅ Taux de transfert : 44,6 Mpps (millions de paquets/seconde)\n✅ Protection contre la foudre 6KV : sécurité renforcée pour vos équipements\n✅ Table MAC : 4K adresses\n\n💼 Idéal pour les petites entreprises, les créateurs de contenu, les gamers exigeants ou toute personne souhaitant exploiter les vitesses 2.5G et 10G sur leur réseau local.",
+    "prix": "99.00",
+    "stock": 9,
+    "image": "produits/matériel_réseau/LD0006107389_ayW6dFz.jpg",
+    "categorie": 57
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2373,
+  "fields": {
+    "nom": "ASUSTOR Switch'nstor ASW205T",
+    "description": "ASUSTOR Switch'nstor ASW205T – Switch 2.5G 5 Ports Ultra-Rapide et Silencieux\nPassez à la vitesse supérieure avec le Switch ASUSTOR Switch'nstor ASW205T, un switch non administré conçu pour vous offrir un réseau 2.5 Gigabit Ethernet sans modifier votre câblage existant. Idéal pour les utilisateurs de NAS, PC haut débit ou gamers exigeants, il vous permet de profiter pleinement de la vitesse de vos périphériques compatibles 2.5G.\n\nCaractéristiques principales :\n✅ 5 ports 2.5 GbE : vitesse x2.5 par rapport au Gigabit, parfaite pour les transferts lourds\n✅ Contrôleurs Realtek performants : RTL8731 + RTL8221B\n✅ Capacité de commutation : 25 Gbps pour un trafic fluide\n✅ Silencieux : conception sans ventilateur, fonctionnement discret\n✅ Compatibilité étendue : rétrocompatible avec les périphériques 1G et 100 Mbps\n✅ Utilisation simple : Plug & Play, aucune configuration requise\n✅ Fonctionne avec du câble Cat5e : inutile de changer votre infrastructure\n\n💡 Astuce : Combinez ce switch avec un NAS 2.5G et un adaptateur USB 2.5G pour doubler instantanément les performances de votre réseau domestique ou professionnel.\n\nUn switch compact, silencieux et prêt pour les réseaux du futur.",
+    "prix": "139.00",
+    "stock": 9,
+    "image": "produits/matériel_réseau/LD0005905748_1_WmHCfdG.jpg",
+    "categorie": 57
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2374,
+  "fields": {
+    "nom": "TRENDnet TEG-S762",
+    "description": "TRENDnet TEG-S762 – Switch Multigigabit 6 Ports (2.5G + 10G)\nBoostez votre réseau local avec le switch TRENDnet TEG-S762, un modèle compact, performant et silencieux. Doté de 4 ports 2.5 GbE et de 2 ports 10 GbE, il permet de connecter à la fois vos périphériques récents à haut débit et vos équipements plus anciens, tout en garantissant un fonctionnement stable et rapide.\n\nCaractéristiques principales :\n✅ 6 ports multigigabit :\n– 4 ports 2.5 Gbit/s\n– 2 ports 10 Gbit/s\n\n✅ Capacité de commutation : 60 Gbps\n\n✅ Compatibilité étendue :\n– Ports 10G : rétrocompatibles 5G/2.5G/1G/100 Mbps\n– Ports 2.5G : rétrocompatibles 1G/100 Mbps\n\n✅ Installation Plug & Play : aucune configuration requise\n\n✅ Refroidissement passif : conception sans ventilateur, pour un silence absolu\n\n💡 Idéal pour : les utilisateurs exigeants (NAS, PC gamers, stations de travail) souhaitant accélérer leur réseau domestique ou professionnel sans compromis.\n\nCompact, évolutif, et rapide : le TRENDnet TEG-S762 est prêt pour les usages de demain.",
+    "prix": "129.00",
+    "stock": 10,
+    "image": "produits/matériel_réseau/LD0006229164_GGhiO90.jpg",
+    "categorie": 57
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2375,
+  "fields": {
+    "nom": "HPE Networking Instant On 1930 24G Class4 PoE 195W",
+    "description": "HPE Networking Instant On 1930 24G PoE+ : un switch puissant pour les pros\n\nConçu pour répondre aux besoins des petites et moyennes entreprises, le commutateur HPE Instant On 1930 24G PoE+ allie performance, simplicité de gestion et sécurité réseau avancée. Grâce à ses 24 ports Gigabit avec alimentation PoE+, il prend en charge des équipements variés comme des points d’accès Wi-Fi, des caméras IP ou des téléphones VoIP tout en leur fournissant l’alimentation nécessaire jusqu’à 30W par port.\n\nSes 4 ports SFP+ 10G assurent des liaisons montantes ultra-rapides pour un trafic fluide et sans congestion, même sur les réseaux exigeants. Il se configure facilement via une interface cloud intuitive ou une application mobile, idéale pour un suivi à distance. Pensé pour durer, il bénéficie d’une construction robuste et d’options avancées comme le VLAN, le routage statique, le contrôle des accès et bien plus encore.\n\nPuissant, sécurisé et simple à déployer, ce switch est un choix stratégique pour bâtir un réseau professionnel fiable.\n\nCaractéristiques principales :\n\n✔ 24 ports Gigabit Ethernet PoE+ (jusqu’à 30W par port)\n✔ 4 ports SFP+ 10G pour les liaisons montantes haut débit\n✔ Capacité de commutation de 128 Gbps\n✔ Débit de transfert : 95.23 Mpps\n✔ Budget PoE total : 195W\n✔ Routage statique IPv4, VLAN, ACL, STP, IPv6\n✔ Sécurité réseau intégrée (filtrage IP/MAC, protection contre les attaques)\n✔ Interface de gestion Cloud ou mobile (app Instant On)\n✔ Installation facile, pas de matériel supplémentaire requis\n✔ Processeur ARM Cortex-A9 – 512 Mo SDRAM / 256 Mo Flash\n\n🌐 Déployez un réseau stable, rapide et sécurisé avec HPE Instant On 1930 !",
+    "prix": "409.00",
+    "stock": 10,
+    "image": "produits/matériel_réseau/LD0006068068_K5a03ns.jpg",
+    "categorie": 57
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2376,
+  "fields": {
+    "nom": "TP-LINK TL-SG1005P",
+    "description": "TP-Link TL-SG1005P : Switch PoE compact et pratique\n\nSimplifiez votre installation réseau avec le TP-Link TL-SG1005P, un switch Gigabit 5 ports dont 4 sont compatibles PoE. Idéal pour alimenter vos caméras IP, points d’accès Wi-Fi ou téléphones VoIP sans multiplier les prises de courant, il permet de transférer données et électricité via un seul câble Ethernet.\n\nSon fonctionnement Plug & Play vous évite toute configuration fastidieuse : branchez vos appareils et profitez immédiatement d’un réseau stable et rapide. Grâce à la gestion intelligente de la consommation électrique (jusqu’à 56W répartis entre les 4 ports PoE), le TL-SG1005P garantit un usage sûr et optimisé, avec priorité donnée aux appareils critiques si la limite est atteinte.\n\nCompact, fiable et ultra simple à utiliser, ce switch est la solution économique parfaite pour les petites installations professionnelles ou domestiques.\n\nCaractéristiques principales :\n\n✔ 5 ports Gigabit (10/100/1000 Mbps) dont 4 PoE\n✔ Budget PoE total : 56W (15,4W max par port)\n✔ Capacité de commutation : 10 Gbps\n✔ Plug & Play – aucune configuration requise\n✔ Compatible câbles droits/croisés (Auto MDI/MDI-X)\n✔ QoS 802.1p / DSCP pour une meilleure qualité de service\n✔ Alimentation externe : 48VDC / 1.25A\n✔ Format compact – idéal pour les bureaux ou petits réseaux IP\n\n🔌 Un switch PoE simple, efficace et accessible pour tous vos équipements réseau !",
+    "prix": "59.00",
+    "stock": 10,
+    "image": "produits/matériel_réseau/LD0005746612_1_zqbureT.jpg",
+    "categorie": 57
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2377,
+  "fields": {
+    "nom": "Brother ADS-1300",
+    "description": "Un scanner compact et performant pour une numérisation rapide\r\nLe Brother ADS-1300 est un scanner de documents USB-C conçu pour numériser facilement et rapidement vos documents, où que vous soyez. Idéal pour les professionnels en déplacement, il est compact, léger (1.37 kg) et auto-alimenté via USB-C, permettant une numérisation fluide sans alimentation externe.\r\n\r\nGrâce à sa vitesse de 30 pages par minute (60 ppm en recto-verso) et son chargeur automatique de 20 feuilles, il optimise votre productivité. Il offre une numérisation vers plusieurs destinations : PC, clé USB (jusqu'à 128 Go), PDF, e-mail ou Cloud. Son emplacement dédié aux cartes plastifiées facilite la digitalisation des cartes d’identité, permis et cartes vitales.\r\n\r\nCaractéristiques clés :\r\n✔ Vitesse de numérisation jusqu'à 30 ppm (60 ppm recto-verso) – Rapidité et efficacité\r\n✔ Chargeur automatique de documents (ADF) 20 feuilles – Gain de temps assuré\r\n✔ Alimentation via USB-C – Numérisation nomade sans contrainte\r\n✔ Numérisation vers PC, PDF, e-mail, Cloud ou clé USB – Organisation simplifiée\r\n✔ Scanner de cartes plastifiées (ID, permis, cartes vitales) – Pratique pour les documents officiels\r\n✔ Logiciels Kofax PaperPort inclus – Gestion et modification rapide des PDF\r\n✔ Design compact – Idéal pour les espaces réduits et les déplacements\r\n\r\n📏 Dimensions : 288 x 101 x 85 mm (bac fermé) / 288 x 211 x 205 mm (bac ouvert)\r\n⚖ Poids : 1.37 kg\r\n\r\n🔹 Un scanner portable et efficace pour une gestion optimisée de vos documents ! 📄🚀",
+    "prix": "235.00",
+    "stock": 8,
+    "image": "produits/imprimantes_&_scanners/LD0006127440_uDMkQL4.jpg",
+    "categorie": 59
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2378,
+  "fields": {
+    "nom": "Brother ADS-4700W",
+    "description": "Numérisation rapide et archivage simplifié\nLe Brother ADS-4700W est un scanner de bureau rapide et polyvalent, idéal pour les entreprises cherchant à optimiser l’archivage et le partage des documents. Avec son chargeur automatique de 80 feuilles et sa capacité de numérisation recto-verso en un seul passage à 40 ppm, il permet un gros volume de travail en toute fluidité.\n\nSon écran tactile couleur de 10.9 cm simplifie la gestion des fichiers, permettant une numérisation directe vers e-mail, réseau, FTP, Cloud ou clé USB (jusqu’à 64 Go), sans passer par un PC. Sa connectivité complète (Wi-Fi, Ethernet, USB 3.0) garantit une intégration facile dans tout environnement de travail.\n\nCaractéristiques clés :\n✔ Écran tactile couleur 10.9 cm – Interface intuitive et rapide\n✔ Numérisation jusqu'à 40 ppm recto-verso – Haute productivité\n✔ Chargeur automatique de 80 feuilles – Traitement de gros volumes\n✔ Wi-Fi, Ethernet, USB 3.0 – Connexions flexibles et sans fil\n✔ Numérisation vers e-mail, fichier, image, réseau, FTP, clé USB – Archivage simplifié\n✔ Résolution jusqu’à 1200 x 1200 dpi (interpolée) – Qualité d’image optimisée\n✔ Gestion avancée des documents – Réduction des erreurs et gain de temps\n\n📏 Dimensions compactes, idéal pour les bureaux\n🔹 Un scanner fiable et performant pour un flux de travail efficace ! 📄🚀",
+    "prix": "449.00",
+    "stock": 9,
+    "image": "produits/imprimantes_&_scanners/LD0005952738_CzoqwZz.jpg",
+    "categorie": 59
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2379,
+  "fields": {
+    "nom": "Canon CanoScan LiDE 400",
+    "description": "Un scanner haut de gamme, compact et ultra-stylé\nLe Canon CanoScan LiDE 400 est un scanner à plat A4 élégant, rapide et ultra-pratique, pensé pour une utilisation à domicile ou au bureau. Doté d’un design compact et raffiné, il s’intègre facilement dans tous les environnements, et propose même une option de numérisation verticale pour gagner de l’espace sur votre bureau.\n\nGrâce à sa résolution de 4800 x 4800 dpi et à sa vitesse de numérisation de 8 secondes, il permet de capturer photos et documents avec une qualité professionnelle. Son couvercle en Z à double charnière permet de numériser des documents épais, tandis que ses 5 touches EZ offrent une utilisation simple et rapide pour copier, envoyer, créer des PDF ou lancer une numérisation automatique.\n\nCaractéristiques clés :\n✔ Scanner à plat A4 – Résolution jusqu’à 4800 x 4800 dpi\n✔ Vitesse de numérisation de 8 secondes – Rapide et efficace\n✔ Interface USB-C (auto-alimenté) – Utilisation simple sans adaptateur secteur\n✔ 5 touches EZ – Accès rapide aux fonctions courantes (PDF, Scan auto, E-mail, Copie)\n✔ Couvercle Z à double charnière – Idéal pour les documents épais\n✔ Numérisation verticale possible – Gain de place optimal\n✔ Design élégant, sobre et compact – 1.7 kg seulement\n✔ Compatible Windows & macOS – Installation facile\n\n🔹 Un scanner fiable, stylé et performant pour des numérisations en toute simplicité ! 📄✨",
+    "prix": "109.00",
+    "stock": 10,
+    "image": "produits/imprimantes_&_scanners/LD0005077399_2_E80ncWw.jpg",
+    "categorie": 59
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2380,
+  "fields": {
+    "nom": "Canon imageFORMULA DR-C225 II",
+    "description": "Scanner compact, rapide et intelligent pour un usage quotidien\nLe Canon imageFORMULA DR-C225 II est un scanner de bureau performant, conçu pour offrir une numérisation rapide, intuitive et peu encombrante. Grâce à son design vertical unique, il s’intègre facilement dans les petits espaces de travail tout en assurant une productivité élevée.\n\nAvec une vitesse de numérisation jusqu’à 25 ppm (50 ipm en recto-verso), il est idéal pour les tâches quotidiennes de numérisation en entreprise. Il intègre le logiciel CaptureOnTouch, qui permet de numériser en un clic, ainsi que d’autres outils professionnels comme eCopy PDF Pro Office et Cardiris pour une gestion documentaire complète.\n\nCaractéristiques clés :\n✔ Numérisation rapide jusqu'à 25 ppm / 50 ipm en recto-verso – Productivité optimale\n✔ Chargeur automatique de documents fiable – Manipulation fluide du papier\n✔ Cycle de travail : jusqu’à 1500 pages/jour – Idéal pour les petites équipes\n✔ Détection de double épaisseur par ultrasons – Sécurité renforcée\n✔ CaptureOnTouch – Numérisation intuitive par simple pression\n✔ Logiciels inclus : eCopy PDF Pro Office, Cardiris – Gestion avancée des fichiers\n✔ Design compact avec alimentation verticale – Gain de place assuré\n✔ Interface USB 2.0 (compatible USB 3.0) – Connexion rapide\n✔ Interface utilisateur visuelle à base d’icônes – Utilisation simple et guidée\n\n📏 Dimensions bac ouvert : 300 x 235 x 339 mm\n⚖ Poids : 2.8 kg\n🔹 Un scanner rapide et intelligent pour booster l'efficacité de votre quotidien professionnel ! 📄🚀",
+    "prix": "349.00",
+    "stock": 6,
+    "image": "produits/imprimantes_&_scanners/LD0005163168_2_n1tluX7.jpg",
+    "categorie": 59
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2381,
+  "fields": {
+    "nom": "HP ScanJet Pro 3600 f1",
+    "description": "Performance professionnelle et polyvalence au quotidien\nLe HP ScanJet Pro 3600 f1 est un scanner à plat avec chargeur automatique de documents (ADF) conçu pour les équipes productives. Grâce à sa numérisation recto-verso en un seul passage, il permet de numériser jusqu'à 3000 pages par jour avec une vitesse allant jusqu'à 60 images/minute. Compact, rapide et fiable, il s'intègre parfaitement dans les environnements professionnels exigeants.\n\nÉquipé de la technologie HP EveryPage, il évite les erreurs de chargement, même pour les piles de documents hétérogènes. Grâce aux raccourcis personnalisables, au logiciel HP Scan Pro et à la connectivité USB 3.0, la numérisation devient fluide, intuitive et sécurisée.\n\nCaractéristiques clés :\n✔ Numérisation recto-verso jusqu’à 30 ppm / 60 ipm – Vitesse optimale pour gros volumes\n✔ Chargeur automatique de 60 feuilles + Scanner à plat – Polyvalence maximale\n✔ Technologie Instant-on – Démarrage sans attente\n✔ Technologie HP EveryPage (ultrasons) – Détection fiable des doublons\n✔ Résolution jusqu’à 1200 ppp (à plat) – Qualité d’image professionnelle\n✔ Flux de travail personnalisables via HP Scan Pro – Automatisation simplifiée\n✔ Compatibilité TWAIN, ISIS, WIA – Intégration facile dans les systèmes existants\n✔ Sécurité HP intégrée – Vérification du micrologiciel et démarrage sécurisé\n\n🔹 Un outil fiable et performant pour les environnements professionnels à haut rendement ! 📄🚀",
+    "prix": "419.00",
+    "stock": 10,
+    "image": "produits/imprimantes_&_scanners/LD0006195733_qB4iskp.jpg",
+    "categorie": 59
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2382,
+  "fields": {
+    "nom": "HP LaserJet Pro 4002dn",
+    "description": "HP LaserJet Pro 4002dn : Imprimante laser rapide et fiable pour les pros\n\nConçue pour répondre aux besoins d’une petite équipe (jusqu’à 10 utilisateurs), la HP LaserJet Pro 4002dn combine vitesse, efficacité et sécurité. Grâce à une impression monochrome ultra-rapide jusqu’à 40 pages par minute, elle assure une productivité optimale tout en offrant une utilisation simple avec son écran LCD 2 lignes.\n\nDotée de deux bacs pour une capacité totale de 350 feuilles, elle permet de gérer facilement les gros volumes d’impression. Son mode recto-verso automatique, sa connectivité Ethernet Gigabit et son impression via le Cloud avec l'application HP Smart en font une alliée idéale pour les environnements de travail modernes.\n\nAvec la sécurité HP Wolf Pro intégrée, vos données restent protégées en continu. Et en choisissant les toners HP EcoSmart, vous faites un geste pour l’environnement tout en allégeant vos coûts d’impression.\n\nCaractéristiques principales :\n\n✔ Impression laser monochrome rapide : jusqu’à 40 ppm\n✔ Recto-verso automatique inclus\n✔ Bac de 100 feuilles + bac de 250 feuilles\n✔ Connexions : USB 2.0, USB hôte, Ethernet Gigabit\n✔ Impression sécurisée Cloud via HP Smart\n✔ Écran LCD 2 lignes – interface simple et pratique\n✔ Sécurité HP Wolf Pro : surveillance continue\n✔ Toner HP 149A préinstallé (jusqu’à 2 900 pages)\n\n🖨️ Gagnez du temps, de la sérénité et de l'efficacité avec cette imprimante taillée pour la performance au bureau.",
+    "prix": "179.00",
+    "stock": 7,
+    "image": "produits/imprimantes_&_scanners/LD0006054520_Scg7aQk.jpg",
+    "categorie": 60
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2383,
+  "fields": {
+    "nom": "Brother HL-L2445DW",
+    "description": "Brother HL-L2445DW : Silencieuse, rapide et connectée\n\nImprimez efficacement au quotidien avec la Brother HL-L2445DW, une imprimante laser monochrome pensée pour les environnements de travail exigeants. Silencieuse et rapide, elle atteint une vitesse de 32 pages par minute en simple face et jusqu’à 16 images par minute en recto-verso automatique.\n\nFacile à configurer, elle se connecte en USB, Ethernet ou Wi-Fi double bande (2.4 / 5 GHz), et peut être contrôlée à distance via l’application Brother Mobile Connect. Pratique et économique, elle intègre un toner de démarrage de 1 200 pages et des consommables séparés (tambour et toner) pour réduire les coûts à long terme.\n\nParfaite pour une utilisation professionnelle ou domestique intensive, elle allie performance, silence et connectivité moderne.\n\nCaractéristiques principales :\n\n✔ Vitesse d’impression jusqu’à 32 ppm\n✔ Impression recto-verso automatique (jusqu’à 16 ipm)\n✔ Connexion Wi-Fi 2.4/5 GHz, Ethernet et USB 2.0\n✔ Application Brother Mobile Connect pour impression mobile\n✔ Bac de 250 feuilles – autonomie prolongée\n✔ Panneau LCD 1 ligne – navigation simple\n✔ Résolution jusqu’à 1200 x 1200 dpi\n✔ Toner initial 1200 pages – prêt à l’emploi\n\n🖨️ Une imprimante fiable, rapide et connectée pour un quotidien sans tracas.",
+    "prix": "169.00",
+    "stock": 8,
+    "image": "produits/imprimantes_&_scanners/LD0006080432_WmiORQm.jpg",
+    "categorie": 60
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2384,
+  "fields": {
+    "nom": "Canon i-SENSYS LBP673Cdw",
+    "description": "Canon i-SENSYS LBP673Cdw : Compacte, rapide et sécurisée\n\nIdéale pour les petites entreprises et bureaux exigeants, la Canon i-SENSYS LBP673Cdw allie vitesse, qualité et connectivité dans un format compact. Avec une impression couleur laser ultra nette jusqu’à 33 pages par minute, elle vous permet de gagner en efficacité sans sacrifier l’espace de travail.\n\nProfitez de la gestion mobile avancée avec la prise en charge de Google Drive, Dropbox, OneDrive et de l’impression universelle Microsoft. L'impression sécurisée par code PIN assure la confidentialité de vos documents, tandis que la vérification au démarrage protège l’appareil des menaces extérieures.\n\nSon écran LCD à 5 lignes et son pavé numérique rendent l’utilisation simple et rapide, et sa capacité papier jusqu’à 300 feuilles (cassette + bac multifonction) vous garantit une autonomie idéale.\n\nCaractéristiques principales :\n\n✔ Impression couleur laser jusqu’à 33 ppm (A4)\n✔ Impression sécurisée par code PIN\n✔ Impression mobile : AirPrint, Mopria, Google Cloud Print\n✔ Écran LCD 5 lignes avec pavé numérique\n✔ Cassette 250 feuilles + Bac multifonction 50 feuilles\n✔ Connectivité : USB 2.0, Ethernet, Wi-Fi 802.11 b/g/n\n✔ Formats pris en charge : A4, A5, enveloppes, reçus, chèques\n\n🖨️ Des performances pro dans un format compact, pour une impression fluide, rapide et hautement sécurisée.",
+    "prix": "349.00",
+    "stock": 10,
+    "image": "produits/imprimantes_&_scanners/LD0006002451_KRkAaLM.jpg",
+    "categorie": 60
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2385,
+  "fields": {
+    "nom": "HP LaserJet Pro 4202dw",
+    "description": "HP LaserJet Pro 4202dw : Performances couleur et productivité maximale\n\nGagnez en efficacité avec l’imprimante HP LaserJet Pro 4202dw, conçue pour répondre aux besoins des équipes dynamiques jusqu’à 10 utilisateurs. Compacte, rapide et intuitive, elle est idéale pour gérer d’importants volumes d’impression sans perdre en qualité ni en temps. Grâce à sa vitesse impressionnante (jusqu’à 35 ppm en noir et 33 ppm en couleur), elle s’intègre parfaitement dans un environnement de travail exigeant.\n\nElle dispose d’un écran LCD 4 lignes avec cadran rotatif facilitant la navigation dans les menus, et d’une connectivité complète incluant le Wi-Fi, Bluetooth, Ethernet Gigabit et USB. L’impression recto-verso automatique et la capacité de 300 feuilles (bac 1 + bac 2) permettent un travail continu sans interruption.\n\nEnfin, les toners HP TerraJet inclus optimisent la consommation énergétique tout en réduisant l’impact environnemental.\n\nCaractéristiques principales :\n\n✔ Imprimante laser couleur rapide : jusqu’à 35 ppm (mono) / 33 ppm (couleur)\n✔ Impression recto-verso automatique\n✔ Connectivité complète : USB, Bluetooth, Wi-Fi, Ethernet\n✔ Écran LCD 4 lignes avec navigation intuitive\n✔ 2 bacs (50 + 250 feuilles) pour un total de 300 pages\n✔ Volume recommandé : jusqu’à 50 000 pages/mois\n✔ Toners HP TerraJet inclus pour des impressions plus durables\n\n📄 Idéale pour les pros qui veulent une imprimante couleur rapide, efficace et simple à gérer au quotidien.",
+    "prix": "319.00",
+    "stock": 10,
+    "image": "produits/imprimantes_&_scanners/LD0006061881_rJ3Pio6.jpg",
+    "categorie": 60
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2386,
+  "fields": {
+    "nom": "HP LaserJet Pro 3002dw",
+    "description": "HP LaserJet Pro 3002dw : Imprimante monochrome rapide, fiable et connectée\n\nOptimisez votre productivité avec la HP LaserJet Pro 3002dw, une imprimante compacte conçue pour les petits groupes de travail (jusqu’à 7 utilisateurs). Offrant une impression rapide jusqu’à 33 ppm en recto et 20 ppm en recto-verso, elle s’adapte parfaitement aux environnements professionnels exigeants, tout en restant facile à configurer et à utiliser.\n\nAvec sa connectivité complète (Wi-Fi, Bluetooth, Ethernet et USB), son impression automatique recto-verso, et une capacité de 250 feuilles, elle répond à tous les besoins quotidiens sans interruption. Son design sobre et efficace s’intègre facilement dans tout espace de travail.\n\nÉquipez-la des toners HP 139A ou 139X authentiques, conçus pour minimiser la consommation d’énergie et réduire l’impact environnemental tout en garantissant une qualité constante.\n\nCaractéristiques principales :\n\n✔ Imprimante laser monochrome – idéale pour 7 utilisateurs\n✔ Vitesse : jusqu’à 33 ppm en recto, 20 ppm en recto/verso\n✔ Bac principal de 250 feuilles – impression continue sans rechargement\n✔ Connexions complètes : USB, Ethernet, Wi-Fi, Bluetooth\n✔ Compatible HP Smart, AirPrint, Mopria, Wi-Fi Direct\n✔ Volume recommandé : 350 à 2 500 pages/mois\n✔ Toner de démarrage préinstallé (≈1000 pages)\n✔ Compatible avec les toners HP 139A / HP 139X\n\n🖨️ Un excellent choix pour imprimer en toute simplicité, rapidement, et à moindre coût.",
+    "prix": "209.00",
+    "stock": 10,
+    "image": "produits/imprimantes_&_scanners/LD0006127832_SNUcdJf.jpg",
+    "categorie": 60
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2387,
+  "fields": {
+    "nom": "HP Officejet 200 Mobile",
+    "description": "HP OfficeJet 200 : L’imprimante portable pour les pros nomades\n\nProfitez de performances professionnelles partout où vos déplacements vous mènent grâce à l’imprimante HP OfficeJet 200. Compacte, rapide et silencieuse, elle est idéale pour imprimer depuis un ordinateur portable, un smartphone ou une tablette, sans même avoir besoin d’un réseau. Grâce à sa connectivité Wi-Fi Direct, AirPrint et HP ePrint, vous pouvez lancer vos impressions à tout moment, où que vous soyez.\n\nSon design léger s’insère facilement dans un sac, et sa batterie (en option) vous garantit une grande autonomie, que ce soit au bureau, à la maison ou en voiture. Dotée d’un écran monochrome de 2 pouces et d’un port USB 2.0, elle s’utilise facilement et s’adapte à tous les environnements professionnels.\n\nImprimez rapidement (jusqu’à 10 ppm en noir) et bénéficiez de cartouches à haut rendement pour limiter les remplacements. Discrète et performante, l’OfficeJet 200 est l’alliée idéale des professionnels mobiles.\n\nCaractéristiques principales :\n\n✔ Imprimante portable compacte – parfaite pour les déplacements\n✔ Vitesse : jusqu’à 10 ppm en noir / 7 ppm en couleur\n✔ Impression mobile : Wi-Fi, Wi-Fi Direct, AirPrint, HP ePrint\n✔ Écran monochrome haute résolution 2\"\n✔ Connexion USB 2.0 – utilisation simple et rapide\n✔ Poids léger : 2,1 kg (2,2 kg avec batterie)\n✔ Batterie rechargeable en option (réf. M9L89A)\n\n🧳 Emportez la qualité d’impression HP partout avec vous, sans compromis sur la performance.",
+    "prix": "259.00",
+    "stock": 10,
+    "image": "produits/imprimantes_&_scanners/LD0003776172_2_J8FH0VO.jpg",
+    "categorie": 61
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2388,
+  "fields": {
+    "nom": "Epson Expression Photo HD XP-15000",
+    "description": "Epson Expression Photo XP-15000 : L’imprimante photo A3+ compacte et élégante\n\nImprimez des photos au rendu professionnel directement depuis chez vous grâce à l’Epson XP-15000. Compacte et raffinée, cette imprimante jet d’encre est capable de produire des clichés de haute qualité jusqu’au format A3+. Grâce aux encres Claria Photo HD à six couleurs (dont le gris et le rouge), elle garantit des noirs profonds, des dégradés subtils et des couleurs éclatantes pour sublimer chaque tirage.\n\nElle dispose de deux bacs papier pour imprimer facilement sur différents formats, y compris CD/DVD, et offre une fonction recto verso automatique au format A4. Le Wi-Fi, le Wi-Fi Direct et l’Ethernet assurent une grande flexibilité d’utilisation, avec prise en charge d’AirPrint, Google Cloud Print et des applis Epson Connect pour une impression mobile fluide.\n\nDiscrète et design, la XP-15000 s’intègre parfaitement dans n’importe quel intérieur tout en vous offrant des performances photo dignes d’un labo professionnel.\n\nCaractéristiques principales :\n\n✔ Imprimante jet d’encre photo A3+ compacte\n✔ Encres Claria Photo HD 6 couleurs (dont rouge et gris)\n✔ Impression recto verso automatique (A4) + CD/DVD\n✔ Connexions : Wi-Fi, Wi-Fi Direct, Ethernet\n✔ Impression mobile : Epson iPrint, Email Print, Remote Print, AirPrint, Google Cloud Print\n✔ Bacs papier avant (jusqu’à A4) et arrière (jusqu’à A3+, papier épais)\n✔ Grand écran LCD couleur 6,1 cm\n✔ Design moderne et faible encombrement : 479 x 370 x 159 mm\n✔ Poids : 8,5 kg\n\n📸 Obtenez des impressions photo professionnelles, à la maison, sans compromis.",
+    "prix": "349.00",
+    "stock": 10,
+    "image": "produits/imprimantes_&_scanners/LD0004775709_2_heVya0M.jpg",
+    "categorie": 61
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2389,
+  "fields": {
+    "nom": "Canon MAXIFY GX5050",
+    "description": "Canon MAXIFY GX5050 : L’imprimante pro économique et performante\n\nPensée pour les professionnels et les télétravailleurs exigeants, l’imprimante Canon MAXIFY GX5050 offre une solution d’impression couleur économique, fiable et simple à utiliser. Grâce à ses réservoirs d’encre rechargeables à haut rendement, elle réduit considérablement le coût par page tout en assurant une grande autonomie. Idéale pour un usage régulier au bureau comme à domicile, elle est conçue pour s’adapter à tous les environnements.\n\nDotée d’un écran LCD inclinable à deux lignes, cette imprimante jet d’encre A4 imprime rapidement vos documents avec une résolution de 1200 x 600 ppp. Le système à double chargement (cassette + bac arrière) permet d’atteindre une capacité totale de 350 feuilles, pour une productivité optimale sans interruption.\n\nConnectée, elle prend en charge le Wi-Fi, l’Ethernet et l’impression mobile/cloud, pour vous permettre d’imprimer à tout moment, où que vous soyez.\n\nCaractéristiques principales :\n\n✔ Imprimante jet d’encre couleur A4 avec écran LCD 2 lignes\n✔ Impression recto-verso automatique\n✔ Réservoirs d’encre rechargeables à haut rendement\n✔ Vitesse d’impression : jusqu’à 24 ipm en noir / 15.5 ipm en couleur\n✔ Capacité papier : 350 feuilles (250 cassette + 100 bac arrière)\n✔ Connectivités : USB 2.0, Ethernet 10/100, Wi-Fi IEEE802.11 b/g/n\n✔ Impression mobile et cloud compatible\n\n🖨️ Une imprimante pensée pour les pros : économique, rapide et connectée.",
+    "prix": "599.00",
+    "stock": 10,
+    "image": "produits/imprimantes_&_scanners/LD0006148061_KWbQtf9.jpg",
+    "categorie": 61
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2390,
+  "fields": {
+    "nom": "Brother HL-J6010DW",
+    "description": "Brother HL-J6010DW : Imprimante A3 jet d’encre rapide, économique et connectée\n\nPensée pour les environnements professionnels exigeants, la Brother HL-J6010DW vous permet d’imprimer en A3 avec une grande vitesse et une qualité constante. Dotée d’un temps de sortie inférieur à 5 secondes et d’une vitesse allant jusqu’à 30 ipm, elle assure une productivité optimale tout en réduisant la consommation d’énergie, grâce à sa technologie d'impression sans préchauffe.\n\nSon impression recto-verso automatique, sa capacité papier généreuse (jusqu’à 600 feuilles) et sa compatibilité avec une large gamme de supports (jusqu’à 220 g/m²) en font une imprimante complète, fiable et économique. Le bac multiformats permet de gérer facilement des impressions spécifiques ou occasionnelles.\n\nConnectée, elle propose toutes les options modernes : impression mobile via AirPrint, Mopria ou Brother Mobile Connect, NFC intégré pour lancer une impression en un geste, ainsi qu’un écran tactile couleur de 6,8 cm pour une navigation intuitive et le suivi des consommables.\n\nCaractéristiques principales :\n\n✔ Imprimante jet d’encre couleur A3\n✔ Vitesse d’impression jusqu’à 30 ipm\n✔ Temps de sortie de la 1ère page < 5 secondes\n✔ Impression recto-verso automatique\n✔ Écran tactile couleur 6,8 cm avec jauge de niveau d’encre\n✔ Capacité papier : 2 bacs de 250 feuilles + bac multiformats de 100 feuilles\n✔ Connectivités : USB, Wi-Fi, Wi-Fi Direct, Ethernet, NFC\n✔ Compatible AirPrint, Mopria, Brother Mobile Connect\n\n🖨️ Une imprimante A3 rapide, pratique et conçue pour les pros !",
+    "prix": "399.00",
+    "stock": 8,
+    "image": "produits/imprimantes_&_scanners/LD0005931122_1_RyC7UEm.jpg",
+    "categorie": 61
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2391,
+  "fields": {
+    "nom": "HP OfficeJet Pro 9110b",
+    "description": "HP OfficeJet Pro 9110b : Imprimante couleur connectée et performante pour les pros\n\nOptimisez votre flux de travail avec l’imprimante jet d’encre HP OfficeJet Pro 9110b, pensée pour s’intégrer facilement dans tout espace professionnel. Compacte, rapide et connectée, elle vous permet d’imprimer vos présentations, documents et dossiers couleur en toute simplicité, que vous soyez au bureau ou à la maison.\n\nAvec sa vitesse d’impression jusqu’à 22 ppm en noir et blanc et 18 ppm en couleur, elle vous offre une grande réactivité, tandis que le recto-verso automatique vous aide à économiser du papier. Son bac de 250 feuilles vous permet de travailler sans interruption, et son écran tactile de 2,7 pouces facilite la navigation et les réglages au quotidien.\n\nCôté connectivité, la HP 9110b a tout ce qu’il faut : Wi-Fi, Bluetooth, USB et Ethernet. Compatible avec Apple AirPrint, Mopria et l’application HP Smart, elle vous permet d’imprimer directement depuis votre smartphone, d’envoyer vos documents sur le cloud (Dropbox, Google Drive…) et même de les partager par e-mail. L’impression mobile devient un jeu d’enfant.\n\nCaractéristiques principales :\n\n✔ Imprimante jet d’encre couleur A4\n✔ Vitesse : jusqu’à 22 ppm (N&B) / 18 ppm (Couleur)\n✔ Impression recto-verso automatique\n✔ Bac papier de 250 feuilles\n✔ Écran tactile couleur 2,7\"\n✔ Connectivités : Wi-Fi, USB 2.0, Ethernet, Bluetooth\n✔ Impression mobile : Apple AirPrint, Mopria, HP Smart, Wi-Fi Direct\n\n📄 L'alliée idéale pour une productivité optimale au quotidien !",
+    "prix": "149.00",
+    "stock": 5,
+    "image": "produits/imprimantes_&_scanners/LD0006088471_u3O1El5.jpg",
+    "categorie": 61
+  }
+},
+{
+  "model": "app_yemconsulting.panier",
+  "pk": 1,
+  "fields": {
+    "utilisateur": 1,
+    "date_creation": "2025-05-18T12:34:20.044Z"
+  }
+},
+{
+  "model": "app_yemconsulting.panier",
+  "pk": 2,
+  "fields": {
+    "utilisateur": 2,
+    "date_creation": "2025-05-18T12:44:12.501Z"
+  }
+},
+{
+  "model": "app_yemconsulting.lignepanier",
+  "pk": 1,
+  "fields": {
+    "panier": 1,
+    "produit": 2329,
+    "quantite": 1
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 2,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T12:49:21.885Z",
+    "statut": "en_attente",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "0.00",
+    "quantites_initiales": {}
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 3,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T12:52:36.774Z",
+    "statut": "en_attente",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "0.00",
+    "quantites_initiales": {}
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 4,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:01:27.825Z",
+    "statut": "en_attente",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "0.00",
+    "quantites_initiales": {}
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 5,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:10:41.883Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "889.00",
+    "quantites_initiales": {
+      "2329": {
+        "quantity": 1,
+        "price": "889.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 6,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:16:46.029Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "1250.00",
+    "quantites_initiales": {
+      "2303": {
+        "quantity": 1,
+        "price": "1250.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 7,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:19:02.746Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "199.00",
+    "quantites_initiales": {
+      "2323": {
+        "quantity": 1,
+        "price": "199.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 8,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:23:09.752Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "49.00",
+    "quantites_initiales": {
+      "2357": {
+        "quantity": 1,
+        "price": "49.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 9,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:25:56.883Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "109.00",
+    "quantites_initiales": {
+      "2358": {
+        "quantity": 1,
+        "price": "109.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 10,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:34:12.181Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "1199.00",
+    "quantites_initiales": {
+      "2313": {
+        "quantity": 1,
+        "price": "1199.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 11,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:36:58.601Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "299.00",
+    "quantites_initiales": {
+      "2367": {
+        "quantity": 1,
+        "price": "299.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 12,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:43:13.449Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 2,
+    "livraison": "0.00",
+    "total": "639.00",
+    "quantites_initiales": {
+      "2305": {
+        "quantity": 1,
+        "price": "639.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 13,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:44:37.492Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "299.00",
+    "quantites_initiales": {
+      "2367": {
+        "quantity": 1,
+        "price": "299.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 14,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:49:18.422Z",
+    "statut": "en_attente",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "1250.00",
+    "quantites_initiales": {
+      "2303": {
+        "quantity": 1,
+        "price": "1250.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 15,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:52:03.816Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "179.00",
+    "quantites_initiales": {
+      "2382": {
+        "quantity": 1,
+        "price": "179.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 16,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T13:58:02.472Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "529.00",
+    "quantites_initiales": {
+      "2304": {
+        "quantity": 1,
+        "price": "529.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 17,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T14:02:37.912Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "889.00",
+    "quantites_initiales": {
+      "2329": {
+        "quantity": 1,
+        "price": "889.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 18,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T14:09:57.441Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "889.00",
+    "quantites_initiales": {
+      "2329": {
+        "quantity": 1,
+        "price": "889.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 19,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T14:19:25.243Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "889.00",
+    "quantites_initiales": {
+      "2329": {
+        "quantity": 1,
+        "price": "889.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 20,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T14:22:43.384Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "767.00",
+    "quantites_initiales": {
+      "2387": {
+        "quantity": 1,
+        "price": "259.00"
+      },
+      "2367": {
+        "quantity": 1,
+        "price": "299.00"
+      },
+      "2386": {
+        "quantity": 1,
+        "price": "209.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 21,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T14:27:33.478Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "889.00",
+    "quantites_initiales": {
+      "2329": {
+        "quantity": 1,
+        "price": "889.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.commande",
+  "pk": 22,
+  "fields": {
+    "utilisateur": 2,
+    "date_commande": "2025-05-18T14:28:36.757Z",
+    "statut": "payee",
+    "traitee": false,
+    "adresse_livraison": 1,
+    "adresse_facturation": 1,
+    "livraison": "0.00",
+    "total": "99.00",
+    "quantites_initiales": {
+      "2372": {
+        "quantity": 1,
+        "price": "99.00"
+      }
+    }
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 2,
+  "fields": {
+    "commande": 2,
+    "produit": 2329,
+    "quantite": 1,
+    "prix_unitaire": "0.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 3,
+  "fields": {
+    "commande": 3,
+    "produit": 2303,
+    "quantite": 1,
+    "prix_unitaire": "0.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 4,
+  "fields": {
+    "commande": 4,
+    "produit": 2304,
+    "quantite": 1,
+    "prix_unitaire": "0.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 5,
+  "fields": {
+    "commande": 5,
+    "produit": 2329,
+    "quantite": 1,
+    "prix_unitaire": "889.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 6,
+  "fields": {
+    "commande": 6,
+    "produit": 2303,
+    "quantite": 1,
+    "prix_unitaire": "1250.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 7,
+  "fields": {
+    "commande": 7,
+    "produit": 2323,
+    "quantite": 1,
+    "prix_unitaire": "199.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 8,
+  "fields": {
+    "commande": 8,
+    "produit": 2357,
+    "quantite": 1,
+    "prix_unitaire": "49.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 9,
+  "fields": {
+    "commande": 9,
+    "produit": 2358,
+    "quantite": 1,
+    "prix_unitaire": "109.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 10,
+  "fields": {
+    "commande": 10,
+    "produit": 2313,
+    "quantite": 1,
+    "prix_unitaire": "1199.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 11,
+  "fields": {
+    "commande": 11,
+    "produit": 2367,
+    "quantite": 1,
+    "prix_unitaire": "299.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 12,
+  "fields": {
+    "commande": 12,
+    "produit": 2305,
+    "quantite": 1,
+    "prix_unitaire": "639.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 13,
+  "fields": {
+    "commande": 13,
+    "produit": 2367,
+    "quantite": 1,
+    "prix_unitaire": "299.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 14,
+  "fields": {
+    "commande": 14,
+    "produit": 2303,
+    "quantite": 1,
+    "prix_unitaire": "1250.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 15,
+  "fields": {
+    "commande": 15,
+    "produit": 2382,
+    "quantite": 1,
+    "prix_unitaire": "179.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 16,
+  "fields": {
+    "commande": 16,
+    "produit": 2304,
+    "quantite": 1,
+    "prix_unitaire": "529.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 17,
+  "fields": {
+    "commande": 17,
+    "produit": 2329,
+    "quantite": 1,
+    "prix_unitaire": "889.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 18,
+  "fields": {
+    "commande": 18,
+    "produit": 2329,
+    "quantite": 1,
+    "prix_unitaire": "889.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 19,
+  "fields": {
+    "commande": 19,
+    "produit": 2329,
+    "quantite": 1,
+    "prix_unitaire": "889.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 20,
+  "fields": {
+    "commande": 20,
+    "produit": 2387,
+    "quantite": 1,
+    "prix_unitaire": "259.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 21,
+  "fields": {
+    "commande": 20,
+    "produit": 2367,
+    "quantite": 1,
+    "prix_unitaire": "299.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 22,
+  "fields": {
+    "commande": 20,
+    "produit": 2386,
+    "quantite": 1,
+    "prix_unitaire": "209.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 23,
+  "fields": {
+    "commande": 21,
+    "produit": 2329,
+    "quantite": 1,
+    "prix_unitaire": "889.00"
+  }
+},
+{
+  "model": "app_yemconsulting.lignecommande",
+  "pk": 24,
+  "fields": {
+    "commande": 22,
+    "produit": 2372,
+    "quantite": 1,
+    "prix_unitaire": "99.00"
+  }
+}
+]

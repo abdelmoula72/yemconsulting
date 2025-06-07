@@ -1,6 +1,63 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
 
 {% block title %}Confirmation de commande{% endblock %}
+
+{% block extra_css %}
+<style>
+  .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+  }
+  .card-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    padding: 1.5rem;
+  }
+  .card-body {
+    padding: 1.5rem;
+  }
+  .table th {
+    border-top: none;
+    font-weight: 600;
+    padding: 1.2rem 1rem;
+  }
+  .table td {
+    padding: 1.2rem 1rem;
+    vertical-align: middle;
+  }
+  .table tfoot td {
+    font-weight: 600;
+    border-top: 2px solid #dee2e6;
+  }
+  .btn-outline-primary:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+  }
+  .status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 500;
+  }
+  .status-en-attente {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  .status-en-cours {
+    background-color: #cce5ff;
+    color: #004085;
+  }
+  .status-livree {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  .status-annulee {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -17,7 +74,7 @@
             <h3 class="mb-3">Adresse de livraison</h3>
             <address>
                 {{ adresse_livraison.prenom }} {{ adresse_livraison.nom }}<br>
-                {{ adresse_livraison.adresse }}<br>
+                {{ adresse_livraison.rue }}<br>
                 {% if adresse_livraison.complement %}{{ adresse_livraison.complement }}<br>{% endif %}
                 {{ adresse_livraison.code_postal }} {{ adresse_livraison.ville }}<br>
                 {{ adresse_livraison.pays }}
@@ -27,7 +84,7 @@
             <h3 class="mb-3">Adresse de facturation</h3>
             <address>
                 {{ adresse_facturation.prenom }} {{ adresse_facturation.nom }}<br>
-                {{ adresse_facturation.adresse }}<br>
+                {{ adresse_facturation.rue }}<br>
                 {% if adresse_facturation.complement %}{{ adresse_facturation.complement }}<br>{% endif %}
                 {{ adresse_facturation.code_postal }} {{ adresse_facturation.ville }}<br>
                 {{ adresse_facturation.pays }}
@@ -40,10 +97,10 @@
     <table class="table table-bordered">
         <thead class="table-dark">
           <tr>
-            <th>Produit</th>
-            <th>Quantité</th>
-            <th>Prix unitaire</th>
-            <th>Sous-total</th>
+            <th style="width: 50%">Produit</th>
+            <th class="text-center" style="width: 10%">Quantité</th>
+            <th class="text-end" style="width: 20%">Prix unitaire</th>
+            <th class="text-end" style="width: 20%">Total</th>
           </tr>
         </thead>
         <tbody>
@@ -58,30 +115,56 @@
                   <span>{{ ligne.produit.nom }}</span>
                 </div>
               </td>
-              <td class="align-middle">{{ ligne.quantite }}</td>
-              <td class="align-middle">{{ ligne.prix|floatformat:2 }} €</td>
-              <td class="align-middle">{{ ligne.sous_total|floatformat:2 }} €</td>
+              <td class="align-middle text-center">{{ ligne.quantite }}</td>
+              <td class="align-middle text-end">{{ ligne.prix|floatformat:2 }}&nbsp;€</td>
+              <td class="align-middle text-end">{{ ligne.sous_total|floatformat:2 }}&nbsp;€</td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
       
       <div class="text-end">
-        <p><strong>Sous-total :</strong> {{ total|floatformat:2 }} €</p>
-        <p><strong>Livraison :</strong> {% if commande.livraison == 0 %}Gratuite{% else %}{{ commande.livraison|floatformat:2 }} €{% endif %}</p>
-        <p class="fs-5"><strong>Total TTC :</strong> {{ total_avec_livraison|floatformat:2 }} €</p>
+        <p><strong>Sous-total :</strong> <span class="ms-2">{{ total_ttc|floatformat:2 }}&nbsp;€</span></p>
+        <p><strong>Livraison :</strong> <span class="ms-2">{% if commande.prix_livraison == 0 %}Gratuite{% else %}{{ commande.prix_livraison|floatformat:2 }}&nbsp;€{% endif %}</span></p>
+        <p class="fs-5 mb-5"><strong>Total TTC :</strong> <span class="ms-2">{{ total_avec_livraison|floatformat:2 }}&nbsp;€</span></p>
+        {% if commande.statut != 'payee' %}
+        <div class="text-end">
+            <form action="{% url 'stripe_checkout' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="commande_id" value="{{ commande.id }}">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-credit-card"></i> Payer maintenant
+                </button>
+            </form>
+        </div>
+        {% endif %}
       </div>
     {% else %}
       <p class="text-center">Aucun produit dans cette commande.</p>
     {% endif %}
 
-    <div class="mt-4 text-center">
-        <a href="{% url 'historique_commandes' %}" class="btn btn-secondary me-2">Retour à l'historique des commandes</a>
-        <a href="{% url 'generer_facture_pdf' commande.id %}" class="btn btn-primary me-2">
-            <i class="bi bi-file-earmark-pdf"></i> Télécharger la facture
-        </a>
-        <a href="{% url 'liste_produits' %}" class="btn btn-primary">Retour aux produits</a>
+    <div class="mt-4 d-flex justify-content-center align-items-center">
+        {% if commande.statut == 'payee' %}
+        <div>
+            <a href="{% url 'liste_produits' %}" class="btn btn-secondary me-2">
+                <i class="bi bi-cart"></i> Retour aux produits
+            </a>
+            <a href="{% url 'historique_commandes' %}" class="btn btn-primary me-2">
+                <i class="bi bi-clock-history"></i> Historique des commandes
+            </a>
+            <a href="{% url 'generer_facture_pdf' commande.id %}" class="btn btn-success">
+                <i class="bi bi-file-earmark-pdf"></i> Télécharger la facture
+            </a>
+        </div>
+        {% endif %}
     </div>
     
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe('{{ stripe_publishable_key }}');
+</script>
 {% endblock %}

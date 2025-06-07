@@ -3,27 +3,267 @@
 
 {% block title %}Mon compte{% endblock %}
 
+{% block extra_css %}
+<style>
+  .nav-tabs .nav-link {
+    color: #495057;
+    background-color: #f8f9fa;
+    border-color: #dee2e6 #dee2e6 #fff;
+  }
+  .nav-tabs .nav-link.active {
+    color: #0d6efd;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+    font-weight: bold;
+  }
+  .account-container {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .form-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+  .input-with-icon {
+    position: relative;
+  }
+  .input-with-icon i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+  }
+  .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+  .is-invalid {
+    border-color: #dc3545 !important;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-5" style="max-width:600px">
-  <h2 class="mb-4">Mon compte</h2>
-  <div class="mb-4">
-    <strong>Email :</strong> {{ user.email }}
-  </div>
-  <hr>
-  <h4>Modifier mon mot de passe</h4>
-  <form method="post" class="row g-3">
-    {% csrf_token %}
-    {{ pwd_form.non_field_errors }}
-    {% for field in pwd_form %}
-      <div class="col-12">
-        <label class="form-label">{{ field.label }}</label>
-        {{ field|add_class:"form-control" }}
-        {% for e in field.errors %}<div class="text-danger">{{ e }}</div>{% endfor %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="account-container p-4">
+        <h2 class="text-center mb-4">Mon compte</h2>
+        
+        <!-- Informations utilisateur -->
+        <div class="card mb-4 border-0 bg-light">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h5 class="card-title">{{ user.prenom }} {{ user.nom }}</h5>
+                <p class="card-text text-muted mb-0">{{ user.email }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Onglets -->
+        <ul class="nav nav-tabs mb-4" id="accountTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link {% if form_type == 'profil' %}active{% endif %}" 
+                    id="profile-tab" 
+                    data-bs-toggle="tab" 
+                    data-bs-target="#profile-tab-pane" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="profile-tab-pane" 
+                    aria-selected="{% if form_type == 'profil' %}true{% else %}false{% endif %}">
+              <i class="bi bi-person-vcard me-2"></i>Mes informations
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link {% if form_type == 'password' %}active{% endif %}" 
+                    id="password-tab" 
+                    data-bs-toggle="tab" 
+                    data-bs-target="#password-tab-pane" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="password-tab-pane" 
+                    aria-selected="{% if form_type == 'password' %}true{% else %}false{% endif %}">
+              <i class="bi bi-key me-2"></i>Changer de mot de passe
+            </button>
+          </li>
+        </ul>
+        
+        <!-- Contenu des onglets -->
+        <div class="tab-content" id="accountTabsContent">
+          <!-- Onglet Profil -->
+          <div class="tab-pane fade {% if form_type == 'profil' %}show active{% endif %}" 
+               id="profile-tab-pane" 
+               role="tabpanel" 
+               aria-labelledby="profile-tab" 
+               tabindex="0">
+            <form method="post" class="needs-validation" novalidate>
+              {% csrf_token %}
+              <input type="hidden" name="form_type" value="profil">
+              
+              <!-- Champ Prénom -->
+              <div class="mb-3">
+                <label for="{{ profile_form.prenom.id_for_label }}" class="form-label">{{ profile_form.prenom.label }}</label>
+                <div class="input-with-icon">
+                  {{ profile_form.prenom }}
+                  <i class="bi bi-person"></i>
+                </div>
+                {% if profile_form.prenom.errors %}
+                  {% for error in profile_form.prenom.errors %}
+                    <div class="form-error">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+              
+              <!-- Champ Nom -->
+              <div class="mb-3">
+                <label for="{{ profile_form.nom.id_for_label }}" class="form-label">{{ profile_form.nom.label }}</label>
+                <div class="input-with-icon">
+                  {{ profile_form.nom }}
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                {% if profile_form.nom.errors %}
+                  {% for error in profile_form.nom.errors %}
+                    <div class="form-error">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+              
+              <!-- Champ Email -->
+              <div class="mb-3">
+                <label for="{{ profile_form.email.id_for_label }}" class="form-label">{{ profile_form.email.label }}</label>
+                <div class="input-with-icon">
+                  {{ profile_form.email }}
+                  <i class="bi bi-envelope"></i>
+                </div>
+                {% if profile_form.email.errors %}
+                  {% for error in profile_form.email.errors %}
+                    <div class="form-error">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+              
+              <!-- Bouton de soumission -->
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-check-circle me-2"></i>Enregistrer les modifications
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <!-- Onglet Mot de passe -->
+          <div class="tab-pane fade {% if form_type == 'password' %}show active{% endif %}" 
+               id="password-tab-pane" 
+               role="tabpanel" 
+               aria-labelledby="password-tab" 
+               tabindex="0">
+            <form method="post" class="needs-validation" novalidate>
+              {% csrf_token %}
+              <input type="hidden" name="form_type" value="password">
+              
+              <!-- Erreurs non liées à un champ -->
+              {% if password_form.non_field_errors %}
+                <div class="alert alert-danger">
+                  {% for error in password_form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              
+              <!-- Mot de passe actuel -->
+              <div class="mb-3">
+                <label for="{{ password_form.old_password.id_for_label }}" class="form-label">{{ password_form.old_password.label }}</label>
+                <div class="input-with-icon">
+                  {{ password_form.old_password }}
+                  <i class="bi bi-lock"></i>
+                </div>
+                {% if password_form.old_password.errors %}
+                  {% for error in password_form.old_password.errors %}
+                    <div class="form-error">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+              
+              <!-- Nouveau mot de passe -->
+              <div class="mb-3">
+                <label for="{{ password_form.new_password1.id_for_label }}" class="form-label">{{ password_form.new_password1.label }}</label>
+                <div class="input-with-icon">
+                  {{ password_form.new_password1 }}
+                  <i class="bi bi-lock-fill"></i>
+                </div>
+                {% if password_form.new_password1.errors %}
+                  {% for error in password_form.new_password1.errors %}
+                    <div class="form-error">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+                <small class="form-text text-muted">
+                  <i class="bi bi-info-circle me-1"></i>Le mot de passe doit contenir au moins 8 caractères, incluant des lettres et des chiffres.
+                </small>
+              </div>
+              
+              <!-- Confirmation du nouveau mot de passe -->
+              <div class="mb-3">
+                <label for="{{ password_form.new_password2.id_for_label }}" class="form-label">{{ password_form.new_password2.label }}</label>
+                <div class="input-with-icon">
+                  {{ password_form.new_password2 }}
+                  <i class="bi bi-lock-fill"></i>
+                </div>
+                {% if password_form.new_password2.errors %}
+                  {% for error in password_form.new_password2.errors %}
+                    <div class="form-error">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+              
+              <!-- Bouton de soumission -->
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-shield-lock me-2"></i>Mettre à jour le mot de passe
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Autres liens utiles -->
+        <div class="mt-4 text-center">
+          <a href="{% url 'mes_adresses' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-geo-alt me-2"></i>Gérer mes adresses
+          </a>
+          <a href="{% url 'historique_commandes' %}" class="btn btn-outline-secondary ms-2">
+            <i class="bi bi-clock-history me-2"></i>Historique des commandes
+          </a>
+        </div>
       </div>
-    {% endfor %}
-    <div class="col-12 text-center mt-3">
-      <button class="btn btn-success">Enregistrer</button>
     </div>
-  </form>
+  </div>
 </div>
+
+<!-- Script pour activer les onglets -->
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Activer la validation Bootstrap
+    const forms = document.querySelectorAll('.needs-validation');
+    
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  });
+</script>
+{% endblock %}
 {% endblock %} 

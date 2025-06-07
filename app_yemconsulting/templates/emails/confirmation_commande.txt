@@ -3,19 +3,30 @@ Bonjour {{ utilisateur.nom }},
 Nous avons bien reçu votre commande n° {{ commande.id }} du {{ commande.date_commande|date:"d/m/Y" }}.
 
 Adresse de livraison :
-{{ utilisateur.prenom }} {{ utilisateur.nom }}
-{{ utilisateur.adresse }}{% if utilisateur.complement_adresse %}, {{ utilisateur.complement_adresse }}{% endif %}
-{{ utilisateur.code_postal }} {{ utilisateur.ville }}
-{{ utilisateur.pays }}
+{{ adresse_livraison.prenom }} {{ adresse_livraison.nom }}
+{{ adresse_livraison.adresse }}{% if adresse_livraison.complement %}
+{{ adresse_livraison.complement }}{% endif %}
+{{ adresse_livraison.code_postal }} {{ adresse_livraison.ville }}
+{{ adresse_livraison.pays }}
+
+Adresse de facturation :
+{{ adresse_facturation.prenom }} {{ adresse_facturation.nom }}
+{{ adresse_facturation.adresse }}{% if adresse_facturation.complement %}
+{{ adresse_facturation.complement }}{% endif %}
+{{ adresse_facturation.code_postal }} {{ adresse_facturation.ville }}
+{{ adresse_facturation.pays }}
 
 Contenu :
-{% for ligne in lignes_panier %}
-- {{ ligne.quantite }} x {{ ligne.produit.nom }} – {{ ligne.produit.prix }} €
+{% for ligne in lignes %}
+- {{ ligne.quantite }} x {{ ligne.nom }} – {{ ligne.prix }} €
 {% endfor %}
 
-Total TTC : {{ total_ttc }} €
+Total HT : {{ total_ht|floatformat:2 }} €
+TVA (21%) : {{ total_tva|floatformat:2 }} €
+Total TTC : {{ total_ttc|floatformat:2 }} €
+Livraison : {% if livraison_prix == 0 %}Gratuite{% else %}{{ livraison_prix|floatformat:2 }} €{% endif %}
 
-Vous recevrez un courriel dès l’expédition.
+Vous recevrez un courriel dès l'expédition.
 Merci pour votre confiance !
 
-L’équipe YEMCONSULTING
+L'équipe YEMCONSULTING

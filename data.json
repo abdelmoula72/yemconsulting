@@ -1,0 +1,1404 @@
+[
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2025-05-07T18:02:41.168Z",
+    "user": 2,
+    "content_type": 8,
+    "object_id": "2",
+    "object_repr": "Panier de Moulila",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2025-05-07T18:05:50.055Z",
+    "user": 2,
+    "content_type": 3,
+    "object_id": "1",
+    "object_repr": "Stock manager",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2025-05-07T19:31:01.848Z",
+    "user": 2,
+    "content_type": 7,
+    "object_id": "62",
+    "object_repr": "Armement",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2025-05-07T19:32:10.705Z",
+    "user": 2,
+    "content_type": 7,
+    "object_id": "63",
+    "object_repr": "carte graphique armement",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2025-05-07T19:33:16.533Z",
+    "user": 2,
+    "content_type": 7,
+    "object_id": "63",
+    "object_repr": "carte graphique armement",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2025-05-07T19:33:16.533Z",
+    "user": 2,
+    "content_type": 7,
+    "object_id": "62",
+    "object_repr": "Armement",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2025-05-07T20:17:07.373Z",
+    "user": 2,
+    "content_type": 6,
+    "object_id": "1",
+    "object_repr": "mohyaacoub876@gmail.com",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Groups\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2025-05-07T20:17:59.157Z",
+    "user": 2,
+    "content_type": 6,
+    "object_id": "1",
+    "object_repr": "mohyaacoub876@gmail.com",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is admin\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2025-05-07T22:03:37.685Z",
+    "user": 1,
+    "content_type": 11,
+    "object_id": "2377",
+    "object_repr": "Brother ADS-1300",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Description\", \"Prix\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2025-05-07T22:04:38.624Z",
+    "user": 2,
+    "content_type": 7,
+    "object_id": "59",
+    "object_repr": "Scanners",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Nom\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 11,
+  "fields": {
+    "action_time": "2025-05-14T13:35:17.628Z",
+    "user": 2,
+    "content_type": 11,
+    "object_id": "2392",
+    "object_repr": "lolo",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 12,
+  "fields": {
+    "action_time": "2025-05-14T13:41:25.095Z",
+    "user": 2,
+    "content_type": 11,
+    "object_id": "2393",
+    "object_repr": "kokokoko",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 13,
+  "fields": {
+    "action_time": "2025-05-14T13:42:15.687Z",
+    "user": 2,
+    "content_type": 11,
+    "object_id": "2393",
+    "object_repr": "kokokoko",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 1,
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": 1,
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 2,
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": 1,
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 3,
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": 1,
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 4,
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": 1,
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 5,
+  "fields": {
+    "name": "Can add permission",
+    "content_type": 2,
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 6,
+  "fields": {
+    "name": "Can change permission",
+    "content_type": 2,
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 7,
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": 2,
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 8,
+  "fields": {
+    "name": "Can view permission",
+    "content_type": 2,
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 9,
+  "fields": {
+    "name": "Can add group",
+    "content_type": 3,
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 10,
+  "fields": {
+    "name": "Can change group",
+    "content_type": 3,
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 11,
+  "fields": {
+    "name": "Can delete group",
+    "content_type": 3,
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 12,
+  "fields": {
+    "name": "Can view group",
+    "content_type": 3,
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 13,
+  "fields": {
+    "name": "Can add content type",
+    "content_type": 4,
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 14,
+  "fields": {
+    "name": "Can change content type",
+    "content_type": 4,
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 15,
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": 4,
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 16,
+  "fields": {
+    "name": "Can view content type",
+    "content_type": 4,
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 17,
+  "fields": {
+    "name": "Can add session",
+    "content_type": 5,
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 18,
+  "fields": {
+    "name": "Can change session",
+    "content_type": 5,
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 19,
+  "fields": {
+    "name": "Can delete session",
+    "content_type": 5,
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 20,
+  "fields": {
+    "name": "Can view session",
+    "content_type": 5,
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 21,
+  "fields": {
+    "name": "Can add utilisateur",
+    "content_type": 6,
+    "codename": "add_utilisateur"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 22,
+  "fields": {
+    "name": "Can change utilisateur",
+    "content_type": 6,
+    "codename": "change_utilisateur"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 23,
+  "fields": {
+    "name": "Can delete utilisateur",
+    "content_type": 6,
+    "codename": "delete_utilisateur"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 24,
+  "fields": {
+    "name": "Can view utilisateur",
+    "content_type": 6,
+    "codename": "view_utilisateur"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 25,
+  "fields": {
+    "name": "Can add categorie",
+    "content_type": 7,
+    "codename": "add_categorie"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 26,
+  "fields": {
+    "name": "Can change categorie",
+    "content_type": 7,
+    "codename": "change_categorie"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 27,
+  "fields": {
+    "name": "Can delete categorie",
+    "content_type": 7,
+    "codename": "delete_categorie"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 28,
+  "fields": {
+    "name": "Can view categorie",
+    "content_type": 7,
+    "codename": "view_categorie"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 29,
+  "fields": {
+    "name": "Can add panier",
+    "content_type": 8,
+    "codename": "add_panier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 30,
+  "fields": {
+    "name": "Can change panier",
+    "content_type": 8,
+    "codename": "change_panier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 31,
+  "fields": {
+    "name": "Can delete panier",
+    "content_type": 8,
+    "codename": "delete_panier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 32,
+  "fields": {
+    "name": "Can view panier",
+    "content_type": 8,
+    "codename": "view_panier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 33,
+  "fields": {
+    "name": "Can add ligne panier",
+    "content_type": 9,
+    "codename": "add_lignepanier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 34,
+  "fields": {
+    "name": "Can change ligne panier",
+    "content_type": 9,
+    "codename": "change_lignepanier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 35,
+  "fields": {
+    "name": "Can delete ligne panier",
+    "content_type": 9,
+    "codename": "delete_lignepanier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 36,
+  "fields": {
+    "name": "Can view ligne panier",
+    "content_type": 9,
+    "codename": "view_lignepanier"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 37,
+  "fields": {
+    "name": "Can add commande",
+    "content_type": 10,
+    "codename": "add_commande"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 38,
+  "fields": {
+    "name": "Can change commande",
+    "content_type": 10,
+    "codename": "change_commande"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 39,
+  "fields": {
+    "name": "Can delete commande",
+    "content_type": 10,
+    "codename": "delete_commande"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 40,
+  "fields": {
+    "name": "Can view commande",
+    "content_type": 10,
+    "codename": "view_commande"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 41,
+  "fields": {
+    "name": "Can add produit",
+    "content_type": 11,
+    "codename": "add_produit"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 42,
+  "fields": {
+    "name": "Can change produit",
+    "content_type": 11,
+    "codename": "change_produit"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 43,
+  "fields": {
+    "name": "Can delete produit",
+    "content_type": 11,
+    "codename": "delete_produit"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 44,
+  "fields": {
+    "name": "Can view produit",
+    "content_type": 11,
+    "codename": "view_produit"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 45,
+  "fields": {
+    "name": "Can add adresse",
+    "content_type": 12,
+    "codename": "add_adresse"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 46,
+  "fields": {
+    "name": "Can change adresse",
+    "content_type": 12,
+    "codename": "change_adresse"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 47,
+  "fields": {
+    "name": "Can delete adresse",
+    "content_type": 12,
+    "codename": "delete_adresse"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 48,
+  "fields": {
+    "name": "Can view adresse",
+    "content_type": 12,
+    "codename": "view_adresse"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 49,
+  "fields": {
+    "name": "Can add ligne commande",
+    "content_type": 13,
+    "codename": "add_lignecommande"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 50,
+  "fields": {
+    "name": "Can change ligne commande",
+    "content_type": 13,
+    "codename": "change_lignecommande"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 51,
+  "fields": {
+    "name": "Can delete ligne commande",
+    "content_type": 13,
+    "codename": "delete_lignecommande"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 52,
+  "fields": {
+    "name": "Can view ligne commande",
+    "content_type": 13,
+    "codename": "view_lignecommande"
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 1,
+  "fields": {
+    "name": "Stock manager",
+    "permissions": [
+      42
+    ]
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 1,
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 2,
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 3,
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 4,
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 5,
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 6,
+  "fields": {
+    "app_label": "app_yemconsulting",
+    "model": "utilisateur"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 7,
+  "fields": {
+    "app_label": "app_yemconsulting",
+    "model": "categorie"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 8,
+  "fields": {
+    "app_label": "app_yemconsulting",
+    "model": "panier"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 9,
+  "fields": {
+    "app_label": "app_yemconsulting",
+    "model": "lignepanier"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 10,
+  "fields": {
+    "app_label": "app_yemconsulting",
+    "model": "commande"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 11,
+  "fields": {
+    "app_label": "app_yemconsulting",
+    "model": "produit"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 12,
+  "fields": {
+    "app_label": "app_yemconsulting",
+    "model": "adresse"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 13,
+  "fields": {
+    "app_label": "app_yemconsulting",
+    "model": "lignecommande"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "5wp4xy0cpkon18jbl7yz890809i2d1g0",
+  "fields": {
+    "session_data": ".eJxVj02OwjAMRu-SNaqatCmEJXvOEDmx0waqBPIzGmk0dydFSMDO8vv8bP8xDbUsumZK2iM7Ms52nz0D9kphA3iBMMfOxlCSN90W6V40d-eItJ5e2S_BAnlp070iHHmveho4dxOhk2jFwMXeml4BSuGEQYUA1tAEfJQTkhrkCNNBOgFNWuI8r6Qd2FITFB9Du5hC8fdK7FhSpR1b_U8CnxvKtJItbTP93hLl3ASAW0H6HXp-LNn_A5WSWqw:1uI6GD:5BB-UWIl3SyOgDiPiqCOvX4qNGuEXpqPNTWTKGDvvXI",
+    "expire_date": "2025-06-05T13:47:01.911Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "69m1ye502u6szpqonoeaybb3y1vj8y05",
+  "fields": {
+    "session_data": ".eJxVjk0OwiAQhe_C2jSFliou3XuGZmCGFm0gwuDGeHdp4kK373t_LzFD5XWuhfIcUJyFFIdfzYK7U9wB3iAuqXMpcg622y3dl5bumpC2y9f7V7BCWVu6N4Sj7E1Pg5R-IvQanRqkOjrbG0CtvLJoEMBZmkCOekIygx5hOmmvoJVyWpaNZg-OawYOKbbHFDk8Kokz50oHsYVnhlAaKrSR47ZcGCJCRvH-AM1DUYc:1uLOW6:plwO0695evkHrh9-xWVCCb6EM0XfZJ8e2MN5zmHxij8",
+    "expire_date": "2025-06-14T15:53:02.532Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "c26v8ih2xmr8cic1bqkt60tr9huwvt1m",
+  "fields": {
+    "session_data": ".eJxVjssOwiAQRf-FddMUWqq4dO83NAMztGgDysOYGP9dmnSh23vu680mKHmZSqI4OWQnxlnzq2kwN_IbwCv4ObQm-BydbjdLu9PUXgLSet69fwULpKWmO0U48E511HNuR0Ir0Yiei4PRnQKUwgqNCgGMphH4IEck1csBxqO0AmppDvO80mTB5BIhu-DrY_LZPQqxU46FGra6ZwSXKkq0ksl1mV73SCmxzxd8BlFA:1uM5Ua:M1e0TB1rFBwiW_4dttcN4Uh89wWKnhK7zhQQMKk2DOI",
+    "expire_date": "2025-06-16T13:46:20.312Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "dx5uwjn86rk1v4els13y6l298intm90u",
+  "fields": {
+    "session_data": ".eJxVjMEOwiAQBf-FsyG0xQIevfsNZIFdizZgoDUmxn-XJj3o9c28eTML6zLZtWKxMbAT69nhd3Pg75g2EG6Qrpn7nJYSHd8UvtPKLzngfN7dv8AEdWpv0yEp0r2RRNg5bYgGEmE0zmn0OAAcUQSQAKRV46PsBUlQDkaHWqgWneOzQKw52Yoz-qVV8fUoWCv7fAEwmUPi:1uEoKi:pYO6hgjBX31F7wd4QgM1-qVH1XZDBp8T_2N1UUt3MsQ",
+    "expire_date": "2025-05-27T12:02:04.948Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "jyw4bh43q9idf59pu5fyca3p6670c3jr",
+  "fields": {
+    "session_data": ".eJxVjcEOgjAQRP-lZ0OAAgWO3v2GZre7QpW0sd16Mf67kHjQ68ybNy9lochqS-ZkPalZDer0myG4O4ejoBuEJVYuBkkeqwOpvm2uLpF4O3_ZP8EKed3XpnMTYc91M1yxN0QTYN05RHSj0aZFHBHZgDYD9Ia1bsh1YzfVdTvqpodduvlnAp9jsJk3drJbs0AgSMelxGXZ2F7BSUkgfsc8cRD_KKxmSYXfH7K5UTQ:1uHOgU:Utn7nr9i9l75c4RLiT-2aplfAtE_eACeDTseytuaxCI",
+    "expire_date": "2025-06-03T15:15:14.118Z"
+  }
+},
+{
+  "model": "app_yemconsulting.utilisateur",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$jMxzn5YGc54ldeyNU99MMQ$h3V7Se5nLPn84G7tJ4EldSu5/N2aUKNDvFGyHp9cOMU=",
+    "last_login": "2025-05-31T23:19:18.528Z",
+    "is_superuser": true,
+    "prenom": "abdelmoula",
+    "nom": "El amri",
+    "email": "mohyaacoub876@gmail.com",
+    "is_admin": true,
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "app_yemconsulting.utilisateur",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$CMtGR18MVyi8ARFlnE6rCm$jUt7GtKNBPfzEcov9DBaMnD2XYrAagF6UF4NaTkTM9U=",
+    "last_login": "2025-05-13T11:51:57.239Z",
+    "is_superuser": true,
+    "prenom": "Stephane",
+    "nom": "Moulila",
+    "email": "laurentmanier5453@gmail.com",
+    "is_admin": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "app_yemconsulting.utilisateur",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$XljcvBVetVgMaE5IQRk3tx$9fjNd4tboqW1rnTJX9XfPPbs231ByNmyl2Vqe/OlnzU=",
+    "last_login": "2025-05-07T21:53:49.877Z",
+    "is_superuser": false,
+    "prenom": "Romain",
+    "nom": "debrouwer",
+    "email": "romdebrouwer@gmail.com",
+    "is_admin": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "app_yemconsulting.utilisateur",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$C1AxFzbbYmZEszWOfCO97V$gfr81pmJeggSgEHyK91xNuKkgQpoE5IJ9d4X9Y2u6j0=",
+    "last_login": "2025-05-07T21:59:26.124Z",
+    "is_superuser": false,
+    "prenom": "jean",
+    "nom": "messiha",
+    "email": "jean@messiha.com",
+    "is_admin": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "app_yemconsulting.utilisateur",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$DgWDLcU4EsCG1uN3ewO7jm$PsUmnr6IaDT9TzDLSsj3ryskfa1Fl48tCNvC3E+oNgA=",
+    "last_login": "2025-05-07T22:01:12.059Z",
+    "is_superuser": false,
+    "prenom": "lolo",
+    "nom": "momo",
+    "email": "lolo@momo.com",
+    "is_admin": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "app_yemconsulting.utilisateur",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$NzQyR7b5DmPzLdGCMImCA8$yCRqxhLtCDv5q2tmfiz7Hn3bFEyDpHB+lAZ1blgWEpM=",
+    "last_login": "2025-05-22T13:56:23.461Z",
+    "is_superuser": false,
+    "prenom": "jean",
+    "nom": "dupont",
+    "email": "abdel_du1030@hotmail.com",
+    "is_admin": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "app_yemconsulting.utilisateur",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$UqtVLy9hkS3UzKv6ZIU0BZ$mYjp/VQ/0yFrmZwExJ1/3DadOiTYNMw8z7jJwoRpYxU=",
+    "last_login": "2025-05-20T11:00:28.413Z",
+    "is_superuser": false,
+    "prenom": "loloooo",
+    "nom": "momo",
+    "email": "lolo@momop.com",
+    "is_admin": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 2,
+  "fields": {
+    "utilisateur": 1,
+    "prenom": "abdelmoula",
+    "nom": "El amri",
+    "rue": "Rue des cerisiers 25",
+    "complement": "bte 5",
+    "code_postal": "1171",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 4,
+  "fields": {
+    "utilisateur": 1,
+    "prenom": "Jean",
+    "nom": "Valjean",
+    "rue": "Poste 21",
+    "complement": "",
+    "code_postal": "1000",
+    "ville": "Bxl",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 5,
+  "fields": {
+    "utilisateur": 1,
+    "prenom": "Nesrine",
+    "nom": "Dupont",
+    "rue": "Rue des requins 50",
+    "complement": null,
+    "code_postal": "2000",
+    "ville": "brugges",
+    "pays": "blegqieu",
+    "is_default_shipping": true,
+    "is_default_billing": true,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 6,
+  "fields": {
+    "utilisateur": 1,
+    "prenom": "jean",
+    "nom": "jojoj",
+    "rue": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab",
+    "complement": "ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo",
+    "code_postal": "1000",
+    "ville": "bxl",
+    "pays": "bel",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": true
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 7,
+  "fields": {
+    "utilisateur": 1,
+    "prenom": "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkknjhkhu",
+    "nom": "jkjkkkkbggkhkhgkhgkhgkkhgkh",
+    "rue": "gjhhjhkjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj",
+    "complement": "",
+    "code_postal": "1020",
+    "ville": "jjnkjnkjnkjnj",
+    "pays": "njnknkjbkjb",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 8,
+  "fields": {
+    "utilisateur": 1,
+    "prenom": "Saida",
+    "nom": "El ouasghiri",
+    "rue": "Rue Ruysdael 60",
+    "complement": "",
+    "code_postal": "1030",
+    "ville": "Mons",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 9,
+  "fields": {
+    "utilisateur": 1,
+    "prenom": "Abdelmoula",
+    "nom": "El Amri",
+    "rue": "Rue des chevaux 50",
+    "complement": "bte 10",
+    "code_postal": "1000",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 10,
+  "fields": {
+    "utilisateur": 1,
+    "prenom": "Test",
+    "nom": "Labo",
+    "rue": "Boucher",
+    "complement": "212",
+    "code_postal": "1000",
+    "ville": "AAAAA",
+    "pays": "JPZAIEO",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": true
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 11,
+  "fields": {
+    "utilisateur": 1,
+    "prenom": "Labo",
+    "nom": "Test",
+    "rue": "Rue des patissiers 54",
+    "complement": "",
+    "code_postal": "8787",
+    "ville": "Binche",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 12,
+  "fields": {
+    "utilisateur": 2,
+    "prenom": "Jean",
+    "nom": "Dupont",
+    "rue": "Rue et numéro",
+    "complement": "Complément",
+    "code_postal": "1000",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 13,
+  "fields": {
+    "utilisateur": 2,
+    "prenom": "Spo",
+    "nom": "POI",
+    "rue": "Juiopo",
+    "complement": "",
+    "code_postal": "1000",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 14,
+  "fields": {
+    "utilisateur": 2,
+    "prenom": "El Maqrini",
+    "nom": "Issam",
+    "rue": "Rue des data ingenieurs 25",
+    "complement": "bte 6",
+    "code_postal": "1080",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": true,
+    "is_default_billing": true,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 15,
+  "fields": {
+    "utilisateur": 6,
+    "prenom": "jean",
+    "nom": "paul",
+    "rue": "rue des chats 12",
+    "complement": "bte 6",
+    "code_postal": "1040",
+    "ville": "bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 16,
+  "fields": {
+    "utilisateur": 6,
+    "prenom": "goi",
+    "nom": "younes",
+    "rue": "rue des soupes 14",
+    "complement": "bte 4",
+    "code_postal": "1080",
+    "ville": "bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 18,
+  "fields": {
+    "utilisateur": 6,
+    "prenom": "marie",
+    "nom": "curie",
+    "rue": "rue des champs elysées 25",
+    "complement": "bte 30",
+    "code_postal": "1020",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 20,
+  "fields": {
+    "utilisateur": 6,
+    "prenom": "jean",
+    "nom": "Paul",
+    "rue": "rue des singes 25",
+    "complement": "bte 6",
+    "code_postal": "1140",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 22,
+  "fields": {
+    "utilisateur": 6,
+    "prenom": "luc",
+    "nom": "besson",
+    "rue": "rue des oursons 21",
+    "complement": "bte  7",
+    "code_postal": "1160",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": true
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 23,
+  "fields": {
+    "utilisateur": 6,
+    "prenom": "bernard",
+    "nom": "sanchez",
+    "rue": "rue des moineaux 32",
+    "complement": "bte 7",
+    "code_postal": "1070",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": true,
+    "is_default_billing": true,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.adresse",
+  "pk": 24,
+  "fields": {
+    "utilisateur": 6,
+    "prenom": "Denzel",
+    "nom": "Washinton",
+    "rue": "Rue des maçons 41",
+    "complement": "bte 5",
+    "code_postal": "1140",
+    "ville": "Bruxelles",
+    "pays": "Belgique",
+    "is_default_shipping": false,
+    "is_default_billing": false,
+    "is_deleted": false
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 40,
+  "fields": {
+    "nom": "Ordinateurs et écrans",
+    "parent": null
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 41,
+  "fields": {
+    "nom": "PC Portables",
+    "parent": 40
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 42,
+  "fields": {
+    "nom": "Ordinateurs de bureau",
+    "parent": 40
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 43,
+  "fields": {
+    "nom": "Ecrans PC",
+    "parent": 40
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 44,
+  "fields": {
+    "nom": "Composants",
+    "parent": null
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 45,
+  "fields": {
+    "nom": "Processeurs",
+    "parent": 44
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 46,
+  "fields": {
+    "nom": "Cartes graphiques",
+    "parent": 44
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 47,
+  "fields": {
+    "nom": "Cartes Mères",
+    "parent": 44
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 48,
+  "fields": {
+    "nom": "RAM",
+    "parent": 44
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 49,
+  "fields": {
+    "nom": "Disques durs",
+    "parent": 44
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 50,
+  "fields": {
+    "nom": "Périphériques & Accessoires",
+    "parent": null
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 51,
+  "fields": {
+    "nom": "Claviers",
+    "parent": 50
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 52,
+  "fields": {
+    "nom": "Casques audio",
+    "parent": 50
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 53,
+  "fields": {
+    "nom": "Webcams",
+    "parent": 50
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 54,
+  "fields": {
+    "nom": "Souris",
+    "parent": 50
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 55,
+  "fields": {
+    "nom": "Matériel Réseau",
+    "parent": null
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 56,
+  "fields": {
+    "nom": "Routeurs",
+    "parent": 55
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 57,
+  "fields": {
+    "nom": "Switchs",
+    "parent": 55
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 58,
+  "fields": {
+    "nom": "Imprimantes & Scanners",
+    "parent": null
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 59,
+  "fields": {
+    "nom": "Scanners",
+    "parent": 58
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 60,
+  "fields": {
+    "nom": "Imprimantes Lasers",
+    "parent": 58
+  }
+},
+{
+  "model": "app_yemconsulting.categorie",
+  "pk": 61,
+  "fields": {
+    "nom": "Imprimantes Jets d'Encre",
+    "parent": 58
+  }
+},
+{
+  "model": "app_yemconsulting.produit",
+  "pk": 2303,
+  "fields": {
+    "nom": "Acer Nitro 15 ANV15-51-94X1",
+    "description": 

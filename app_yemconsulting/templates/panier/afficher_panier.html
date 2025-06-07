@@ -1,79 +1,321 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load static widget_tweaks %}
+{% load custom_filters %}
+
 {% block title %}Votre panier{% endblock %}
 
+{% block extra_css %}
+<style>
+  .cart-item {
+    transition: all 0.3s ease;
+  }
+  .cart-item:hover {
+    background-color: #f8f9fa;
+  }
+  .quantity-input {
+    max-width: 80px;
+  }
+  .quantity-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .quantity-stepper button {
+    border: none;
+    background: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .quantity-stepper button:hover {
+    background-color: #f0f0f0;
+  }
+
+  .quantity-stepper button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+  }
+
+  .quantity-stepper .value {
+    padding: 0 12px;
+    min-width: 40px;
+    text-align: center;
+    user-select: none;
+  }
+
+  .quantity-stepper .trash-icon {
+    color: #dc3545;
+  }
+
+  .quantity-stepper .add-icon {
+    color: #198754;
+  }
+  .product-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .cart-summary {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .btn-update {
+    transition: all 0.2s ease;
+  }
+  .btn-update:hover {
+    transform: scale(1.05);
+  }
+  .empty-cart {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .empty-cart i {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 1rem;
+  }
+  .stock-info {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 0.2rem;
+  }
+  .stock-warning {
+    color: #dc3545;
+  }
+  .empty-cart-btn {
+    transition: all 0.3s ease;
+  }
+  .empty-cart-btn:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+  }
+  .cart-footer {
+    padding: 15px;
+    text-align: right;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    background-color: #f9f9f9;
+    border-radius: 0 0 0.25rem 0.25rem;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-  <h1 class="text-center mb-4">Votre panier</h1>
-
+<div class="container py-5">
   {% if messages %}
-    <div class="alert-messages">
+    <div class="alert-messages mb-4">
       {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
       {% endfor %}
     </div>
   {% endif %}
 
-  {% if lignes_commande %}
-    <table class="table table-bordered align-middle">
-      <thead class="table-dark">
-        <tr>
-          <th>Produit</th>
-          <th>Prix&nbsp;TTC</th>
-          <th>Quantité</th>
-          <th>Sous-total</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for l in lignes_commande %}
-        <tr>
-          <!-- ► Miniature + nom --------------------------------------------- -->
-          <td>
-            <div class="d-flex align-items-center gap-2">
-              <img src="{{ l.img_url }}" alt="" style="width:64px;height:auto;border:1px solid #ddd;border-radius:4px">
-              <span>{{ l.nom }}</span>
-            </div>
-          </td>
-
-          <td>{{ l.prix }} €</td>
-
-          <!-- ► Formulaire quantité ----------------------------------------- -->
-          <td>
-            <form action="{% url 'mettre_a_jour_quantite' l.id %}" method="post">
-              {% csrf_token %}
-              <input type="number" name="quantite" value="{{ l.quantite }}" min="1"
-                     class="form-control form-control-sm">
-              <button class="btn btn-sm btn-success mt-1">MAJ</button>
-            </form>
-          </td>
-
-          <td>{{ l.sous_total }} €</td>
-
-          <!-- ► Suppression -------------------------------------------------- -->
-          <td>
-            <form action="{% url 'supprimer_article' l.id %}" method="post"
-                  onsubmit="return confirm('Supprimer cet article ?');">
-              {% csrf_token %}
-              <button class="btn btn-sm btn-danger">Supprimer</button>
-            </form>
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-
-    <div class="d-flex justify-content-between">
-      <p class="fs-5"><strong>Total : {{ total }} €</strong></p>
-      <div class="d-flex gap-3">
-        <a href="{% url 'liste_produits' %}" class="btn btn-secondary">Retour aux produits</a>
-        <a href="{% url 'confirmer_panier' %}" class="btn btn-primary">Commander</a>
+  <div class="row">
+    {% if lignes_commande %}
+      <!-- Panier avec articles -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-bottom-0 py-3">
+            <h4 class="mb-0">Votre panier ({{ total_articles }} article{% if total_articles > 1 %}s{% endif %})</h4>
+          </div>
+          <div class="card-body p-0">
+            {% for l in lignes_commande %}
+              <div class="cart-item p-3 border-bottom">
+                <div class="row align-items-center">
+                  <!-- Image -->
+                  <div class="col-auto">
+                    <img src="{{ l.img_url }}" alt="{{ l.nom }}" class="product-image">
+                  </div>
+                  
+                  <!-- Nom et Prix -->
+                  <div class="col">
+                    <h5 class="mb-1">{{ l.nom }}</h5>
+                    <p class="text-muted mb-0">Prix unitaire : {{ l.prix }} €</p>
+                    <p class="stock-info {% if l.quantite >= l.stock %}stock-warning{% endif %}">
+                      Stock disponible : {{ l.stock }}
+                    </p>
+                  </div>
+                  
+                  <!-- Quantité -->
+                  <div class="col-auto">
+                    <form action="{% url 'mettre_a_jour_quantite' l.id %}" method="post" class="d-flex align-items-center quantity-form">
+                      {% csrf_token %}
+                      <div class="quantity-stepper">
+                        <button type="button" class="decrement-btn" {% if l.quantite == 1 %}data-action="delete"{% endif %}>
+                          {% if l.quantite == 1 %}
+                            <i class="bi bi-trash trash-icon"></i>
+                          {% else %}
+                            <i class="bi bi-dash"></i>
+                          {% endif %}
+                        </button>
+                        <span class="value">{{ l.quantite }}</span>
+                        <button type="button" class="increment-btn" {% if l.quantite >= l.stock %}disabled{% endif %} data-max-stock="{{ l.stock }}">
+                          <i class="bi bi-plus add-icon"></i>
+                        </button>
+                        <input type="hidden" name="quantite" value="{{ l.quantite }}">
+                      </div>
+                    </form>
+                  </div>
+                  
+                  <!-- Sous-total -->
+                  <div class="col-auto text-end">
+                    <p class="fw-bold mb-0">{{ l.sous_total }} €</p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <!-- Bouton pour vider le panier -->
+          <div class="cart-footer">
+            <a href="{% url 'vider_panier' %}" class="btn btn-outline-danger empty-cart-btn" onclick="return confirm('Êtes-vous sûr de vouloir vider votre panier ?')">
+              <i class="bi bi-trash me-2"></i>Vider le panier
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
 
-  {% else %}
-    <p class="text-center text-muted">Votre panier est vide.</p>
-  {% endif %}
+      <!-- Résumé de la commande -->
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="cart-summary">
+          <h5 class="mb-4">Résumé de la commande</h5>
+          
+          <div class="d-flex justify-content-between mb-2">
+            <span>Prix HT</span>
+            <span>{{ total_ht|floatformat:2 }} €</span>
+          </div>
+          
+          <div class="d-flex justify-content-between mb-2">
+            <span>TVA (21%)</span>
+            <span>{{ total_tva|floatformat:2 }} €</span>
+          </div>
+          
+          <hr>
+          
+          <div class="d-flex justify-content-between mb-4">
+            <span class="fw-bold">Total TTC</span>
+            <span class="fw-bold">{{ total|floatformat:2 }} €</span>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <a href="{% url 'confirmer_panier' %}" class="btn btn-primary">
+              Passer la commande
+              <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+            <a href="{% url 'liste_produits' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>
+              Continuer mes achats
+            </a>
+          </div>
+        </div>
+      </div>
+
+    {% else %}
+      <!-- Panier vide -->
+      <div class="col-12">
+        <div class="empty-cart text-center">
+          <i class="bi bi-cart-x"></i>
+          <h3>Votre panier est vide</h3>
+          <p class="text-muted mb-4">Découvrez nos produits et commencez votre shopping !</p>
+          <a href="{% url 'liste_produits' %}" class="btn btn-primary">
+            <i class="bi bi-shop me-2"></i>
+            Voir nos produits
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Gestion des quantités
+  document.querySelectorAll('.quantity-stepper').forEach(stepper => {
+    const form = stepper.closest('form');
+    const decrementBtn = stepper.querySelector('.decrement-btn');
+    const incrementBtn = stepper.querySelector('.increment-btn');
+    const valueSpan = stepper.querySelector('.value');
+    const quantityInput = stepper.querySelector('input[name="quantite"]');
+    const maxStock = incrementBtn.dataset.maxStock ? parseInt(incrementBtn.dataset.maxStock) : 999;
+
+    function updateQuantity(newValue) {
+      // Vérifie si la nouvelle valeur est valide (entre 1 et le stock disponible)
+      if (newValue < 1) {
+        newValue = 1;
+      } else if (newValue > maxStock) {
+        newValue = maxStock;
+        // Afficher un message d'erreur
+        const cartMessage = document.getElementById('cart-message');
+        if (cartMessage) {
+          cartMessage.textContent = `Quantité maximum atteinte (${maxStock} en stock)`;
+          cartMessage.style.display = 'block';
+          setTimeout(() => { cartMessage.style.display = 'none'; }, 3000);
+        }
+      }
+      
+      // Mettre à jour l'UI
+      valueSpan.textContent = newValue;
+      quantityInput.value = newValue;
+      
+      // Désactiver le bouton + si on atteint le maximum
+      if (newValue >= maxStock) {
+        incrementBtn.disabled = true;
+      } else {
+        incrementBtn.disabled = false;
+      }
+      
+      // Soumettre le formulaire
+      form.submit();
+    }
+
+    decrementBtn.addEventListener('click', function() {
+      const currentValue = parseInt(valueSpan.textContent);
+      if (currentValue === 1) {
+        // Si quantité = 1, on redirige vers la suppression
+        const deleteUrl = "{% url 'supprimer_article' 0 %}".replace('0', form.action.split('/').slice(-2)[0]);
+        if (confirm('Voulez-vous vraiment supprimer cet article ?')) {
+          window.location.href = deleteUrl;
+        }
+      } else {
+        updateQuantity(currentValue - 1);
+      }
+    });
+
+    incrementBtn.addEventListener('click', function() {
+      if (this.disabled) return;
+      
+      const currentValue = parseInt(valueSpan.textContent);
+      updateQuantity(currentValue + 1);
+    });
+  });
+
+  // Animation des boutons
+  const buttons = document.querySelectorAll('.quantity-stepper button:not([disabled])');
+  buttons.forEach(button => {
+    button.addEventListener('click', function() {
+      if (!this.disabled) {
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1)';
+        }, 100);
+      }
+    });
+  });
+});
+</script>
 {% endblock %}

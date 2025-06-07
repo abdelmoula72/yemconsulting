@@ -127,11 +127,19 @@
     margin-left: 18px;
     min-width: 110px;
   }
+  .ajouter-adresse-btn:hover {
+    background: #f0edff !important;
+    border-color: #5438e2 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(108, 71, 255, 0.15);
+  }
 </style>
 {% endblock %}
 
 {% block extra_js %}
+<!-- Fichier JS externe désactivé pour éviter les conflits 
 <script src="{% static 'js/panier_confirmation.js' %}" defer></script>
+-->
 {% endblock %}
 
 {% block title %}Vérifiez votre commande{% endblock %}
@@ -141,13 +149,41 @@
   <div class="card shadow-sm p-4">
     <h2 class="text-center mb-4">Vérifiez votre commande</h2>
     
-    <!-- Message d'information sur les adresses -->
-    <div class="alert alert-info mb-4" role="alert">
-      <small><i class="bi bi-info-circle-fill me-1"></i> Les adresses sélectionnées ci-dessous seront utilisées uniquement pour cette commande.</small>
-    </div>
-    
     <form method="post" id="confirm-form">
       {% csrf_token %}
+      <!-- Champs cachés pour les adresses -->
+      <input type="hidden" name="adresse_livraison_id" id="adresse_livraison_id" value="{% if adresse_livraison %}{{ adresse_livraison.id }}{% endif %}">
+      <input type="hidden" name="adresse_facturation_id" id="adresse_facturation_id" value="{% if adresse_facturation %}{{ adresse_facturation.id }}{% endif %}">
+
+      <!-- Script principal pour gérer les adresses -->
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          console.log('📌 Script principal chargé - Initialisation');
+          
+          // Capture des données initiales
+          console.log('📊 Valeurs initiales des champs cachés:',  {
+            livraison: document.getElementById('adresse_livraison_id').value,
+            facturation: document.getElementById('adresse_facturation_id').value
+          });
+          
+          // Éléments importants
+          const carteAdresseLivraison = document.getElementById('carteAdresseLivraison');
+          const carteAdresseFacturation = document.getElementById('carteAdresseFacturation');
+          const toggleAdresseFacturation = document.getElementById('toggleAdresseFacturation');
+          
+          // Synchroniser les champs cachés avec les cartes d'adresse
+          if (carteAdresseLivraison) {
+            const adresseId = carteAdresseLivraison.getAttribute('data-adresse-id');
+            if (adresseId) document.getElementById('adresse_livraison_id').value = adresseId;
+          }
+          
+          if (carteAdresseFacturation) {
+            const adresseId = carteAdresseFacturation.getAttribute('data-adresse-id');
+            if (adresseId) document.getElementById('adresse_facturation_id').value = adresseId;
+          }
+        });
+      </script>
+
       <div class="mb-4">
         <table class="table align-middle mb-0">
           <thead class="table-light">
@@ -207,8 +243,12 @@
       </div>
       <div class="mb-4">
         <div class="d-flex justify-content-between">
-          <span>Sous-total :</span>
-          <strong id="sousttc" data-val="{{ sous_total|floatformat:2 }}">{{ sous_total|floatformat:2 }} €</strong>
+          <span>Prix HT :</span>
+          <strong id="sousttc" data-val="{{ total_ht|floatformat:2 }}">{{ total_ht|floatformat:2 }} €</strong>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span>TVA (21%) :</span>
+          <strong>{{ total_tva|floatformat:2 }} €</strong>
         </div>
         <div class="d-flex justify-content-between">
           <span>Livraison :</span>
@@ -216,131 +256,75 @@
         </div>
         <div class="d-flex justify-content-between fs-5">
           <span>Total TTC :</span>
-          <strong id="totttc">{{ total_ttc|floatformat:2 }} €</strong>
+          <strong id="totttc">{{ total_avec_livraison|floatformat:2 }} €</strong>
         </div>
       </div>
-      <div class="mb-4 adresse">
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Adresses de livraison et facturation</h5>
+        </div>
         <div class="carte-adresse w-100" id="carteAdresseLivraison" {% if adresse_livraison %}data-adresse-id="{{ adresse_livraison.id }}"{% endif %}>
-          <div class="w-100">
+          <div>
             <div class="adresse-titre">
-              <i class="bi bi-geo-alt-fill"></i>
+              <i class="bi bi-truck"></i>
               Adresse de livraison
             </div>
-          <div class="adresse-content" id = "adresse-content-livraison">
-            <div class="adresse-nom">
+            <div id="adresse-content-shipping">
               {% if adresse_livraison %}
-                {{ adresse_livraison.prenom }} {{ adresse_livraison.nom }}
-              {% else %}
-                {{ utilisateur.prenom }} {{ utilisateur.nom }}
+                <div class="adresse-nom">{{ adresse_livraison.prenom }} {{ adresse_livraison.nom }}</div>
+                <div class="adresse-ligne">{{ adresse_livraison.rue }}</div>
+                {% if adresse_livraison.complement %}
+                  <div class="adresse-ligne">{{ adresse_livraison.complement }}</div>
+                {% endif %}
+                <div class="adresse-ligne">{{ adresse_livraison.code_postal }} {{ adresse_livraison.ville }}</div>
+                <div class="adresse-ligne">{{ adresse_livraison.pays }}</div>
               {% endif %}
             </div>
-            <div class="adresse-ligne">
-              {% if adresse_livraison %}
-                {{ adresse_livraison.adresse }}
-              {% else %}
-                {{ utilisateur.adresse }}
-              {% endif %}
-            </div>
-            {% if adresse_livraison and adresse_livraison.complement %}
-              <div class="adresse-ligne">{{ adresse_livraison.complement }}</div>
-            {% elif utilisateur.complement_adresse %}
-              <div class="adresse-ligne">{{ utilisateur.complement_adresse }}</div>
-            {% endif %}
-            <div class="adresse-ligne">
-              {% if adresse_livraison %}
-                {{ adresse_livraison.code_postal }}
-              {% else %}
-                {{ utilisateur.code_postal }}
-              {% endif %}
-            </div>
-            <div class="adresse-ligne">
-              {% if adresse_livraison %}
-                {{ adresse_livraison.ville }}
-              {% else %}
-                {{ utilisateur.ville }}
-              {% endif %}
-            </div>
-            <div class="adresse-ligne">
-              {% if adresse_livraison %}
-                {{ adresse_livraison.pays }}
-              {% else %}
-                {{ utilisateur.pays }}
-              {% endif %}
-            </div>
-          </div></div>
+          </div>
           <div class="adresse-actions">
-            <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center btn-modifier-adresse" data-type="shipping" data-bs-toggle="modal" data-bs-target="#modalAdresses" id="btnModifierAdresseLivraison">
-              <i class="bi bi-pencil me-1"></i> Modifier
+            <button type="button" class="btn btn-outline-primary btn-modifier-adresse" data-bs-toggle="modal" data-bs-target="#modalAdresses" data-type="shipping">
+              Modifier
             </button>
           </div>
         </div>
       </div>
-      <!-- Toggle adresse de facturation -->
       <div class="form-check form-switch mb-3">
-        <input class="form-check-input" type="checkbox" id="toggleAdresseFacturation" {% if toggle_facturation_identique %}checked{% endif %}>
+        <input class="form-check-input" type="checkbox" id="toggleAdresseFacturation" {% if adresses_identiques %}checked{% endif %}>
         <label class="form-check-label" for="toggleAdresseFacturation">
           L'adresse de facturation est identique à l'adresse de livraison
         </label>
+        <script>
+          // Trace pour vérifier la valeur initiale du toggle
+          console.log("🏠 Adresses identiques selon Django: {% if adresses_identiques %}true{% else %}false{% endif %}");
+        </script>
       </div>
-      <!-- Adresse de facturation (affichée seulement si toggle désactivé) -->
-      <div class="mb-4 adresse{% if toggle_facturation_identique %} d-none{% endif %}" id="blocAdresseFacturation">
+      <div class="mb-4 adresse{% if adresses_identiques %} d-none{% endif %}" id="blocAdresseFacturation">
         <div class="carte-adresse w-100" id="carteAdresseFacturation" {% if adresse_facturation %}data-adresse-id="{{ adresse_facturation.id }}"{% endif %}>
-          <div class="w-100">
+          <div>
             <div class="adresse-titre">
               <i class="bi bi-geo-alt-fill"></i>
               Adresse de facturation
             </div>
-            <div class="adresse-content" id = "adresse-content-facturation">
-            <div class="adresse-nom">
+            <div id="adresse-content-billing">
               {% if adresse_facturation %}
-                {{ adresse_facturation.prenom }} {{ adresse_facturation.nom }}
-              {% else %}
-                {{ utilisateur.prenom }} {{ utilisateur.nom }}
-              {% endif %}
-            </div>
-            <div class="adresse-ligne">
-              {% if adresse_facturation %}
-                {{ adresse_facturation.adresse }}
-              {% else %}
-                {{ utilisateur.adresse }}
-              {% endif %}
-            </div>
-            {% if adresse_facturation and adresse_facturation.complement %}
-              <div class="adresse-ligne">{{ adresse_facturation.complement }}</div>
-            {% elif utilisateur.complement_adresse %}
-              <div class="adresse-ligne">{{ utilisateur.complement_adresse }}</div>
-            {% endif %}
-            <div class="adresse-ligne">
-              {% if adresse_facturation %}
-                {{ adresse_facturation.code_postal }}
-              {% else %}
-                {{ utilisateur.code_postal }}
-              {% endif %}
-            </div>
-            <div class="adresse-ligne">
-              {% if adresse_facturation %}
-                {{ adresse_facturation.ville }}
-              {% else %}
-                {{ utilisateur.ville }}
-              {% endif %}
-            </div>
-            <div class="adresse-ligne">
-              {% if adresse_facturation %}
-                {{ adresse_facturation.pays }}
-              {% else %}
-                {{ utilisateur.pays }}
+                <div class="adresse-nom">{{ adresse_facturation.prenom }} {{ adresse_facturation.nom }}</div>
+                <div class="adresse-ligne">{{ adresse_facturation.rue }}</div>
+                {% if adresse_facturation.complement %}
+                  <div class="adresse-ligne">{{ adresse_facturation.complement }}</div>
+                {% endif %}
+                <div class="adresse-ligne">{{ adresse_facturation.code_postal }} {{ adresse_facturation.ville }}</div>
+                <div class="adresse-ligne">{{ adresse_facturation.pays }}</div>
               {% endif %}
             </div>
           </div>
-        </div>
           <div class="adresse-actions">
-            <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center btn-modifier-adresse" data-type="billing" data-bs-toggle="modal" data-bs-target="#modalAdresses" id="btnModifierAdresseFacturation">
-              <i class="bi bi-pencil me-1"></i> Modifier
+            <button type="button" class="btn btn-outline-primary btn-modifier-adresse" data-bs-toggle="modal" data-bs-target="#modalAdresses" data-type="billing">
+              Modifier
             </button>
           </div>
         </div>
       </div>
-      <button class="btn btn-primary w-100 mt-2" type="submit" id="btnValiderCommande">
+      <button class="btn btn-primary w-100 mt-2" type="submit" id="btnValiderCommande" {% if not adresse_livraison %}disabled{% endif %}>
         Valider votre commande
       </button>
     </form>
@@ -359,22 +343,106 @@
         <div class="alert alert-info mb-3" role="alert">
           <small><i class="bi bi-info-circle-fill me-1"></i> Cette sélection s'applique uniquement à cette commande et ne change pas votre adresse par défaut.</small>
         </div>
-        <div class="ajouter-adresse-btn text-decoration-none text-center mb-3" id="btnOuvrirAjoutAdresse" style="min-height: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border: 2px dashed #6c47ff; background: #faf8ff; color: #6c47ff; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; max-width: 100%;">
-          <div style="font-size: 2rem; line-height: 1; margin-right: 10px;">
-            <svg viewBox="0 0 24 24" width="2em" height="2em" fill="currentColor">
-              <path d="M20.25 11.2h-7.5V3.7a.75.75 0 0 0-1.5 0v7.5h-7.5a.75.75 0 0 0 0 1.5h7.5v7.5a.75.75 0 0 0 1.5 0v-7.5h7.5a.75.75 0 0 0 0-1.5"></path>
-            </svg>
+        <button type="button" class="btn btn-primary mb-3 w-100" id="btnAfficherFormulaireAdresse">
+          <i class="bi bi-plus-circle me-2"></i> Ajouter une nouvelle adresse
+        </button>
+        
+        <!-- Formulaire d'ajout d'adresse (caché initialement) -->
+        <div id="formulaireNouvelleAdresse" class="mb-4" style="display: none;">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Ajouter une adresse</h5>
+              <button type="button" class="btn-close" id="fermerFormulaireAdresse" aria-label="Fermer"></button>
+            </div>
+            <div class="card-body">
+              <form id="formAjouterAdresse" method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="row g-3">
+                  <!-- Prénom -->
+                  <div class="col-md-6">
+                    <label for="prenom" class="form-label">Prénom</label>
+                    <input type="text" class="form-control" id="prenom" name="prenom" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre prénom.</div>
+                  </div>
+                  
+                  <!-- Nom -->
+                  <div class="col-md-6">
+                    <label for="nom" class="form-label">Nom</label>
+                    <input type="text" class="form-control" id="nom" name="nom" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre nom.</div>
+                  </div>
+                  
+                  <!-- Adresse -->
+                  <div class="col-12">
+                    <label for="rue" class="form-label">Adresse</label>
+                    <input type="text" class="form-control" id="rue" name="rue" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre adresse.</div>
+                  </div>
+                  
+                  <!-- Complément -->
+                  <div class="col-12">
+                    <label for="complement" class="form-label">Complément d'adresse</label>
+                    <input type="text" class="form-control" id="complement" name="complement">
+                  </div>
+                  
+                  <!-- Code postal -->
+                  <div class="col-md-4">
+                    <label for="code_postal" class="form-label">Code postal</label>
+                    <input type="text" class="form-control" id="code_postal" name="code_postal" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre code postal.</div>
+                  </div>
+                  
+                  <!-- Ville -->
+                  <div class="col-md-8">
+                    <label for="ville" class="form-label">Ville</label>
+                    <input type="text" class="form-control" id="ville" name="ville" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre ville.</div>
+                  </div>
+                  
+                  <!-- Pays -->
+                  <div class="col-12">
+                    <label for="pays" class="form-label">Pays</label>
+                    <input type="text" class="form-control" id="pays" name="pays" value="Belgique" required>
+                    <div class="invalid-feedback">Veuillez indiquer votre pays.</div>
+                  </div>
+                  
+                  <!-- Options par défaut -->
+                  <div class="col-md-6">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="is_default_shipping" name="is_default_shipping">
+                      <label class="form-check-label" for="is_default_shipping">
+                        Adresse de livraison par défaut
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="is_default_billing" name="is_default_billing">
+                      <label class="form-check-label" for="is_default_billing">
+                        Adresse de facturation par défaut
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-4">
+                  <button type="submit" class="btn btn-primary">Enregistrer</button>
+                  <button type="button" class="btn btn-secondary" id="annulerAjoutAdresse">Annuler</button>
+                </div>
+              </form>
+            </div>
           </div>
-          <span>Ajouter une adresse</span>
         </div>
+        
         <div class="list-group">
           {% for adresse in adresses %}
           <div class="adresse-item-container">
-            <label class="list-group-item d-flex gap-2">
+            <label class="list-group-item d-flex gap-2" style="cursor: pointer;">
               <input class="form-check-input flex-shrink-0" type="radio" name="adresseLivraison" value="{{ adresse.id }}" {% if adresse.id == adresse_livraison.id %}checked{% endif %}>
               <div class="adresse-popup-content">
                 <span class="adresse-popup-nom">{{ adresse.prenom }} {{ adresse.nom }}</span>
-                <span class="adresse-popup-ligne">{{ adresse.adresse }}</span>
+                <span class="adresse-popup-ligne">{{ adresse.rue }}</span>
                 {% if adresse.complement %}
                 <span class="adresse-popup-ligne">{{ adresse.complement }}</span>
                 {% endif %}
@@ -388,7 +456,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-        <button type="button" class="btn btn-primary" id="validerAdresse">Valider</button>
+        <button type="button" class="btn btn-primary" id="validerAdresse" disabled>Valider</button>
       </div>
     </div>
   </div>
@@ -408,234 +476,6 @@
     </div>
   </div>
 </div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // Gestion de la sélection d'adresse
-    const modalAdresses = document.getElementById("modalAdresses");
-    const validerAdresse = document.getElementById("validerAdresse");
-    const adresseLivraison = document.getElementById("adresseLivraison");
-    const blocAdresseFacturation = document.getElementById("blocAdresseFacturation");
-
-    // Gestion des boutons Modifier pour livraison/facturation
-    let typeAdresseAModifier = "shipping";
-    document.querySelectorAll('.btn-modifier-adresse').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        typeAdresseAModifier = btn.getAttribute('data-type');
-        
-        // Mise à jour du titre de la modal selon le type d'adresse
-        const modalTitle = document.getElementById("modalAdressesLabel");
-        if (typeAdresseAModifier === "shipping") {
-          modalTitle.textContent = "Sélectionner une adresse de livraison pour cette commande";
-          
-          // Récupérer l'ID de l'adresse de livraison actuellement sélectionnée
-          const adresseId = document.getElementById('carteAdresseLivraison').getAttribute('data-adresse-id');
-          
-          // Sélectionner le bouton radio correspondant à cette adresse
-          const radioButtons = document.querySelectorAll('input[name="adresseLivraison"]');
-          radioButtons.forEach(radio => {
-            radio.checked = (radio.value === adresseId);
-          });
-          
-        } else {
-          modalTitle.textContent = "Sélectionner une adresse de facturation pour cette commande";
-          
-          // Récupérer l'ID de l'adresse de facturation actuellement sélectionnée
-          const adresseId = document.getElementById('carteAdresseFacturation').getAttribute('data-adresse-id');
-          
-          // Sélectionner le bouton radio correspondant à cette adresse
-          const radioButtons = document.querySelectorAll('input[name="adresseLivraison"]');
-          radioButtons.forEach(radio => {
-            radio.checked = (radio.value === adresseId);
-          });
-        }
-      });
-    });
-
-    validerAdresse.addEventListener("click", function () {
-      const selectedAdresse = document.querySelector(
-        'input[name="adresseLivraison"]:checked'
-      );
-      if (selectedAdresse) {
-        const adresseId = selectedAdresse.value;
-        let url = "/update-shipping-address/" + adresseId + "/";
-        if (typeAdresseAModifier === "billing") {
-          url = "/update-billing-address/" + adresseId + "/";
-        }
-        fetch(url, {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-          },
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Erreur lors de la mise à jour de l'adresse");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            if (data.success) {
-              if (typeAdresseAModifier === "shipping") {
-                // Mise à jour de l'adresse de livraison
-                const adresseContent = document.getElementById('adresse-content-livraison');
-                if (!adresseContent) {
-                  console.error("Élément adresse-content-livraison introuvable");
-                  return;
-                }
-                
-                // Mettre à jour l'attribut data-adresse-id
-                const carteAdresseLivraison = document.getElementById('carteAdresseLivraison');
-                if (carteAdresseLivraison) {
-                  carteAdresseLivraison.setAttribute('data-adresse-id', adresseId);
-                }
-                
-                // Créer le contenu HTML pour l'adresse
-                let htmlContent = `
-                  <div class="adresse-nom">${data.prenom || ''} ${data.nom || ''}</div>
-                  <div class="adresse-ligne">${data.adresse || ''}</div>`;
-                  
-                // Ajouter le complément d'adresse s'il existe
-                if (data.complement) {
-                  htmlContent += `<div class="adresse-ligne">${data.complement}</div>`;
-                }
-                
-                // Ajouter le reste des informations
-                htmlContent += `
-                  <div class="adresse-ligne">${data.code_postal || ''}</div>
-                  <div class="adresse-ligne">${data.ville || ''}</div>
-                  <div class="adresse-ligne">${data.pays || ''}</div>`;
-                  
-                // Mettre à jour le contenu HTML
-                adresseContent.innerHTML = htmlContent;
-               
-                // Si le toggle est activé, mettre automatiquement à jour l'adresse de facturation
-                const toggleAdresseFacturation = document.getElementById("toggleAdresseFacturation");
-                if (toggleAdresseFacturation && toggleAdresseFacturation.checked) {
-                  // Appeler la route pour mettre à jour l'adresse de facturation avec la même adresse
-                  fetch("/update-billing-address/" + adresseId + "/", {
-                    method: "POST",
-                    headers: {
-                      "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-                    },
-                  })
-                  .then(response => response.json())
-                  .then(data => {
-                    console.log("Adresse de facturation mise à jour pour cette commande uniquement");
-                   
-                    // Mettre à jour l'affichage de l'adresse de facturation avec les données de l'adresse de livraison
-                    const adresseFacturationContent = document.getElementById('adresse-content-facturation');
-                    if (adresseFacturationContent) {
-                      adresseFacturationContent.innerHTML = htmlContent;
-                    }
-                  })
-                  .catch(error => {
-                    console.error("Erreur lors de la mise à jour de l'adresse pour cette commande:", error);
-                  });
-                }
-              } else {
-                // Mise à jour de l'adresse de facturation
-                const adresseContent = document.getElementById('adresse-content-facturation');
-                if (!adresseContent) {
-                  console.error("Élément adresse-content-facturation introuvable");
-                  return;
-                }
-                
-                // Mettre à jour l'attribut data-adresse-id
-                const carteAdresseFacturation = document.getElementById('carteAdresseFacturation');
-                if (carteAdresseFacturation) {
-                  carteAdresseFacturation.setAttribute('data-adresse-id', adresseId);
-                }
-                
-                // Créer le contenu HTML pour l'adresse
-                let htmlContent = `
-                  <div class="adresse-nom">${data.prenom || ''} ${data.nom || ''}</div>
-                  <div class="adresse-ligne">${data.adresse || ''}</div>`;
-                  
-                // Ajouter le complément d'adresse s'il existe
-                if (data.complement) {
-                  htmlContent += `<div class="adresse-ligne">${data.complement}</div>`;
-                }
-                
-                // Ajouter le reste des informations
-                htmlContent += `
-                  <div class="adresse-ligne">${data.code_postal || ''}</div>
-                  <div class="adresse-ligne">${data.ville || ''}</div>
-                  <div class="adresse-ligne">${data.pays || ''}</div>`;
-                  
-                // Mettre à jour le contenu HTML
-                adresseContent.innerHTML = htmlContent;
-              }
-              // Fermer la modal
-              try {
-                const modalElement = document.getElementById('modalAdresses');
-                if (modalElement) {
-                  const modal = bootstrap.Modal.getInstance(modalElement);
-                  if (modal) {
-                    modal.hide();
-                  }
-                }
-              } catch (error) {
-                console.error("Erreur lors de la fermeture de la modal:", error);
-              }
-            }
-          })
-          .catch((error) => {
-            console.error("Erreur:", error);
-            alert(
-              "Une erreur est survenue lors de la mise à jour de l'adresse"
-            );
-          });
-      }
-    });
-
-    // Gestion ouverture modale et chargement du formulaire
-    const btnOuvrirAjoutAdresse = document.getElementById("btnOuvrirAjoutAdresse");
-    if (btnOuvrirAjoutAdresse) {
-      btnOuvrirAjoutAdresse.addEventListener("click", function () {
-        window.location.href = "/mes-adresses/?edit=shipping";
-      });
-    }
-
-    // Toggle adresse de facturation
-    const toggleAdresseFacturation = document.getElementById("toggleAdresseFacturation");
-    if (toggleAdresseFacturation && blocAdresseFacturation) {
-      toggleAdresseFacturation.addEventListener("change", function () {
-        if (this.checked) {
-          blocAdresseFacturation.classList.add("d-none");
-          
-          // Quand le toggle est activé, définir l'adresse de facturation identique à l'adresse de livraison
-          const adresseId = document.getElementById('carteAdresseLivraison').getAttribute('data-adresse-id');
-          if (adresseId) {
-            // Mettre à jour la session avec l'ID de l'adresse de livraison comme adresse de facturation
-            fetch("/update-billing-address/" + adresseId + "/", {
-              method: "POST",
-              headers: {
-                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-              },
-            })
-            .then(response => response.json())
-            .then(data => {
-              console.log("Adresse de facturation temporairement définie comme identique à l'adresse de livraison pour cette commande");
-              
-              // Mettre à jour l'affichage de l'adresse de facturation avec les données de l'adresse de livraison
-              const adresseLivraisonContent = document.getElementById('adresse-content-livraison');
-              const adresseFacturationContent = document.getElementById('adresse-content-facturation');
-              if (adresseLivraisonContent && adresseFacturationContent) {
-                adresseFacturationContent.innerHTML = adresseLivraisonContent.innerHTML;
-              }
-            })
-            .catch(error => {
-              console.error("Erreur lors de la mise à jour temporaire de l'adresse de facturation:", error);
-            });
-          }
-        } else {
-          blocAdresseFacturation.classList.remove("d-none");
-        }
-      });
-    }
-  });
-</script>
 
 <style>
   .adresse-popup-nom {
@@ -686,4 +526,437 @@
     opacity: 1;
   }
 </style>
+
+<!-- Script unifié pour gérer toutes les fonctionnalités -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initialisation du script unifié - v2.0');
+    
+    // PARTIE 1: GESTION DES PRIX DE LIVRAISON
+    // Sélectionner tous les boutons radio d'options de livraison
+    const optionsLivraison = document.querySelectorAll('input[name="livraison"]');
+    const prixLivraisonElement = document.getElementById('livPrx');
+    const totalElement = document.getElementById('totttc');
+    const sousTotalElement = document.getElementById('sousttc');
+    
+    // Fonction pour formater le prix avec deux décimales et symbole euro
+    function formatPrix(prix) {
+      return prix.toFixed(2).replace('.', ',') + ' €';
+    }
+    
+    // Fonction pour mettre à jour les prix affichés
+    function mettreAJourPrix(prixLivraison) {
+      // Récupérer le sous-total HT
+      const sousTotalHT = parseFloat(sousTotalElement.getAttribute('data-val').replace(',', '.'));
+      
+      // Calculer le sous-total TTC (HT * 1.21 car TVA 21%)
+      const sousTotalTTC = sousTotalHT * 1.21;
+      
+      // Calculer le total avec livraison
+      const totalAvecLivraison = sousTotalTTC + prixLivraison;
+      
+      // Mettre à jour l'affichage
+      prixLivraisonElement.textContent = prixLivraison === 0 ? 'Gratuite' : formatPrix(prixLivraison);
+      totalElement.textContent = formatPrix(totalAvecLivraison);
+      
+      console.log("Prix mis à jour:", {
+        prixLivraison: prixLivraison,
+        sousTotalHT: sousTotalHT,
+        sousTotalTTC: sousTotalTTC,
+        totalAvecLivraison: totalAvecLivraison
+      });
+    }
+    
+    // Ajouter un écouteur d'événement à chaque option de livraison
+    if (optionsLivraison.length > 0) {
+      optionsLivraison.forEach(option => {
+        option.addEventListener('change', function() {
+          // Récupérer le prix de livraison à partir de l'attribut data-price
+          const prixLivraison = parseFloat(this.getAttribute('data-price').replace(',', '.'));
+          console.log(`Option de livraison changée: ${this.id}, prix: ${prixLivraison}`);
+          
+          // Mettre à jour les prix affichés
+          mettreAJourPrix(prixLivraison);
+        });
+      });
+      
+      // Appeler la fonction au chargement pour initialiser les prix avec l'option sélectionnée
+      const optionSelectionnee = document.querySelector('input[name="livraison"]:checked');
+      if (optionSelectionnee) {
+        const prixInitial = parseFloat(optionSelectionnee.getAttribute('data-price').replace(',', '.'));
+        console.log(`Option initiale: ${optionSelectionnee.id}, prix: ${prixInitial}`);
+        mettreAJourPrix(prixInitial);
+      }
+    }
+    
+    // PARTIE 2: GESTION DES ADRESSES
+    console.log('🏠 Initialisation de la gestion des adresses');
+    
+    // Éléments importants
+    const carteAdresseLivraison = document.getElementById('carteAdresseLivraison');
+    const carteAdresseFacturation = document.getElementById('carteAdresseFacturation');
+    const toggleAdresseFacturation = document.getElementById('toggleAdresseFacturation');
+    const blocAdresseFacturation = document.getElementById('blocAdresseFacturation');
+    const btnValiderCommande = document.getElementById('btnValiderCommande');
+    const formConfirm = document.getElementById('confirm-form');
+    const champLivraisonId = document.getElementById('adresse_livraison_id');
+    const champFacturationId = document.getElementById('adresse_facturation_id');
+    
+    // État global pour suivre l'adresse en cours d'édition
+    window.typeAdresseAModifier = null;
+    
+    // Capture des données initiales
+    console.log('📊 État initial:', {
+      livraisonId: champLivraisonId ? champLivraisonId.value : null,
+      facturationId: champFacturationId ? champFacturationId.value : null,
+      toggle: toggleAdresseFacturation ? toggleAdresseFacturation.checked : false
+    });
+
+    // INITIALISATION DU TOGGLE: vérifier si les adresses sont identiques au démarrage
+    if (champLivraisonId && champFacturationId && toggleAdresseFacturation) {
+      // Vérifier si les adresses sont identiques
+      const addressesIdentiques = champLivraisonId.value && champFacturationId.value && 
+                                champLivraisonId.value === champFacturationId.value;
+      
+      // CORRECTION SPÉCIALE: Si nous avons deux adresses sélectionnées et qu'elles sont identiques,
+      // mais que le toggle n'est pas activé, nous l'activons
+      const toggleActif = toggleAdresseFacturation.checked;
+      if (addressesIdentiques && !toggleActif) {
+        console.log('🔄 Correction automatique du toggle: identique=true mais toggle désactivé');
+        toggleAdresseFacturation.checked = true;
+        
+        // Mettre à jour la visibilité du bloc de facturation
+        if (blocAdresseFacturation) {
+          blocAdresseFacturation.classList.add('d-none');
+        }
+        
+        // Envoyer l'état du toggle au serveur
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        fetch('/update-toggle-addresses/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken
+          },
+          body: 'is_same=true'
+        });
+      }
+      
+      // Définir l'état du toggle en fonction des adresses
+      // toggleAdresseFacturation.checked = addressesIdentiques;
+      
+      // Mettre à jour la visibilité du bloc de facturation
+      if (blocAdresseFacturation) {
+        blocAdresseFacturation.classList.toggle('d-none', toggleAdresseFacturation.checked);
+      }
+      
+      console.log(`🔄 État initial toggle: ${toggleAdresseFacturation.checked ? 'activé' : 'désactivé'} (adresses identiques: ${addressesIdentiques})`);
+    }
+    
+    // Synchroniser les champs cachés avec les attributs data-adresse-id des cartes
+    function synchroniserChampsAvecCartes() {
+      if (carteAdresseLivraison) {
+        const adresseId = carteAdresseLivraison.getAttribute('data-adresse-id');
+        if (adresseId && champLivraisonId) {
+          champLivraisonId.value = adresseId;
+          console.log(`🔄 Champ livraison synchronisé: ${adresseId}`);
+        }
+      }
+      
+      if (carteAdresseFacturation) {
+        const adresseId = carteAdresseFacturation.getAttribute('data-adresse-id');
+        if (adresseId && champFacturationId) {
+          champFacturationId.value = adresseId;
+          console.log(`🔄 Champ facturation synchronisé: ${adresseId}`);
+        }
+      }
+    }
+    
+    // Initialisation: synchroniser les champs avec les cartes
+    synchroniserChampsAvecCartes();
+    
+    // Fonction utilitaire pour mettre à jour en toute sécurité l'affichage d'une adresse
+    window.safeUpdateAddress = function(elementId, data) {
+      console.log('🔧 safeUpdateAddress appelé pour:', elementId, data);
+      
+      const element = document.getElementById(elementId);
+      if (!element) {
+        console.error('❌ Élément non trouvé:', elementId);
+        return;
+      }
+      
+      // Sécuriser toutes les valeurs
+      const prenom = data.prenom || '';
+      const nom = data.nom || '';
+      const rue = data.rue || '';
+      const complement = data.complement || '';
+      const code_postal = data.code_postal || '';
+      const ville = data.ville || '';
+      const pays = data.pays || '';
+      
+      // Construire le HTML
+      let html = `<div class="adresse-nom">${prenom} ${nom}</div>`;
+      html += `<div class="adresse-ligne">${rue}</div>`;
+      
+      if (complement && complement !== 'null' && complement !== 'undefined') {
+        html += `<div class="adresse-ligne">${complement}</div>`;
+      }
+      
+      html += `<div class="adresse-ligne">${code_postal} ${ville}</div>`;
+      html += `<div class="adresse-ligne">${pays}</div>`;
+      
+      // Mettre à jour l'élément
+      element.innerHTML = html;
+      console.log('✅ Adresse mise à jour pour:', elementId);
+      
+      // Activer le bouton de validation si nous avons une adresse de livraison
+      if (elementId === 'adresse-content-shipping' && btnValiderCommande) {
+        btnValiderCommande.disabled = false;
+      }
+    };
+    
+    // Toggle pour l'adresse de facturation identique
+    if (toggleAdresseFacturation) {
+      toggleAdresseFacturation.addEventListener('change', function() {
+        console.log(`🔄 Toggle adresse facturation: ${this.checked}`);
+        
+        if (blocAdresseFacturation) {
+          blocAdresseFacturation.classList.toggle('d-none', this.checked);
+        }
+        
+        // Si le toggle est activé, copier l'adresse de livraison vers l'adresse de facturation
+        if (this.checked && champLivraisonId && champFacturationId) {
+          const livraisonId = champLivraisonId.value;
+          if (livraisonId) {
+            champFacturationId.value = livraisonId;
+            console.log(`🔄 Copie ID: livraison ${livraisonId} → facturation`);
+            
+            // Si les cartes existent, mettre à jour l'attribut data-adresse-id
+            if (carteAdresseFacturation && carteAdresseLivraison) {
+              carteAdresseFacturation.setAttribute('data-adresse-id', livraisonId);
+              
+              // Mettre à jour l'affichage de l'adresse de facturation
+              const contentLivraison = document.getElementById('adresse-content-shipping');
+              const contentFacturation = document.getElementById('adresse-content-billing');
+              if (contentLivraison && contentFacturation) {
+                contentFacturation.innerHTML = contentLivraison.innerHTML;
+              }
+            }
+          }
+        }
+        
+        // Envoyer l'état du toggle au serveur
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        fetch('/update-toggle-addresses/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken
+          },
+          body: `is_same=${this.checked}`
+        });
+      });
+    }
+    
+    // Gestionnaires pour les boutons de modification d'adresse
+    const boutonsModifierAdresse = document.querySelectorAll('.btn-modifier-adresse');
+    if (boutonsModifierAdresse.length > 0) {
+      boutonsModifierAdresse.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // Stocker le type d'adresse à modifier (shipping ou billing)
+          window.typeAdresseAModifier = this.getAttribute('data-type');
+          console.log(`🔍 Modification adresse de type: ${window.typeAdresseAModifier}`);
+          
+          // Présélectionner l'adresse actuelle dans la modal
+          const typeAdresse = window.typeAdresseAModifier;
+          const adresseId = typeAdresse === 'shipping' 
+            ? champLivraisonId.value 
+            : champFacturationId.value;
+            
+          if (adresseId) {
+            const radioBtn = document.querySelector(`input[name="adresseLivraison"][value="${adresseId}"]`);
+            if (radioBtn) {
+              radioBtn.checked = true;
+              const btnValiderModal = document.getElementById('validerAdresse');
+              if (btnValiderModal) btnValiderModal.disabled = false;
+            }
+          }
+        });
+      });
+    }
+    
+    // Gestionnaire pour la sélection d'adresse dans le modal
+    const radioAdresses = document.querySelectorAll('input[name="adresseLivraison"]');
+    const btnValiderAdresse = document.getElementById('validerAdresse');
+    
+    if (radioAdresses.length > 0 && btnValiderAdresse) {
+      radioAdresses.forEach(radio => {
+        radio.addEventListener('change', function() {
+          btnValiderAdresse.disabled = false;
+        });
+      });
+      
+      btnValiderAdresse.addEventListener('click', function() {
+        console.log('⚡ Clic sur valider adresse');
+        const adresseSelectionnee = document.querySelector('input[name="adresseLivraison"]:checked');
+        
+        if (adresseSelectionnee) {
+          const adresseId = adresseSelectionnee.value;
+          console.log(`📋 Adresse sélectionnée: ${adresseId}`);
+          
+          // Déterminer l'URL et le champ à mettre à jour selon le type d'adresse
+          const typeAdresse = window.typeAdresseAModifier || 'shipping';
+          console.log(`🔤 Type d'adresse: ${typeAdresse}`);
+          
+          const url = typeAdresse === 'shipping' 
+            ? `/update-shipping-address/${adresseId}/` 
+            : `/update-billing-address/${adresseId}/`;
+            
+          const champId = typeAdresse === 'shipping' 
+            ? champLivraisonId 
+            : champFacturationId;
+            
+          const carteAdresse = typeAdresse === 'shipping' 
+            ? carteAdresseLivraison 
+            : carteAdresseFacturation;
+            
+          const contentId = typeAdresse === 'shipping' 
+            ? 'adresse-content-shipping' 
+            : 'adresse-content-billing';
+            
+          // Mettre à jour le champ caché
+          if (champId) champId.value = adresseId;
+          
+          // Mettre à jour l'attribut data-adresse-id de la carte
+          if (carteAdresse) carteAdresse.setAttribute('data-adresse-id', adresseId);
+          
+          // Appel AJAX pour mettre à jour l'adresse
+          const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+          
+          fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': csrfToken
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Mettre à jour l'affichage de l'adresse
+              window.safeUpdateAddress(contentId, data);
+              
+              // Si c'est l'adresse de livraison et que le toggle est activé,
+              // également mettre à jour l'adresse de facturation
+              if (typeAdresse === 'shipping' && toggleAdresseFacturation && toggleAdresseFacturation.checked) {
+                if (champFacturationId) champFacturationId.value = adresseId;
+                if (carteAdresseFacturation) carteAdresseFacturation.setAttribute('data-adresse-id', adresseId);
+                window.safeUpdateAddress('adresse-content-billing', data);
+              }
+              
+              // Fermer la modal
+              const modalAdresses = bootstrap.Modal.getInstance(document.getElementById('modalAdresses'));
+              if (modalAdresses) modalAdresses.hide();
+            }
+          })
+          .catch(error => {
+            console.error('Erreur lors de la mise à jour de l\'adresse:', error);
+          });
+        }
+      });
+    }
+    
+    // Gérer la soumission du formulaire de commande
+    if (formConfirm) {
+      formConfirm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Synchroniser les champs avec les attributs data-adresse-id des cartes une dernière fois
+        synchroniserChampsAvecCartes();
+        
+        console.log('📤 Soumission du formulaire avec valeurs:', {
+          livraison: champLivraisonId ? champLivraisonId.value : null,
+          facturation: champFacturationId ? champFacturationId.value : null
+        });
+        
+        // Si le toggle est activé, s'assurer que l'ID de facturation est le même que celui de livraison
+        if (toggleAdresseFacturation && toggleAdresseFacturation.checked && champLivraisonId && champFacturationId) {
+          champFacturationId.value = champLivraisonId.value;
+        }
+        
+        // Vérifier que nous avons bien une adresse de livraison
+        if (!champLivraisonId || !champLivraisonId.value) {
+          alert("Veuillez sélectionner une adresse de livraison.");
+          return;
+        }
+        
+        // Soumettre le formulaire
+        this.submit();
+      });
+    }
+    
+    // PARTIE 3: GESTION DU BOUTON D'AJOUT D'ADRESSE
+    console.log('🏗️ Initialisation du formulaire d\'ajout d\'adresse');
+    
+    // Éléments pour l'ajout d'adresse
+    const btnAfficherFormulaireAdresse = document.getElementById('btnAfficherFormulaireAdresse');
+    const formulaireNouvelleAdresse = document.getElementById('formulaireNouvelleAdresse');
+    const fermerFormulaireAdresse = document.getElementById('fermerFormulaireAdresse');
+    const annulerAjoutAdresse = document.getElementById('annulerAjoutAdresse');
+    const formAjouterAdresse = document.getElementById('formAjouterAdresse');
+    
+    // Afficher/masquer le formulaire d'ajout d'adresse
+    if (btnAfficherFormulaireAdresse && formulaireNouvelleAdresse) {
+      btnAfficherFormulaireAdresse.addEventListener('click', function() {
+        formulaireNouvelleAdresse.style.display = 'block';
+        btnAfficherFormulaireAdresse.style.display = 'none';
+      });
+    }
+    
+    if (fermerFormulaireAdresse && formulaireNouvelleAdresse && btnAfficherFormulaireAdresse) {
+      fermerFormulaireAdresse.addEventListener('click', function() {
+        formulaireNouvelleAdresse.style.display = 'none';
+        btnAfficherFormulaireAdresse.style.display = 'block';
+      });
+    }
+    
+    if (annulerAjoutAdresse && formulaireNouvelleAdresse && btnAfficherFormulaireAdresse) {
+      annulerAjoutAdresse.addEventListener('click', function() {
+        formulaireNouvelleAdresse.style.display = 'none';
+        btnAfficherFormulaireAdresse.style.display = 'block';
+      });
+    }
+    
+    // Soumettre le formulaire d'ajout d'adresse via AJAX
+    if (formAjouterAdresse) {
+      formAjouterAdresse.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch('/api-ajouter-adresse/', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': csrfToken
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Recharger la page pour afficher la nouvelle adresse
+            window.location.reload();
+          } else {
+            alert('Erreur: ' + (data.message || 'Une erreur est survenue.'));
+          }
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          alert('Une erreur est survenue lors de l\'ajout de l\'adresse.');
+        });
+      });
+    }
+  });
+</script>
 {% endblock content %}
